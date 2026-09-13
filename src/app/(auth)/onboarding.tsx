@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
-import GoogleIcon from '../components/social-icons/GoogleIcon';
-import FacebookIcon from '../components/social-icons/FacebookIcon';
-import AppleIcon from '../components/social-icons/AppleIcon';
-import MailIcon from '../components/social-icons/MailIcon';
+import GoogleIcon from '@/components/social-icons/GoogleIcon';
+import FacebookIcon from '@/components/social-icons/FacebookIcon';
+import AppleIcon from '@/components/social-icons/AppleIcon';
+import TwitterIcon from '@/components/social-icons/TwitterIcon';
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -11,14 +11,14 @@ export default function OnboardingScreen() {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('../../assets/onboarding/fundo-onboarding.jpg')}
+        source={require('../../../assets/onboarding/fundo-onboarding.jpg')}
         style={styles.heroImage}
         resizeMode="cover"
       />
       <View style={styles.whiteCard}>
         <Text style={styles.title}>está a apenas alguns passos do Rota</Text>
         
-        <TouchableOpacity style={styles.btnLogin}>
+        <TouchableOpacity style={styles.btnLogin} onPress={() => router.push('/(auth)/login')}>
           <Text style={styles.btnText}>Log In</Text>
         </TouchableOpacity>
 
@@ -26,16 +26,16 @@ export default function OnboardingScreen() {
 
         <View style={styles.socialContainer}>
           <TouchableOpacity style={styles.socialBox}>
-            <GoogleIcon />
+            <GoogleIcon color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialBox}>
-            <FacebookIcon />
+            <FacebookIcon color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialBox}>
-            <AppleIcon />
+            <AppleIcon color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialBox}>
-            <MailIcon />
+            <TwitterIcon color="#fff" />
           </TouchableOpacity>
         </View>
       </View>
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   },
   heroImage: {
     flex: 0.65,
-    backgroundColor: '#ff9a00', // Placeholder
+    backgroundColor: '#ff9a00',
   },
   whiteCard: {
     flex: 0.4,
