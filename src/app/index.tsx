@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
+import { router } from 'expo-router';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -17,13 +18,15 @@ export default function SplashScreen() {
   const logoOpacity = useSharedValue(0);
 
   useEffect(() => {
-    // Icon animation: rise, rotate, shrink
     iconTranslateY.value = withTiming(0, { duration: 1500, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
     iconScale.value = withTiming(1, { duration: 1500 });
     iconRotate.value = withTiming(380, { duration: 1500 });
 
-    // Logo appears after icon animation
     logoOpacity.value = withDelay(1500, withTiming(1, { duration: 500 }));
+
+    setTimeout(() => {
+      router.replace('/onboarding');
+    }, 2500);
   }, []);
 
   const iconStyle = useAnimatedStyle(() => ({
@@ -41,12 +44,12 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <Animated.Image
-        source={require('../../assets/rota-logo.png')}
+        source={require('../../assets/brand/rota-logo.png')}
         style={[styles.logo, logoStyle]}
         resizeMode="contain"
       />
       <Animated.Image
-        source={require('../../assets/rota-icon.png')}
+        source={require('../../assets/brand/rota-icon.png')}
         style={[styles.icon, iconStyle]}
         resizeMode="contain"
       />
@@ -69,7 +72,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     position: 'absolute',
-    // Positioned 67 pixels to the left of the center
     left: SCREEN_WIDTH / 2 - 67,
     },
 
