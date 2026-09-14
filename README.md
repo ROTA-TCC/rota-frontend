@@ -1,50 +1,56 @@
-# Welcome to your Expo app 👋
+# Rota - App de Corrida
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Este projeto consiste em um aplicativo de mobilidade urbana desenvolvido como Trabalho de Conclusão de Curso (TCC).
 
-## Get started
+## 1. Instalação e Execução Local
 
-1. Install dependencies
+Esta seção descreve como preparar o ambiente de desenvolvimento em sua máquina local.
 
-   ```bash
-   npm install
-   ```
+### Requisitos
+*   **Node.js:** O projeto utiliza o Expo SDK 57, que exige uma versão recente do Node.js (versão 18 ou superior recomendada). Caso a sua versão seja incompatível, utilize o nvm (Node Version Manager) para instalar a versão correta.
+*   **Gerenciador de pacotes:** npm ou yarn.
 
-2. Start the app
+### Passo a passo
+1.  **Instalação de dependências:**
+    Abra o terminal na pasta raiz do projeto e execute:
+    ```bash
+    npm install
+    ```
 
-   ```bash
-   npx expo start
-   ```
+2.  **Iniciar o servidor:**
+    Após a instalação, inicie o ambiente de desenvolvimento com o comando:
+    ```bash
+    npx expo start
+    ```
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 2. Execução via GitHub Codespaces
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+O Codespaces é uma alternativa recomendada para desenvolvimento em nuvem, especialmente útil caso você não deseje configurar o ambiente localmente ou esteja utilizando máquinas com restrições.
 
-## Get a fresh project
+### Pré-requisitos
+*   **Extensão do VS Code:** Certifique-se de ter a extensão "GitHub Codespaces" instalada no seu Visual Studio Code.
+*   **Conta GitHub:** O repositório deve estar hospedado no GitHub para que o Codespace possa ser criado.
 
-When you're ready, run:
+### Passo a passo
+1.  **Criar o Codespace:**
+    No repositório do projeto no GitHub, clique no botão "Code" e selecione a aba "Codespaces". Clique em "Create codespace on main". Isso abrirá um ambiente de desenvolvimento completo no seu navegador ou conectará diretamente ao seu VS Code local.
 
-```bash
-npm run reset-project
-```
+2.  **Instalação de dependências:**
+    Assim que o terminal estiver disponível dentro do Codespace, execute:
+    ```bash
+    npm install
+    ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+3.  **Iniciar o servidor com túnel:**
+    Como o Codespace roda em um servidor remoto, é necessário criar um túnel para permitir que o seu celular (com o app Expo Go) acesse o servidor. Utilize o comando:
+    ```bash
+    npx expo start --tunnel
+    ```
+    Após executar este comando, um código QR aparecerá no terminal. Utilize o aplicativo Expo Go no seu celular para ler o QR Code e visualizar o aplicativo.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Sobre o Projeto
+O Rota tem como objetivo facilitar a conexão entre passageiros e motoristas, funcionando como um sistema de mobilidade urbana completo para o TCC.
