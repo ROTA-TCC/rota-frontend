@@ -1,4 +1,5 @@
-import { StyleSheet, View, Text, TextInput, Pressable, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, View, TextInput, Pressable, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedView } from '@/components/themed-view';
@@ -7,9 +8,28 @@ import GoogleIcon from '@/components/social-icons/GoogleIcon';
 import FacebookIcon from '@/components/social-icons/FacebookIcon';
 import AppleIcon from '@/components/social-icons/AppleIcon';
 import TwitterIcon from '@/components/social-icons/TwitterIcon';
+import { useAuth } from '@/providers/AuthProvider';
 
 export default function CadastroScreen() {
   const router = useRouter();
+  const { register } = useAuth();
+  const [alias, setAlias] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleRegister = async () => {
+    setLoading(true);
+    try {
+      await register(alias, email, password);
+      Alert.alert('Sucesso', 'Conta criada com sucesso!');
+      router.push('/(auth)/login');
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Falha ao cadastrar');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -25,9 +45,29 @@ export default function CadastroScreen() {
       <View style={styles.content}>
         <View style={styles.formCard}>
           <ThemedText style={styles.cardTitle}>Bem Vindo!</ThemedText>
-          <TextInput style={styles.input} placeholder="Nome" placeholderTextColor="#8C8C8C" />
-          <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#8C8C8C" keyboardType="email-address" />
-          <TextInput style={styles.input} placeholder="Senha" placeholderTextColor="#8C8C8C" secureTextEntry />
+          <TextInput 
+            style={styles.input} 
+            placeholder="Nome (Alias)" 
+            placeholderTextColor="#8C8C8C" 
+            value={alias}
+            onChangeText={setAlias}
+          />
+          <TextInput 
+            style={styles.input} 
+            placeholder="Email" 
+            placeholderTextColor="#8C8C8C" 
+            keyboardType="email-address" 
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput 
+            style={styles.input} 
+            placeholder="Senha" 
+            placeholderTextColor="#8C8C8C" 
+            secureTextEntry 
+            value={password}
+            onChangeText={setPassword}
+          />
         </View>
 
         <View style={styles.divider}>
@@ -43,8 +83,8 @@ export default function CadastroScreen() {
           <TouchableOpacity style={styles.socialBtn}><AppleIcon size={28} color="#000" /></TouchableOpacity>
         </View>
 
-        <Pressable style={styles.btnConcluir}>
-          <ThemedText style={styles.btnText}>Concluir</ThemedText>
+        <Pressable style={styles.btnConcluir} onPress={handleRegister} disabled={loading}>
+          <ThemedText style={styles.btnText}>{loading ? 'Cadastrando...' : 'Concluir'}</ThemedText>
         </Pressable>
 
         <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
