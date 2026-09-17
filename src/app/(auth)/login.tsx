@@ -21,7 +21,6 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(email, password);
-      // router.replace('/home'); // Redirecionar após login
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Falha ao fazer login');
     } finally {
