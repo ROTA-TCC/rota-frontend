@@ -27,7 +27,7 @@ export default function SplashScreen() {
     setTimeout(() => {
       router.replace('/onboarding');
     }, 2500);
-  }, []);
+  }, [iconTranslateY, iconScale, iconRotate, logoOpacity]);
 
   const iconStyle = useAnimatedStyle(() => ({
     transform: [
