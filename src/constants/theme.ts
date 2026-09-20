@@ -1,8 +1,3 @@
-/**
- * Cores da identidade visual do app ROTA.
- * Laranja: #ff9a00 | Cinza-Escuro: #0e0e0e | Branco: #ffffff
- */
-
 import { Platform } from 'react-native';
 
 const tintColorLight = '#ff9a00';

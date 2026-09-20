@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     try {
       const response = await api.post('/auth/login', { email, password });
-      // Tratar resposta (Set-Cookie ou corpo da resposta)
       setIsAuthenticated(true);
       console.log('Login bem-sucedido:', response.data);
     } catch (error) {
@@ -33,7 +32,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } catch (error: any) {
       console.error('Erro no registro (detalhado):', error.response?.data || error);
 
-      // Tenta extrair a mensagem do backend, caso exista
       const backendMessage = error.response?.data?.message || 'Erro ao realizar cadastro.';
       throw new Error(backendMessage);
     }

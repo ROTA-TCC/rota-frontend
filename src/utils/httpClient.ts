@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://paiva.qzz.io';
+const API_BASE_URL = 'https://rota.nx.kg';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -9,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Interceptor para tratar erros (ex: 429 - Too Many Requests)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -17,7 +16,6 @@ api.interceptors.response.use(
       if (error.response.status === 429) {
         return Promise.reject(new Error('Muitas tentativas. Aguarde 1 minuto.'));
       }
-      // Aqui você pode adicionar lógica para 401 (token expirado)
     }
     return Promise.reject(error);
   }
