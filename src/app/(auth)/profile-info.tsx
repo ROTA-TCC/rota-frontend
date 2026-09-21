@@ -1,9 +1,22 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { BlurView } from 'expo-blur';
+import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
+
+const GlowCircle = () => (
+  <Svg height="380" width="380" style={styles.glowSvg}>
+    <Defs>
+      <RadialGradient id="glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+        <Stop offset="0%" stopColor="#0F140E" stopOpacity="0.8" />
+        <Stop offset="50%" stopColor="#0F140E" stopOpacity="0.4" />
+        <Stop offset="100%" stopColor="#0F140E" stopOpacity="0" />
+      </RadialGradient>
+    </Defs>
+    <Circle cx="190" cy="190" r="190" fill="url(#glow)" />
+  </Svg>
+);
 
 export default function ProfileInfoScreen() {
   const accentColor = Colors.dark.tint; // #ff9a00
@@ -11,11 +24,11 @@ export default function ProfileInfoScreen() {
   return (
     <ThemedView style={styles.container}>
       {/* Glow effect blobs */}
-      <View style={[styles.glowContainer, styles.topGlow]}>
-        <BlurView intensity={100} tint="dark" style={StyleSheet.absoluteFill} />
+      <View style={[styles.glowWrapper, styles.topGlow]}>
+        <GlowCircle />
       </View>
-      <View style={[styles.glowContainer, styles.bottomGlow]}>
-        <BlurView intensity={100} tint="dark" style={StyleSheet.absoluteFill} />
+      <View style={[styles.glowWrapper, styles.bottomGlow]}>
+        <GlowCircle />
       </View>
 
       {/* Header */}
@@ -78,13 +91,15 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     overflow: 'hidden',
   },
-  glowContainer: {
+  glowWrapper: {
     position: 'absolute',
     width: 380,
     height: 380,
-    borderRadius: 190,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(15, 20, 14, 0.2)', // More transparent
+  },
+  glowSvg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   topGlow: {
     top: -80,
