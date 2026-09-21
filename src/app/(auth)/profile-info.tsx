@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
@@ -33,86 +34,88 @@ export default function ProfileInfoScreen() {
   const ageItems = Array.from({ length: 66 }, (_, i) => `${15 + i} anos`);
 
   return (
-    <ThemedView style={styles.container}>
-      {/* Glow effect blobs */}
-      <View style={[styles.glowWrapper, styles.topGlow]}>
-        <GlowCircle />
-      </View>
-      <View style={[styles.glowWrapper, styles.bottomGlow]}>
-        <GlowCircle />
-      </View>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.progressBar}>
-          <View style={[styles.step, styles.activeStep, { backgroundColor: accentColor }]} />
-          <View style={styles.step} />
-          <View style={styles.step} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemedView style={styles.container}>
+        {/* Glow effect blobs */}
+        <View style={[styles.glowWrapper, styles.topGlow]}>
+          <GlowCircle />
+        </View>
+        <View style={[styles.glowWrapper, styles.bottomGlow]}>
+          <GlowCircle />
         </View>
 
-        <ThemedText style={[styles.subtitle, { color: accentColor }]}>Informações pessoais</ThemedText>
-        <ThemedText type="title" style={styles.title}>Informações do perfil</ThemedText>
-        <ThemedText style={styles.description}>
-          As informações do seu perfil desempenham um papel fundamental na personalização do acompanhamento de determinadas métricas.
-        </ThemedText>
-      </View>
-
-      {/* Form */}
-      <View style={styles.formContainer}>
-        <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('weight')}>
-          <ThemedText style={styles.inputLabel}>Peso</ThemedText>
-          <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-            <ThemedText style={{ color: accentColor }}>{weight}</ThemedText>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.progressBar}>
+            <View style={[styles.step, styles.activeStep, { backgroundColor: accentColor }]} />
+            <View style={styles.step} />
+            <View style={styles.step} />
           </View>
-        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('height')}>
-          <ThemedText style={styles.inputLabel}>Altura</ThemedText>
-          <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-            <ThemedText style={{ color: accentColor }}>{height}</ThemedText>
-          </View>
-        </TouchableOpacity>
+          <ThemedText style={[styles.subtitle, { color: accentColor }]}>Informações pessoais</ThemedText>
+          <ThemedText type="title" style={styles.title}>Informações do perfil</ThemedText>
+          <ThemedText style={styles.description}>
+            As informações do seu perfil desempenham um papel fundamental na personalização do acompanhamento de determinadas métricas.
+          </ThemedText>
+        </View>
 
-        <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('age')}>
-          <ThemedText style={styles.inputLabel}>Idade</ThemedText>
-          <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-            <ThemedText style={{ color: accentColor }}>{age}</ThemedText>
-          </View>
-        </TouchableOpacity>
-      </View>
+        {/* Form */}
+        <View style={styles.formContainer}>
+          <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('weight')}>
+            <ThemedText style={styles.inputLabel}>Peso</ThemedText>
+            <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
+              <ThemedText style={{ color: accentColor }}>{weight}</ThemedText>
+            </View>
+          </TouchableOpacity>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity style={[styles.btnNext, { backgroundColor: accentColor }]}>
-          <ThemedText style={styles.btnNextText}>Próximo</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btnSkip}>
-          <ThemedText style={[styles.btnSkipText, { color: accentColor }]}>Pular</ThemedText>
-        </TouchableOpacity>
-      </View>
-      
-      <PickerModal
-        isVisible={activePicker === 'weight'}
-        onClose={() => setActivePicker(null)}
-        title="Peso"
-        items={weightItems}
-        onSelect={(item) => { setWeight(item); setActivePicker(null); }}
-      />
-      <PickerModal
-        isVisible={activePicker === 'height'}
-        onClose={() => setActivePicker(null)}
-        title="Altura"
-        items={heightItems}
-        onSelect={(item) => { setHeight(item); setActivePicker(null); }}
-      />
-      <PickerModal
-        isVisible={activePicker === 'age'}
-        onClose={() => setActivePicker(null)}
-        title="Idade"
-        items={ageItems}
-        onSelect={(item) => { setAge(item); setActivePicker(null); }}
-      />
-    </ThemedView>
+          <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('height')}>
+            <ThemedText style={styles.inputLabel}>Altura</ThemedText>
+            <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
+              <ThemedText style={{ color: accentColor }}>{height}</ThemedText>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('age')}>
+            <ThemedText style={styles.inputLabel}>Idade</ThemedText>
+            <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
+              <ThemedText style={{ color: accentColor }}>{age}</ThemedText>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <TouchableOpacity style={[styles.btnNext, { backgroundColor: accentColor }]}>
+            <ThemedText style={styles.btnNextText}>Próximo</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btnSkip}>
+            <ThemedText style={[styles.btnSkipText, { color: accentColor }]}>Pular</ThemedText>
+          </TouchableOpacity>
+        </View>
+        
+        <PickerModal
+          isVisible={activePicker === 'weight'}
+          onClose={() => setActivePicker(null)}
+          title="Peso"
+          items={weightItems}
+          onSelect={(item) => { setWeight(item); setActivePicker(null); }}
+        />
+        <PickerModal
+          isVisible={activePicker === 'height'}
+          onClose={() => setActivePicker(null)}
+          title="Altura"
+          items={heightItems}
+          onSelect={(item) => { setHeight(item); setActivePicker(null); }}
+        />
+        <PickerModal
+          isVisible={activePicker === 'age'}
+          onClose={() => setActivePicker(null)}
+          title="Idade"
+          items={ageItems}
+          onSelect={(item) => { setAge(item); setActivePicker(null); }}
+        />
+      </ThemedView>
+    </GestureHandlerRootView>
   );
 }
 
