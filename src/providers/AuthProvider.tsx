@@ -8,7 +8,7 @@ import { LoginDto } from '@ROTA-TCC/types';
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (data: LoginDto) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
+  register: (alias: string, email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -40,10 +40,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (alias: string, email: string, password: string) => {
     try {
-      console.log('Enviando requisição de registro:', { username, email, password });
-      await api.post('/auth/register', { username, email, password });
+      console.log('Enviando requisição de registro:', { alias, email, password });
+      await api.post('/auth/register', { alias, email, password });
       console.log('Registro bem-sucedido');
     } catch (error: any) {
       console.error('Erro no registro:', error.message || error);

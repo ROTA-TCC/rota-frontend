@@ -14,7 +14,7 @@ import { ApiError } from '@/services/api/interceptors';
 export default function CadastroScreen() {
   const router = useRouter();
   const { register } = useAuth();
-  const [username, setUsername] = useState('');
+  const [alias, setAlias] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +24,7 @@ export default function CadastroScreen() {
     setLoading(true);
     setErrors({});
     try {
-      await register(username, email, password);
+      await register(alias, email, password);
       Alert.alert('Sucesso', 'Conta criada com sucesso!');
       router.push('/(auth)/profile-info');
     } catch (error: any) {
@@ -57,13 +57,13 @@ export default function CadastroScreen() {
         <View style={styles.formCard}>
           <ThemedText style={styles.cardTitle}>Bem Vindo!</ThemedText>
           <TextInput 
-            style={[styles.input, errors.username && styles.inputError]} 
-            placeholder="Nome de Usuário" 
+            style={[styles.input, errors.alias && styles.inputError]} 
+            placeholder="Nome do usuário" 
             placeholderTextColor="#8C8C8C" 
-            value={username}
-            onChangeText={(text) => { setUsername(text); setErrors(prev => ({...prev, username: ''})); }}
+            value={alias}
+            onChangeText={(text) => { setAlias(text); setErrors(prev => ({...prev, alias: ''})); }}
           />
-          {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+          {errors.alias && <Text style={styles.errorText}>{errors.alias}</Text>}
 
           <TextInput 
             style={[styles.input, errors.email && styles.inputError]} 
