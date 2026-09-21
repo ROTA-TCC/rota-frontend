@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
@@ -10,8 +11,8 @@ export default function ProfileInfoScreen() {
   return (
     <ThemedView style={styles.container}>
       {/* Glow effect blobs */}
-      <View style={[styles.glow, styles.topGlow]} />
-      <View style={[styles.glow, styles.bottomGlow]} />
+      <BlurView intensity={80} tint="dark" style={[styles.glow, styles.topGlow]} />
+      <BlurView intensity={80} tint="dark" style={[styles.glow, styles.bottomGlow]} />
 
       {/* Header */}
       <View style={styles.header}>
@@ -71,14 +72,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 50,
     paddingBottom: 40,
+    overflow: 'hidden',
   },
   glow: {
     position: 'absolute',
     width: 380,
     height: 380,
     borderRadius: 190,
-    backgroundColor: '#0F140E',
-    opacity: 0.8,
+    backgroundColor: 'rgba(15, 20, 14, 0.5)', // Cor baseada no original com transparência
   },
   topGlow: {
     top: -80,
