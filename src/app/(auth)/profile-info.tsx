@@ -12,10 +12,10 @@ export default function ProfileInfoScreen() {
     <ThemedView style={styles.container}>
       {/* Glow effect blobs */}
       <View style={[styles.glowContainer, styles.topGlow]}>
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+        <BlurView intensity={100} tint="dark" style={StyleSheet.absoluteFill} />
       </View>
       <View style={[styles.glowContainer, styles.bottomGlow]}>
-        <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+        <BlurView intensity={100} tint="dark" style={StyleSheet.absoluteFill} />
       </View>
 
       {/* Header */}
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     height: 380,
     borderRadius: 190,
     overflow: 'hidden',
-    backgroundColor: 'rgba(15, 20, 14, 0.5)',
+    backgroundColor: 'rgba(15, 20, 14, 0.2)', // More transparent
   },
   topGlow: {
     top: -80,
