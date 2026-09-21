@@ -26,7 +26,7 @@ export default function CadastroScreen() {
     try {
       await register(username, email, password);
       Alert.alert('Sucesso', 'Conta criada com sucesso!');
-      router.push('/(auth)/login');
+      router.push('/(auth)/profile-info');
     } catch (error: any) {
       if (error instanceof ApiError) {
         if (error.field) {
