@@ -78,12 +78,13 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     overflow: 'hidden',
   },
-  glow: {
+  glowContainer: {
     position: 'absolute',
     width: 380,
     height: 380,
     borderRadius: 190,
-    backgroundColor: 'rgba(15, 20, 14, 0.5)', // Cor baseada no original com transparência
+    overflow: 'hidden',
+    backgroundColor: 'rgba(15, 20, 14, 0.5)',
   },
   topGlow: {
     top: -80,
