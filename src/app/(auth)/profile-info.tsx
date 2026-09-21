@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
+import { PickerModal } from '@/components/PickerModal';
 
 const GlowCircle = () => (
   <Svg height="380" width="380" style={styles.glowSvg}>
@@ -20,6 +21,16 @@ const GlowCircle = () => (
 
 export default function ProfileInfoScreen() {
   const accentColor = Colors.dark.tint; // #ff9a00
+
+  const [weight, setWeight] = useState('70.3 kg');
+  const [height, setHeight] = useState('175 cm');
+  const [age, setAge] = useState('24 anos');
+  
+  const [activePicker, setActivePicker] = useState<'weight' | 'height' | 'age' | null>(null);
+
+  const weightItems = Array.from({ length: 111 }, (_, i) => `${(40 + i * 0.1).toFixed(1)} kg`);
+  const heightItems = Array.from({ length: 81 }, (_, i) => `${140 + i} cm`);
+  const ageItems = Array.from({ length: 66 }, (_, i) => `${15 + i} anos`);
 
   return (
     <ThemedView style={styles.container}>
@@ -48,26 +59,26 @@ export default function ProfileInfoScreen() {
 
       {/* Form */}
       <View style={styles.formContainer}>
-        <View style={styles.inputPill}>
+        <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('weight')}>
           <ThemedText style={styles.inputLabel}>Peso</ThemedText>
           <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-            <ThemedText style={{ color: accentColor }}>70,3 kg</ThemedText>
+            <ThemedText style={{ color: accentColor }}>{weight}</ThemedText>
           </View>
-        </View>
+        </TouchableOpacity>
 
-        <View style={styles.inputPill}>
+        <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('height')}>
           <ThemedText style={styles.inputLabel}>Altura</ThemedText>
           <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-            <ThemedText style={{ color: accentColor }}>175 cm</ThemedText>
+            <ThemedText style={{ color: accentColor }}>{height}</ThemedText>
           </View>
-        </View>
+        </TouchableOpacity>
 
-        <View style={styles.inputPill}>
+        <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('age')}>
           <ThemedText style={styles.inputLabel}>Idade</ThemedText>
           <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-            <ThemedText style={{ color: accentColor }}>24 anos</ThemedText>
+            <ThemedText style={{ color: accentColor }}>{age}</ThemedText>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
 
       {/* Footer */}
@@ -79,6 +90,28 @@ export default function ProfileInfoScreen() {
           <ThemedText style={[styles.btnSkipText, { color: accentColor }]}>Pular</ThemedText>
         </TouchableOpacity>
       </View>
+      
+      <PickerModal
+        isVisible={activePicker === 'weight'}
+        onClose={() => setActivePicker(null)}
+        title="Peso"
+        items={weightItems}
+        onSelect={(item) => { setWeight(item); setActivePicker(null); }}
+      />
+      <PickerModal
+        isVisible={activePicker === 'height'}
+        onClose={() => setActivePicker(null)}
+        title="Altura"
+        items={heightItems}
+        onSelect={(item) => { setHeight(item); setActivePicker(null); }}
+      />
+      <PickerModal
+        isVisible={activePicker === 'age'}
+        onClose={() => setActivePicker(null)}
+        title="Idade"
+        items={ageItems}
+        onSelect={(item) => { setAge(item); setActivePicker(null); }}
+      />
     </ThemedView>
   );
 }
