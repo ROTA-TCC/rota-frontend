@@ -9,6 +9,10 @@ export default function ProfileInfoScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      {/* Glow effect blobs */}
+      <View style={[styles.glow, styles.topGlow]} />
+      <View style={[styles.glow, styles.bottomGlow]} />
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.progressBar}>
@@ -67,6 +71,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 50,
     paddingBottom: 40,
+  },
+  glow: {
+    position: 'absolute',
+    width: 380,
+    height: 380,
+    borderRadius: 190,
+    backgroundColor: '#0F140E',
+    opacity: 0.8,
+  },
+  topGlow: {
+    top: -80,
+    right: -80,
+  },
+  bottomGlow: {
+    bottom: -80,
+    left: -80,
   },
   header: {
     marginBottom: 40,
