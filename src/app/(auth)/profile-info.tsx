@@ -23,11 +23,12 @@ export default function ProfileInfoScreen() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemedView style={styles.container}>
         {/* Imagens de Luz Ambiental / Glow do Figma */}
-        <Image
-          source={require('../../../assets/images/ambient-light.png')}
-          style={[styles.glowWrapper, styles.topGlow]}
-          resizeMode="contain"
-        />
+	<Image
+	  source={require('../../../assets/images/background-blur.png')}
+	  style={[styles.glowImage, styles.topGlow, { tintColor: '#ff9a00' }]} // <-- Teste com cor viva
+	  resizeMode="cover"
+	/>
+
         <Image
           source={require('../../../assets/images/ambient-light.png')}
           style={[styles.glowWrapper, styles.bottomGlow]}
