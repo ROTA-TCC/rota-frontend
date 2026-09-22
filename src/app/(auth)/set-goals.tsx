@@ -4,20 +4,44 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
-  ScrollView,
   Image,
+  ScrollView,
 } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
+import Svg, { Circle } from 'react-native-svg';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import GoalArcPicker, { GoalLevel } from '@/components/GoalArcPicker';
 
 const ORANGE = '#FF8C00';
 
-export default function ProfileMetricsScreen() {
+interface LevelData {
+  id: GoalLevel;
+  title: string;
+  description: string;
+}
+
+const LEVELS: Record<GoalLevel, LevelData> = {
+  novice: {
+    id: 'novice',
+    title: 'Novato',
+    description: 'Haverá 1 desafio com distância de 2 km. Perfeito para dar os primeiros passos com consistência.',
+  },
+  intermediate: {
+    id: 'intermediate',
+    title: 'Intermediário',
+    description: 'Haverá 3 desafios com distâncias cumulativas de 5 km. Você pode redefinir isso na página de configurações.',
+  },
+  advanced: {
+    id: 'advanced',
+    title: 'Avançado',
+    description: 'Haverá 5 desafios com distâncias cumulativas de 10 km. Ideal para quem deseja alta intensidade.',
+  },
+};
+
+export default function SetGoalsScreen() {
   const router = useRouter();
-  const [weight, setWeight] = useState('');
-  const [height, setHeight] = useState('');
-  const [gender, setGender] = useState('masculino');
+  const [selectedLevel, setSelectedLevel] = useState<GoalLevel>('intermediate');
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -48,97 +72,37 @@ export default function ProfileMetricsScreen() {
               <View style={styles.step} />
             </View>
 
-            <Text style={styles.subtitle}>Métricas corporais</Text>
-            <Text style={styles.title}>Seus dados físicos</Text>
+            <Text style={styles.subtitle}>Metas</Text>
+            <Text style={styles.title}>Defina metas</Text>
             <Text style={styles.description}>
-              Estas informações são essenciais para calcular o seu gasto calórico, ritmo ideal e personalização das métricas de desempenho.
+              Defina sua meta semanal. Nós ajudaremos você a acompanhar seu progresso e a manter a motivação, escolha o nível de dificuldade.
             </Text>
           </View>
 
-          <View style={styles.formContainer}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Peso (kg)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: 70"
-                placeholderTextColor="#55555A"
-                keyboardType="numeric"
-                value={weight}
-                onChangeText={setWeight}
-              />
+          <GoalArcPicker
+            selectedLevel={selectedLevel}
+            onSelectLevel={setSelectedLevel}
+            accentColor={ORANGE}
+          />
+
+          <Animated.View
+            key={selectedLevel}
+            entering={FadeIn.duration(200)}
+            exiting={FadeOut.duration(150)}
+            style={styles.infoBox}
+          >
+            <View style={styles.infoIcon}>
+              <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <Circle cx="12" cy="12" r="10" stroke={ORANGE} strokeWidth="2" />
+                <Circle cx="12" cy="12" r="6" stroke={ORANGE} strokeWidth="2" />
+                <Circle cx="12" cy="12" r="2" fill={ORANGE} />
+              </Svg>
             </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Altura (cm)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: 175"
-                placeholderTextColor="#55555A"
-                keyboardType="numeric"
-                value={height}
-                onChangeText={setHeight}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Gênero</Text>
-              <View style={styles.genderOptions}>
-                <TouchableOpacity
-                  style={[
-                    styles.genderButton,
-                    gender === 'masculino' && styles.genderButtonActive,
-                  ]}
-                  onPress={() => setGender('masculino')}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={[
-                      styles.genderText,
-                      gender === 'masculino' && styles.genderTextActive,
-                    ]}
-                  >
-                    Masculino
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.genderButton,
-                    gender === 'feminino' && styles.genderButtonActive,
-                  ]}
-                  onPress={() => setGender('feminino')}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={[
-                      styles.genderText,
-                      gender === 'feminino' && styles.genderTextActive,
-                    ]}
-                  >
-                    Feminino
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.genderButton,
-                    gender === 'outro' && styles.genderButtonActive,
-                  ]}
-                  onPress={() => setGender('outro')}
-                  activeOpacity={0.8}
-                >
-                  <Text
-                    style={[
-                      styles.genderText,
-                      gender === 'outro' && styles.genderTextActive,
-                    ]}
-                  >
-                    Outro
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+            <Text style={styles.infoText}>
+              <Text style={styles.infoHighlight}>{LEVELS[selectedLevel].title}: </Text>
+              {LEVELS[selectedLevel].description}
+            </Text>
+          </Animated.View>
 
           <View style={styles.footer}>
             <TouchableOpacity
@@ -194,7 +158,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '180deg' }],
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 8,
   },
   progressBar: {
     flexDirection: 'row',
@@ -230,59 +194,36 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: 20,
   },
-  formContainer: {
-    gap: 20,
-    marginVertical: 12,
-  },
-  inputGroup: {
-    gap: 8,
-  },
-  label: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  input: {
-    backgroundColor: '#151515',
+  infoBox: {
+    backgroundColor: '#141416',
     borderRadius: 16,
-    height: 56,
-    paddingHorizontal: 16,
-    color: '#FFFFFF',
-    fontSize: 15,
     borderWidth: 1,
-    borderColor: '#222225',
-  },
-  genderOptions: {
+    borderColor: '#242426',
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     flexDirection: 'row',
-    gap: 10,
+    alignItems: 'flex-start',
+    gap: 12,
+    marginVertical: 16,
   },
-  genderButton: {
-    flex: 1,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: '#151515',
-    borderWidth: 1,
-    borderColor: '#222225',
-    justifyContent: 'center',
-    alignItems: 'center',
+  infoIcon: {
+    marginTop: 2,
   },
-  genderButtonActive: {
-    borderColor: ORANGE,
-    backgroundColor: 'rgba(255, 140, 0, 0.12)',
-  },
-  genderText: {
+  infoText: {
     color: '#8E8E93',
     fontSize: 13,
-    fontWeight: '600',
+    lineHeight: 19.5,
+    fontWeight: '500',
+    flex: 1,
   },
-  genderTextActive: {
+  infoHighlight: {
     color: ORANGE,
     fontWeight: '700',
   },
   footer: {
     alignItems: 'center',
     gap: 14,
-    marginTop: 24,
+    marginTop: 8,
   },
   btnNext: {
     backgroundColor: ORANGE,
