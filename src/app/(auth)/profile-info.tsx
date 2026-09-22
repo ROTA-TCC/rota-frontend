@@ -22,18 +22,19 @@ export default function ProfileInfoScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemedView style={styles.container}>
-        {/* Imagens de Luz Ambiental / Glow do Figma */}
-	<Image
-	  source={require('../../../assets/images/background-blur.png')}
-	  style={[styles.glowImage, styles.topGlow, { tintColor: '#ff9a00' }]} // <-- Teste com cor viva
-	  resizeMode="cover"
-	/>
-
-        <Image
-          source={require('../../../assets/images/ambient-light.png')}
-          style={[styles.glowWrapper, styles.bottomGlow]}
-          resizeMode="contain"
-        />
+        {/* Camada isolada de fundo (Glows / Blur) */}
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Image
+            source={require('../../../assets/images/background-blur.png')}
+            style={[styles.glowImage, styles.topGlow]}
+            resizeMode="cover"
+          />
+          <Image
+            source={require('../../../assets/images/background-blur.png')}
+            style={[styles.glowImage, styles.bottomGlow]}
+            resizeMode="cover"
+          />
+        </View>
 
         {/* Header */}
         <View style={styles.header}>
@@ -118,19 +119,18 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     overflow: 'hidden',
   },
-  glowWrapper: {
+  glowImage: {
     position: 'absolute',
-    width: 380,
-    height: 380,
-    opacity: 0.6,
+    width: 320,
+    height: 320,
   },
   topGlow: {
-    top: -100,
-    right: -100,
+    top: -60,
+    right: -60,
   },
   bottomGlow: {
-    bottom: -100,
-    left: -100,
+    bottom: -60,
+    left: -60,
   },
   header: {
     marginBottom: 40,
