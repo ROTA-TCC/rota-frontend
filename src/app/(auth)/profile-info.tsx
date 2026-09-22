@@ -24,12 +24,12 @@ export default function ProfileInfoScreen() {
       <ThemedView style={styles.container}>
         {/* Imagens de Luz Ambiental / Glow do Figma */}
         <Image
-          source={require('@/assets/images/ambient-light.png')}
+          source={require('../../../assets/images/ambient-light.png')}
           style={[styles.glowWrapper, styles.topGlow]}
           resizeMode="contain"
         />
         <Image
-          source={require('@/assets/images/ambient-light.png')}
+          source={require('../../../assets/images/ambient-light.png')}
           style={[styles.glowWrapper, styles.bottomGlow]}
           resizeMode="contain"
         />
