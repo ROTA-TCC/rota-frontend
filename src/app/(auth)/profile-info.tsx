@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 320,
     height: 320,
+    opacity: 0.5, // Adiciona transparência suave aos brilhos
   },
   topGlow: {
     top: -60,
@@ -131,6 +132,7 @@ const styles = StyleSheet.create({
   bottomGlow: {
     bottom: -60,
     left: -60,
+    transform: [{ rotate: '180deg' }], // Espelha a imagem em 180 graus
   },
   header: {
     marginBottom: 40,
