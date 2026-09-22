@@ -19,9 +19,9 @@ interface GoalArcPickerProps {
 }
 
 const ARC_LENGTH = 518.4;
-const DEFAULT_ACCENT = '#FF8C00'; // Laranja vibrante e limpo
+const DEFAULT_ACCENT = '#FF8C00'; // Laranja Vibrante Base
 
-// Coordenadas dos pontinhos
+// Coordenadas das bolinhas esquerdas e direitas
 const LEFT_DOTS = [
   { cx: 63.0, cy: 201.8 },
   { cx: 52.1, cy: 171.5 },
@@ -41,6 +41,12 @@ const RIGHT_DOTS = [
   { cx: 259.1, cy: 196.8 },
 ];
 
+// Cores ativadas em degradê profundo (Laranja queimado escuro até o laranja vibrante)
+const LEFT_ACTIVE_COLORS = ['#6A3815', '#864312', '#A24F0F', '#BE5A0C', '#DA6509', '#F07105', '#FF7E01'];
+const RIGHT_ACTIVE_COLORS = ['#FF8200', '#FF8400', '#FF8600', '#FF8800', '#FF8A00', DEFAULT_ACCENT];
+
+const INACTIVE_DOT_COLOR = '#555555'; // Cinza muito mais visível
+
 const PROGRESS_MAP: Record<GoalLevel, number> = {
   novice: 0.0,
   intermediate: 0.5,
@@ -56,19 +62,16 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
 
   useEffect(() => {
     progress.value = withTiming(PROGRESS_MAP[selectedLevel], {
-      duration: 400,
+      duration: 450,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
   }, [selectedLevel]);
 
   const animatedPathProps = useAnimatedProps(() => {
     const strokeDashoffset = ARC_LENGTH * (1 - progress.value);
-    return {
-      strokeDashoffset,
-    };
+    return { strokeDashoffset };
   });
 
-  // Regra de ativação dos pontinhos
   const isLeftActive = selectedLevel === 'intermediate' || selectedLevel === 'advanced';
   const isRightActive = selectedLevel === 'advanced';
 
@@ -76,25 +79,46 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
     <View style={styles.container}>
       <Svg width="320" height="280" viewBox="0 0 320 280" fill="none">
         <Defs>
-          {/* Gradiente Limpo e Moderno:
-              Cinza neutro suave no comecinho -> Amarelo/Dourado -> Laranja Vibrante no final */}
-          <LinearGradient id="arcGradient" x1="82.2" y1="227.8" x2="237.8" y2="40" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor="#3A3A3C" />
-            <Stop offset="12%" stopColor="#FFC107" />
-            <Stop offset="50%" stopColor="#FF9800" />
-            <Stop offset="100%" stopColor={accentColor} />
-          </LinearGradient>
+          {/* GRADIENTES DINÂMICOS: Eles se comportam de forma diferente com base na seleção
+              garantindo que a ponta da barra seja sempre o laranja máximo, sem usar amarelos fracos. */}
+          
+          {selectedLevel === 'intermediate' && (
+            <LinearGradient id="arcGradient" x1="50" y1="0" x2="270" y2="0" gradientUnits="userSpaceOnUse">
+              <Stop offset="0%" stopColor={INACTIVE_DOT_COLOR} /> 
+              <Stop offset="10%" stopColor="#7A3A10" />     {/* Transição rápida para um laranja/marrom profundo */}
+              <Stop offset="30%" stopColor="#C25600" />     {/* Laranja queimado no meio do trajeto */}
+              <Stop offset="50%" stopColor={accentColor} /> {/* Finaliza no topo com laranja puro */}
+              <Stop offset="100%" stopColor={accentColor} />
+            </LinearGradient>
+          )}
+
+          {selectedLevel === 'advanced' && (
+            <LinearGradient id="arcGradient" x1="50" y1="0" x2="270" y2="0" gradientUnits="userSpaceOnUse">
+              <Stop offset="0%" stopColor={INACTIVE_DOT_COLOR} />
+              <Stop offset="8%" stopColor="#7A3A10" />      {/* Cinza dura apenas na saída do novato */}
+              <Stop offset="35%" stopColor="#A84200" />     {/* Escurece lindamente o lado esquerdo */}
+              <Stop offset="70%" stopColor="#D66200" />     {/* Esquenta no lado direito */}
+              <Stop offset="100%" stopColor={accentColor} />{/* Laranja puro no final do avançado */}
+            </LinearGradient>
+          )}
+
+          {selectedLevel === 'novice' && (
+            <LinearGradient id="arcGradient" x1="50" y1="0" x2="270" y2="0" gradientUnits="userSpaceOnUse">
+              <Stop offset="0%" stopColor={INACTIVE_DOT_COLOR} />
+              <Stop offset="100%" stopColor={INACTIVE_DOT_COLOR} />
+            </LinearGradient>
+          )}
         </Defs>
 
-        {/* Trilha Fundo Escura */}
+        {/* Trilha Fundo Escura (Bem visível) */}
         <Path
           d="M 82.2 227.8 A 110 110 0 1 1 237.8 227.8"
-          stroke="#1C1C1E"
+          stroke="#1E1E1E"
           strokeWidth="44"
           strokeLinecap="butt"
         />
 
-        {/* Trilha Preenchida (Gradiente Animado) */}
+        {/* Trilha Preenchida com Animação do Gradiente */}
         <AnimatedPath
           d="M 82.2 227.8 A 110 110 0 1 1 237.8 227.8"
           stroke="url(#arcGradient)"
@@ -104,25 +128,25 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
           animatedProps={animatedPathProps}
         />
 
-        {/* PONTINHOS LADO ESQUERDO (Ativam no Intermediário / Avançado) */}
+        {/* BOLINHAS ESQUERDAS - Seguem o gradiente visual individualmente */}
         {LEFT_DOTS.map((dot, index) => (
           <Circle
             key={`left-dot-${index}`}
             cx={dot.cx}
             cy={dot.cy}
-            r={isLeftActive ? 1.8 : 1.2}
-            fill={isLeftActive ? '#FFB703' : '#2C2C2E'}
+            r={isLeftActive ? 2 : 1.5}
+            fill={isLeftActive ? LEFT_ACTIVE_COLORS[index] : INACTIVE_DOT_COLOR}
           />
         ))}
 
-        {/* PONTINHOS LADO DIREITO (Ativam apenas no Avançado) */}
+        {/* BOLINHAS DIREITAS - Seguem o gradiente visual final */}
         {RIGHT_DOTS.map((dot, index) => (
           <Circle
             key={`right-dot-${index}`}
             cx={dot.cx}
             cy={dot.cy}
-            r={isRightActive ? 1.8 : 1.2}
-            fill={isRightActive ? accentColor : '#2C2C2E'}
+            r={isRightActive ? 2 : 1.5}
+            fill={isRightActive ? RIGHT_ACTIVE_COLORS[index] : INACTIVE_DOT_COLOR}
           />
         ))}
 
@@ -133,13 +157,13 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
             cx="0"
             cy="0"
             r="22"
-            fill="#121212"
-            stroke={selectedLevel === 'novice' ? accentColor : '#2C2C2E'}
+            fill="#161616"
+            stroke={selectedLevel === 'novice' ? accentColor : '#4A4A4A'}
             strokeWidth="2.5"
           />
           <Path
             d="M 2.25,-9 L -5.25,2.25 L -0.75,2.25 L -2.25,10.5 L 6.75,-0.75 L 1.5,-0.75 Z"
-            fill={selectedLevel === 'novice' ? accentColor : '#555555'}
+            fill={selectedLevel === 'novice' ? accentColor : '#666666'}
           />
           <SvgText
             x="0"
@@ -153,21 +177,20 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
           </SvgText>
         </G>
 
-        {/* NÓ: INTERMEDIÁRIO (TOPO) */}
+        {/* NÓ: INTERMEDIÁRIO */}
         <G transform="translate(160, 40)" onPress={() => onSelectLevel('intermediate')}>
           <Circle cx="0" cy="0" r="32" fill="transparent" />
           <Circle
             cx="0"
             cy="0"
             r="24"
-            fill="#121212"
-            stroke={selectedLevel === 'intermediate' ? accentColor : '#2C2C2E'}
+            fill="#161616"
+            stroke={selectedLevel === 'intermediate' ? accentColor : '#4A4A4A'}
             strokeWidth="2.5"
           />
-          {/* Ícone de Alvo */}
-          <Circle cx="0" cy="0" r="10" fill="none" stroke={selectedLevel === 'intermediate' ? accentColor : '#555555'} strokeWidth="2" />
-          <Circle cx="0" cy="0" r="6" fill="none" stroke={selectedLevel === 'intermediate' ? accentColor : '#555555'} strokeWidth="1.5" />
-          <Circle cx="0" cy="0" r="2" fill={selectedLevel === 'intermediate' ? accentColor : '#555555'} />
+          <Circle cx="0" cy="0" r="10" fill="none" stroke={selectedLevel === 'intermediate' ? accentColor : '#666666'} strokeWidth="2" />
+          <Circle cx="0" cy="0" r="6" fill="none" stroke={selectedLevel === 'intermediate' ? accentColor : '#666666'} strokeWidth="1.5" />
+          <Circle cx="0" cy="0" r="2" fill={selectedLevel === 'intermediate' ? accentColor : '#666666'} />
 
           <SvgText
             x="0"
@@ -188,13 +211,13 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
             cx="0"
             cy="0"
             r="22"
-            fill="#121212"
-            stroke={selectedLevel === 'advanced' ? accentColor : '#2C2C2E'}
+            fill="#161616"
+            stroke={selectedLevel === 'advanced' ? accentColor : '#4A4A4A'}
             strokeWidth="2.5"
           />
           <Path
             d="M 2.25,-9 L -5.25,2.25 L -0.75,2.25 L -2.25,10.5 L 6.75,-0.75 L 1.5,-0.75 Z"
-            fill={selectedLevel === 'advanced' ? accentColor : '#555555'}
+            fill={selectedLevel === 'advanced' ? accentColor : '#666666'}
           />
           <SvgText
             x="0"
