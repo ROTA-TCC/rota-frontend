@@ -9,15 +9,13 @@ import { PickerModal } from '@/components/PickerModal';
 export default function ProfileInfoScreen() {
   const accentColor = Colors.dark.tint; // #ff9a00
 
+  // Estados com os valores do formulário
   const [weight, setWeight] = useState('70.3 kg');
   const [height, setHeight] = useState('175 cm');
   const [age, setAge] = useState('24 anos');
 
+  // Controle do modal ativo
   const [activePicker, setActivePicker] = useState<'weight' | 'height' | 'age' | null>(null);
-
-  const weightItems = Array.from({ length: 111 }, (_, i) => `${(40 + i * 0.1).toFixed(1)} kg`);
-  const heightItems = Array.from({ length: 81 }, (_, i) => `${140 + i} cm`);
-  const ageItems = Array.from({ length: 66 }, (_, i) => `${15 + i} anos`);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -53,6 +51,7 @@ export default function ProfileInfoScreen() {
 
         {/* Form */}
         <View style={styles.formContainer}>
+          {/* Campo Peso */}
           <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('weight')}>
             <ThemedText style={styles.inputLabel}>Peso</ThemedText>
             <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
@@ -60,6 +59,7 @@ export default function ProfileInfoScreen() {
             </View>
           </TouchableOpacity>
 
+          {/* Campo Altura */}
           <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('height')}>
             <ThemedText style={styles.inputLabel}>Altura</ThemedText>
             <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
@@ -67,6 +67,7 @@ export default function ProfileInfoScreen() {
             </View>
           </TouchableOpacity>
 
+          {/* Campo Idade */}
           <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('age')}>
             <ThemedText style={styles.inputLabel}>Idade</ThemedText>
             <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
@@ -85,26 +86,53 @@ export default function ProfileInfoScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Modais de Seleção */}
         <PickerModal
           isVisible={activePicker === 'weight'}
           onClose={() => setActivePicker(null)}
           title="Peso"
-          items={weightItems}
-          onSelect={(item) => { setWeight(item); setActivePicker(null); }}
+          min={40}
+          max={150}
+          step={0.1}
+          decimals={1}
+          unit="kg"
+          selectedValue={weight}
+          onSelect={(value) => {
+            setWeight(value);
+            setActivePicker(null);
+          }}
         />
+
         <PickerModal
           isVisible={activePicker === 'height'}
           onClose={() => setActivePicker(null)}
           title="Altura"
-          items={heightItems}
-          onSelect={(item) => { setHeight(item); setActivePicker(null); }}
+          min={140}
+          max={220}
+          step={1}
+          decimals={0}
+          unit="cm"
+          selectedValue={height}
+          onSelect={(value) => {
+            setHeight(value);
+            setActivePicker(null);
+          }}
         />
+
         <PickerModal
           isVisible={activePicker === 'age'}
           onClose={() => setActivePicker(null)}
           title="Idade"
-          items={ageItems}
-          onSelect={(item) => { setAge(item); setActivePicker(null); }}
+          min={15}
+          max={90}
+          step={1}
+          decimals={0}
+          unit="anos"
+          selectedValue={age}
+          onSelect={(value) => {
+            setAge(value);
+            setActivePicker(null);
+          }}
         />
       </ThemedView>
     </GestureHandlerRootView>
@@ -123,7 +151,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 320,
     height: 320,
-    opacity: 0.5, // Adiciona transparência suave aos brilhos
+    opacity: 0.5,
   },
   topGlow: {
     top: -60,
@@ -132,7 +160,7 @@ const styles = StyleSheet.create({
   bottomGlow: {
     bottom: -60,
     left: -60,
-    transform: [{ rotate: '180deg' }], // Espelha a imagem em 180 graus
+    transform: [{ rotate: '180deg' }],
   },
   header: {
     marginBottom: 40,

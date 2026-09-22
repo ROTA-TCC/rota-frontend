@@ -1,22 +1,23 @@
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity, Dimensions, Image } from 'react-native';
+import React, { useEffect, useRef, useMemo } from 'react';
+import { StyleSheet, View, TouchableOpacity, Dimensions, Image, FlatList } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withTiming,
   runOnJS,
   useAnimatedScrollHandler,
   interpolate,
   Extrapolation,
+  Easing,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const SHEET_HEIGHT = SCREEN_HEIGHT * 0.45;
-const ITEM_HEIGHT = 50;
-const PICKER_HEIGHT = 210;
+const SHEET_HEIGHT = SCREEN_HEIGHT * 0.42;
+const ITEM_HEIGHT = 48;
+const PICKER_HEIGHT = 200;
 const PICKER_PADDING = (PICKER_HEIGHT - ITEM_HEIGHT) / 2;
 
 const AnimatedThemedText = Animated.createAnimatedComponent(ThemedText);
@@ -25,8 +26,14 @@ interface PickerModalProps {
   isVisible: boolean;
   onClose: () => void;
   title: string;
-  items: string[];
-  onSelect: (item: string) => void;
+  min: number;
+  max: number;
+  step?: number;
+  decimals?: number;
+  unit?: string;
+  selectedValue?: string;
+  initialValue?: string;
+  onSelect: (value: string) => void;
 }
 
 interface PickerItemProps {
@@ -37,46 +44,39 @@ interface PickerItemProps {
 }
 
 const PickerItem: React.FC<PickerItemProps> = ({ item, index, scrollY, accentColor }) => {
-  const animatedContainerStyle = useAnimatedStyle(() => {
+  const animatedTextStyle = useAnimatedStyle(() => {
     const itemOffset = index * ITEM_HEIGHT;
     const distance = Math.abs(scrollY.value - itemOffset);
-
-    const scale = interpolate(
-      distance,
-      [0, ITEM_HEIGHT, ITEM_HEIGHT * 2],
-      [1.15, 0.9, 0.75],
-      Extrapolation.CLAMP
-    );
 
     const opacity = interpolate(
       distance,
       [0, ITEM_HEIGHT, ITEM_HEIGHT * 2],
-      [1, 0.45, 0.2],
+      [1, 0.4, 0.15],
       Extrapolation.CLAMP
     );
 
-    return {
-      transform: [{ scale }],
-      opacity,
-    };
-  });
+    const scale = interpolate(
+      distance,
+      [0, ITEM_HEIGHT, ITEM_HEIGHT * 2],
+      [1.1, 0.95, 0.85],
+      Extrapolation.CLAMP
+    );
 
-  const animatedTextStyle = useAnimatedStyle(() => {
-    const itemOffset = index * ITEM_HEIGHT;
-    const distance = Math.abs(scrollY.value - itemOffset);
     const isSelected = distance < ITEM_HEIGHT / 2;
 
     return {
-      color: isSelected ? accentColor : '#A0A0A0',
+      opacity,
+      transform: [{ scale }],
+      color: isSelected ? accentColor : '#888888',
     };
   });
 
   return (
-    <Animated.View style={[styles.pickerItem, animatedContainerStyle]}>
+    <View style={styles.pickerItem}>
       <AnimatedThemedText style={[styles.pickerItemText, animatedTextStyle]}>
         {item}
       </AnimatedThemedText>
-    </Animated.View>
+    </View>
   );
 };
 
@@ -84,40 +84,75 @@ export const PickerModal: React.FC<PickerModalProps> = ({
   isVisible,
   onClose,
   title,
-  items,
+  min,
+  max,
+  step = 1,
+  decimals = 0,
+  unit = '',
+  selectedValue,
+  initialValue,
   onSelect,
 }) => {
-  const accentColor = Colors.dark.tint; // #ff9a00
+  const accentColor = Colors.dark.tint;
   const translateY = useSharedValue(SHEET_HEIGHT);
   const scrollY = useSharedValue(0);
-  const flatListRef = useRef<Animated.FlatList<string>>(null);
+  const flatListRef = useRef<FlatList<string>>(null);
+
+  // Gerar lista de itens baseado no min, max, step e unit
+  const items = useMemo(() => {
+    const list: string[] = [];
+    for (let val = min; val <= max + 0.0001; val += step) {
+      const formatted = decimals > 0 ? val.toFixed(decimals) : Math.round(val).toString();
+      list.push(unit ? `${formatted} ${unit}` : formatted);
+    }
+    return list;
+  }, [min, max, step, decimals, unit]);
+
+  // Identificar item atualmente focado/selecionado
+  const activeValue = selectedValue || initialValue || items[0];
+  const initialIndex = useMemo(() => {
+    const idx = items.indexOf(activeValue);
+    return idx !== -1 ? idx : 0;
+  }, [items, activeValue]);
 
   useEffect(() => {
     if (isVisible) {
-      translateY.value = withSpring(0, { damping: 22, stiffness: 200 });
-      scrollY.value = 0;
-      flatListRef.current?.scrollToOffset({ offset: 0, animated: false });
-    } else {
-      translateY.value = withSpring(SHEET_HEIGHT, { damping: 22, stiffness: 200 });
-    }
-  }, [isVisible]);
+      // Animação simples de subida
+      translateY.value = withTiming(0, {
+        duration: 250,
+        easing: Easing.out(Easing.quad),
+      });
 
-  const backdropStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
+      const targetOffset = initialIndex * ITEM_HEIGHT;
+      scrollY.value = targetOffset;
+
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ offset: targetOffset, animated: false });
+      }, 50);
+    } else {
+      // Animação simples de descida
+      translateY.value = withTiming(SHEET_HEIGHT, {
+        duration: 200,
+        easing: Easing.in(Easing.quad),
+      });
+    }
+  }, [isVisible, initialIndex]);
+
+  const backdropStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
       translateY.value,
       [0, SHEET_HEIGHT],
-      [0.8, 0],
+      [0.7, 0],
       Extrapolation.CLAMP
-    );
-    return { opacity };
-  });
+    ),
+  }));
 
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
 
   const handleClose = () => {
-    translateY.value = withSpring(SHEET_HEIGHT, { damping: 22, stiffness: 200 }, () => {
+    translateY.value = withTiming(SHEET_HEIGHT, { duration: 200 }, () => {
       runOnJS(onClose)();
     });
   };
@@ -130,6 +165,7 @@ export const PickerModal: React.FC<PickerModalProps> = ({
     }
   };
 
+  // Gesto Pan apenas para a área da aba superior / arrasto
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       if (event.translationY > 0) {
@@ -137,10 +173,10 @@ export const PickerModal: React.FC<PickerModalProps> = ({
       }
     })
     .onEnd((event) => {
-      if (event.translationY > SHEET_HEIGHT / 3 || event.velocityY > 500) {
+      if (event.translationY > 80 || event.velocityY > 500) {
         runOnJS(handleClose)();
       } else {
-        translateY.value = withSpring(0, { damping: 22, stiffness: 200 });
+        translateY.value = withTiming(0, { duration: 200 });
       }
     });
 
@@ -154,71 +190,76 @@ export const PickerModal: React.FC<PickerModalProps> = ({
 
   return (
     <>
+      {/* Backdrop */}
       <Animated.View style={[styles.backdrop, backdropStyle]}>
         <TouchableOpacity style={StyleSheet.absoluteFill} onPress={handleClose} activeOpacity={1} />
       </Animated.View>
 
-      <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.bottomSheet, sheetStyle]}>
-          <View style={styles.dragHandle} />
-
-          {/* Header */}
-          <View style={styles.sheetHeader}>
-            <TouchableOpacity onPress={handleClose} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-              <ThemedText style={styles.cancelText}>Cancelar</ThemedText>
-            </TouchableOpacity>
-            <ThemedText style={styles.title}>{title}</ThemedText>
-            <TouchableOpacity onPress={handleSave} hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
-              <ThemedText style={[styles.saveText, { color: accentColor }]}>Salvar</ThemedText>
-            </TouchableOpacity>
+      {/* Sheet Container */}
+      <Animated.View style={[styles.bottomSheet, sheetStyle]}>
+        {/* Top bar com detector de arrasto */}
+        <GestureDetector gesture={panGesture}>
+          <View style={styles.dragZone}>
+            <View style={styles.dragHandle} />
+            <View style={styles.sheetHeader}>
+              <TouchableOpacity onPress={handleClose} hitSlop={12}>
+                <ThemedText style={styles.cancelText}>Cancelar</ThemedText>
+              </TouchableOpacity>
+              <ThemedText style={styles.title}>{title}</ThemedText>
+              <TouchableOpacity onPress={handleSave} hitSlop={12}>
+                <ThemedText style={[styles.saveText, { color: accentColor }]}>Salvar</ThemedText>
+              </TouchableOpacity>
+            </View>
           </View>
+        </GestureDetector>
 
-          {/* Picker Wheel Container */}
-          <View style={styles.pickerContainer}>
-            {/* 1. Imagem de Iluminação Suave no Fundo */}
-            <Image
-              source={require('../../assets/images/ambient-light.png')}
-              style={styles.ambientGlowImage}
-              resizeMode="cover"
-            />
+        {/* Picker Container com Rolagem */}
+        <View style={styles.pickerContainer}>
+          {/* Fundo Iluminação */}
+          <Image
+            source={require('../../assets/images/ambient-light.png')}
+            style={styles.ambientGlowImage}
+            resizeMode="cover"
+            pointerEvents="none"
+          />
 
-            {/* 2. Faixa Gradual de Seleção Central */}
-            <Image
-              source={require('../../assets/images/selection-strip.png')}
-              style={styles.selectionStripImage}
-              resizeMode="stretch"
-            />
+          {/* Faixa Central com Transparência */}
+          <Image
+            source={require('../../assets/images/selection-strip.png')}
+            style={styles.selectionStripImage}
+            resizeMode="stretch"
+            pointerEvents="none"
+          />
 
-            <Animated.FlatList
-              ref={flatListRef}
-              data={items}
-              keyExtractor={(item) => item}
-              renderItem={({ item, index }) => (
-                <PickerItem
-                  item={item}
-                  index={index}
-                  scrollY={scrollY}
-                  accentColor={accentColor}
-                />
-              )}
-              onScroll={onScroll}
-              scrollEventThrottle={16}
-              snapToInterval={ITEM_HEIGHT}
-              decelerationRate="fast"
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{
-                paddingTop: PICKER_PADDING,
-                paddingBottom: PICKER_PADDING,
-              }}
-              getItemLayout={(_, index) => ({
-                length: ITEM_HEIGHT,
-                offset: ITEM_HEIGHT * index,
-                index,
-              })}
-            />
-          </View>
-        </Animated.View>
-      </GestureDetector>
+          <Animated.FlatList
+            ref={flatListRef}
+            data={items}
+            keyExtractor={(item) => item}
+            renderItem={({ item, index }) => (
+              <PickerItem
+                item={item}
+                index={index}
+                scrollY={scrollY}
+                accentColor={accentColor}
+              />
+            )}
+            onScroll={onScroll}
+            scrollEventThrottle={16}
+            snapToInterval={ITEM_HEIGHT}
+            decelerationRate="fast"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingTop: PICKER_PADDING,
+              paddingBottom: PICKER_PADDING,
+            }}
+            getItemLayout={(_, index) => ({
+              length: ITEM_HEIGHT,
+              offset: ITEM_HEIGHT * index,
+              index,
+            })}
+          />
+        </View>
+      </Animated.View>
     </>
   );
 };
@@ -236,14 +277,18 @@ const styles = StyleSheet.create({
     right: 0,
     height: SHEET_HEIGHT,
     backgroundColor: '#151515',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingBottom: 24,
     zIndex: 101,
   },
+  dragZone: {
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
   dragHandle: {
-    width: 36,
+    width: 38,
     height: 4,
     backgroundColor: '#333333',
     borderRadius: 2,
@@ -254,26 +299,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    marginBottom: 16,
+    paddingHorizontal: 8,
+    marginBottom: 12,
   },
   cancelText: { color: '#888888', fontWeight: '600', fontSize: 15 },
   title: { color: 'white', fontWeight: '700', fontSize: 16 },
   saveText: { fontWeight: '700', fontSize: 15 },
   pickerContainer: {
-    backgroundColor: '#0A0A0A',
+    backgroundColor: '#080808',
     height: PICKER_HEIGHT,
-    borderRadius: 24,
+    borderRadius: 20,
     overflow: 'hidden',
     position: 'relative',
-    justifyContent: 'center',
   },
   ambientGlowImage: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    opacity: 0.45,
-    zIndex: 0,
+    opacity: 0.35,
   },
   selectionStripImage: {
     position: 'absolute',
@@ -281,15 +324,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     width: '100%',
-    height: ITEM_HEIGHT + 8,
-    transform: [{ translateY: -(ITEM_HEIGHT + 8) / 2 }],
-    zIndex: 1,
+    height: ITEM_HEIGHT + 6,
+    transform: [{ translateY: -(ITEM_HEIGHT + 6) / 2 }],
+    opacity: 0.6, // Transparência aplicada na faixa de seleção
   },
   pickerItem: {
     height: ITEM_HEIGHT,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 2,
   },
   pickerItemText: {
     fontSize: 20,
