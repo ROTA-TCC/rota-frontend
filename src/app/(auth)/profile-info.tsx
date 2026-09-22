@@ -1,24 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
+import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { PickerModal } from '@/components/PickerModal';
-
-const GlowCircle = () => (
-  <Svg height="380" width="380" style={styles.glowSvg}>
-    <Defs>
-      <RadialGradient id="glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-        <Stop offset="0%" stopColor="#0F140E" stopOpacity="0.8" />
-        <Stop offset="50%" stopColor="#0F140E" stopOpacity="0.4" />
-        <Stop offset="100%" stopColor="#0F140E" stopOpacity="0" />
-      </RadialGradient>
-    </Defs>
-    <Circle cx="190" cy="190" r="190" fill="url(#glow)" />
-  </Svg>
-);
 
 export default function ProfileInfoScreen() {
   const accentColor = Colors.dark.tint; // #ff9a00
@@ -26,7 +12,7 @@ export default function ProfileInfoScreen() {
   const [weight, setWeight] = useState('70.3 kg');
   const [height, setHeight] = useState('175 cm');
   const [age, setAge] = useState('24 anos');
-  
+
   const [activePicker, setActivePicker] = useState<'weight' | 'height' | 'age' | null>(null);
 
   const weightItems = Array.from({ length: 111 }, (_, i) => `${(40 + i * 0.1).toFixed(1)} kg`);
@@ -36,13 +22,17 @@ export default function ProfileInfoScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemedView style={styles.container}>
-        {/* Glow effect blobs */}
-        <View style={[styles.glowWrapper, styles.topGlow]}>
-          <GlowCircle />
-        </View>
-        <View style={[styles.glowWrapper, styles.bottomGlow]}>
-          <GlowCircle />
-        </View>
+        {/* Imagens de Luz Ambiental / Glow do Figma */}
+        <Image
+          source={require('@/assets/images/ambient-light.png')}
+          style={[styles.glowWrapper, styles.topGlow]}
+          resizeMode="contain"
+        />
+        <Image
+          source={require('@/assets/images/ambient-light.png')}
+          style={[styles.glowWrapper, styles.bottomGlow]}
+          resizeMode="contain"
+        />
 
         {/* Header */}
         <View style={styles.header}>
@@ -92,7 +82,7 @@ export default function ProfileInfoScreen() {
             <ThemedText style={[styles.btnSkipText, { color: accentColor }]}>Pular</ThemedText>
           </TouchableOpacity>
         </View>
-        
+
         <PickerModal
           isVisible={activePicker === 'weight'}
           onClose={() => setActivePicker(null)}
@@ -131,19 +121,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 380,
     height: 380,
-  },
-  glowSvg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
+    opacity: 0.6,
   },
   topGlow: {
-    top: -80,
-    right: -80,
+    top: -100,
+    right: -100,
   },
   bottomGlow: {
-    bottom: -80,
-    left: -80,
+    bottom: -100,
+    left: -100,
   },
   header: {
     marginBottom: 40,
