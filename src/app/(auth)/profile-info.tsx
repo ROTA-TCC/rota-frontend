@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { PickerModal } from '@/components/PickerModal';
 
 export default function ProfileInfoScreen() {
-  const accentColor = Colors.dark.tint; // #ff9a00
+  const router = useRouter();
+  const accentColor = Colors.dark.tint;
 
-  // Estados com os valores do formulário
   const [weight, setWeight] = useState('70.3 kg');
   const [height, setHeight] = useState('175 cm');
   const [age, setAge] = useState('24 anos');
 
-  // Controle do modal ativo
   const [activePicker, setActivePicker] = useState<'weight' | 'height' | 'age' | null>(null);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemedView style={styles.container}>
-        {/* Camada isolada de fundo (Glows / Blur) */}
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <Image
             source={require('../../../assets/images/background-blur.png')}
@@ -34,7 +33,6 @@ export default function ProfileInfoScreen() {
           />
         </View>
 
-        {/* Header */}
         <View style={styles.header}>
           <View style={styles.progressBar}>
             <View style={[styles.step, styles.activeStep, { backgroundColor: accentColor }]} />
@@ -49,9 +47,7 @@ export default function ProfileInfoScreen() {
           </ThemedText>
         </View>
 
-        {/* Form */}
         <View style={styles.formContainer}>
-          {/* Campo Peso */}
           <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('weight')}>
             <ThemedText style={styles.inputLabel}>Peso</ThemedText>
             <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
@@ -59,7 +55,6 @@ export default function ProfileInfoScreen() {
             </View>
           </TouchableOpacity>
 
-          {/* Campo Altura */}
           <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('height')}>
             <ThemedText style={styles.inputLabel}>Altura</ThemedText>
             <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
@@ -67,7 +62,6 @@ export default function ProfileInfoScreen() {
             </View>
           </TouchableOpacity>
 
-          {/* Campo Idade */}
           <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('age')}>
             <ThemedText style={styles.inputLabel}>Idade</ThemedText>
             <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
@@ -76,17 +70,24 @@ export default function ProfileInfoScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Footer */}
         <View style={styles.footer}>
-          <TouchableOpacity style={[styles.btnNext, { backgroundColor: accentColor }]}>
+          <TouchableOpacity
+            style={[styles.btnNext, { backgroundColor: accentColor }]}
+            onPress={() => router.push('/set-goals')}
+            activeOpacity={0.85}
+          >
             <ThemedText style={styles.btnNextText}>Próximo</ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnSkip}>
+
+          <TouchableOpacity
+            style={styles.btnSkip}
+            onPress={() => router.push('/set-goals')}
+            activeOpacity={0.7}
+          >
             <ThemedText style={[styles.btnSkipText, { color: accentColor }]}>Pular</ThemedText>
           </TouchableOpacity>
         </View>
 
-        {/* Modais de Seleção */}
         <PickerModal
           isVisible={activePicker === 'weight'}
           onClose={() => setActivePicker(null)}
