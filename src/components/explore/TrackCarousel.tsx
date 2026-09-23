@@ -55,7 +55,6 @@ export function TrackCarousel() {
           {/* Botão DENTRO do card na parte inferior */}
           <TouchableOpacity style={styles.cardButton} activeOpacity={0.8}>
             <Text style={styles.cardButtonText}>Explorar rota</Text>
-            <Ionicons name="arrow-forward" size={14} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       ))}
@@ -117,10 +116,8 @@ const styles = StyleSheet.create({
     borderColor: '#444444',
     height: 38,
     borderRadius: 10,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
     marginTop: 4,
   },
   cardButtonText: {

@@ -13,23 +13,17 @@ export function RecommendationGrid() {
         imageStyle={styles.cardImageStyle}
       >
         <LinearGradient
-          colors={['#D4ED6D', 'rgba(212, 237, 109, 0.92)']}
+          colors={['#D4ED6D', 'rgba(212, 237, 109, 0.3)']}
           style={StyleSheet.absoluteFillObject}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
         />
         <View style={styles.greenCardContent}>
-          <View style={styles.greenBadge}>
-            <Text style={styles.greenBadgeText}>RECOMENDADO</Text>
-          </View>
           <Text style={styles.greenTitle}>Cooling After Run</Text>
           <Text style={styles.greenSubtitle}>
             Top 5 passos para um resfriamento seguro após a corrida
           </Text>
         </View>
-
-        <TouchableOpacity style={styles.greenCardButton} activeOpacity={0.8}>
-          <Text style={styles.greenCardButtonText}>Ver guia</Text>
-          <Ionicons name="arrow-forward" size={14} color="#FFFFFF" />
-        </TouchableOpacity>
       </ImageBackground>
 
       {/* Coluna da Direita */}
@@ -106,53 +100,27 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 24,
     overflow: 'hidden',
-    padding: 16,
-    justifyContent: 'space-between',
+    padding: 20,
+    justifyContent: 'flex-start',
   },
   greenCardContent: {
     zIndex: 2,
   },
-  greenBadge: {
-    backgroundColor: 'rgba(17, 17, 17, 0.15)',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  greenBadgeText: {
-    color: '#111111',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
   greenTitle: {
     color: '#111111',
-    fontSize: 19,
+    fontSize: 18,
     fontWeight: '800',
-    lineHeight: 23,
+    lineHeight: 22,
     marginBottom: 6,
+    textShadowColor: 'rgba(212, 237, 109, 0.8)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
   greenSubtitle: {
     color: '#222222',
-    fontSize: 12,
-    fontWeight: '600',
-    lineHeight: 16,
-  },
-  greenCardButton: {
-    zIndex: 2,
-    backgroundColor: '#111111',
-    borderRadius: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  greenCardButtonText: {
-    color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
+    lineHeight: 15,
   },
   /* Coluna Direita */
   rightColumn: {
