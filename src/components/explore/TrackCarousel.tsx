@@ -29,7 +29,7 @@ export function TrackCarousel() {
       contentContainerStyle={styles.container}
     >
       {TRACKS.map((item) => (
-        <TouchableOpacity key={item.id} style={styles.card} activeOpacity={0.85}>
+        <View key={item.id} style={styles.card}>
           <View style={styles.imageWrapper}>
             <Image source={{ uri: item.image }} style={styles.image} />
           </View>
@@ -41,7 +41,7 @@ export function TrackCarousel() {
             <View style={styles.stats}>
               <View style={styles.statItem}>
                 <Ionicons name="eye-outline" size={13} color="#8E8E93" />
-                <Text style={styles.statText}>{item.views} Views</Text>
+                <Text style={styles.statText}>{item.views}</Text>
               </View>
               <View style={styles.statItem}>
                 <Ionicons name="star" size={13} color="#FFD700" />
@@ -51,7 +51,13 @@ export function TrackCarousel() {
               </View>
             </View>
           </View>
-        </TouchableOpacity>
+
+          {/* Botão DENTRO do card na parte inferior */}
+          <TouchableOpacity style={styles.cardButton} activeOpacity={0.8}>
+            <Text style={styles.cardButtonText}>Explorar rota</Text>
+            <Ionicons name="arrow-forward" size={14} color="#111111" />
+          </TouchableOpacity>
+        </View>
       ))}
     </ScrollView>
   );
@@ -59,7 +65,7 @@ export function TrackCarousel() {
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: 14,
     paddingVertical: 4,
   },
   card: {
@@ -67,13 +73,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#151515',
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     padding: 12,
-    gap: 10,
+    gap: 12,
+    justify: 'space-between',
   },
   imageWrapper: {
     width: '100%',
-    height: 125,
+    height: 120,
     borderRadius: 16,
     overflow: 'hidden',
   },
@@ -83,7 +90,6 @@ const styles = StyleSheet.create({
   },
   info: {
     gap: 4,
-    paddingHorizontal: 2,
   },
   title: {
     color: '#FFFFFF',
@@ -92,7 +98,7 @@ const styles = StyleSheet.create({
   },
   stats: {
     flexDirection: 'row',
-    gap: 14,
+    gap: 12,
     alignItems: 'center',
   },
   statItem: {
@@ -104,5 +110,20 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
     fontSize: 11,
     fontWeight: '600',
+  },
+  cardButton: {
+    backgroundColor: '#D4ED6D',
+    height: 38,
+    borderRadius: 19,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 4,
+  },
+  cardButtonText: {
+    color: '#111111',
+    fontSize: 12,
+    fontWeight: '700',
   },
 });

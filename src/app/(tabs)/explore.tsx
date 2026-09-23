@@ -47,11 +47,6 @@ export default function ExploreScreen() {
               </TouchableOpacity>
             </View>
             <TrackCarousel />
-
-            <TouchableOpacity style={styles.exploreAllBtn} activeOpacity={0.8}>
-              <Text style={styles.exploreAllText}>Ver todas as rotas</Text>
-              <Ionicons name="arrow-forward" size={16} color="#111111" />
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
@@ -93,21 +88,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: '#FFFFFF',
     fontSize: 17,
-    fontWeight: '700',
-  },
-  exploreAllBtn: {
-    backgroundColor: '#D4ED6D',
-    height: 48,
-    borderRadius: 24,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
-  },
-  exploreAllText: {
-    color: '#111111',
-    fontSize: 14,
     fontWeight: '700',
   },
 });
