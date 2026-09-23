@@ -13,7 +13,7 @@ export function RecommendationGrid() {
         imageStyle={styles.cardImageStyle}
       >
         <LinearGradient
-          colors={['#D4ED6D', 'rgba(212, 237, 109, 0.3)']}
+          colors={['rgba(212, 237, 109, 1)', 'rgba(212, 237, 109, 0.6)']}
           style={StyleSheet.absoluteFillObject}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
@@ -112,9 +112,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 22,
     marginBottom: 6,
-    textShadowColor: 'rgba(212, 237, 109, 0.8)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
   },
   greenSubtitle: {
     color: '#222222',

@@ -39,6 +39,9 @@ export default function ExploreScreen() {
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>Melhores rotas próximas</Text>
+              <TouchableOpacity activeOpacity={0.7}>
+                <Ionicons name="chevron-forward" size={18} color="#555555" />
+              </TouchableOpacity>
             </View>
             <TrackCarousel />
           </View>
