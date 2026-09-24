@@ -1,90 +1,40 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { HeaderSearch } from '@/components/explore/HeaderSearch';
-import { FilterChips } from '@/components/explore/FilterChips';
-import { RecommendationGrid } from '@/components/explore/RecommendationGrid';
-import { TrackCarousel } from '@/components/explore/TrackCarousel';
+import { StyleSheet, View, ImageBackground, SafeAreaView, StatusBar } from 'react-native';
+import { MapSearchBar } from '@/components/map/MapSearchBar';
+import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
+import { MapFab } from '@/components/map/MapFab';
+import { MapRouteCarousel } from '@/components/map/MapRouteCarousel';
 
 export default function ExploreScreen() {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar barStyle="light-content" backgroundColor="#050505" />
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <HeaderSearch />
-          <FilterChips />
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <ImageBackground 
+        source={{ uri: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80' }} 
+        style={styles.mapBackground}
+      />
+      
+      <SafeAreaView style={styles.overlay}>
+        <View style={styles.searchWrapper}>
+          <MapSearchBar />
         </View>
 
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Recomendações</Text>
-            </View>
-            <RecommendationGrid />
-          </View>
+        <View style={styles.filterWrapper}>
+          <MapFilterCarousel />
+        </View>
 
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Melhores rotas próximas</Text>
-              <TouchableOpacity activeOpacity={0.7}>
-                <Ionicons name="chevron-forward" size={18} color="#555555" />
-              </TouchableOpacity>
-            </View>
-            <TrackCarousel />
-          </View>
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+        <MapFab />
+        
+        <MapRouteCarousel />
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#050505',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#050505',
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 12,
-    gap: 14,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-    gap: 28,
-  },
-  section: {
-    gap: 14,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '700',
-  },
+  container: { flex: 1, backgroundColor: '#070707' },
+  mapBackground: { position: 'absolute', width: '100%', height: '100%' },
+  overlay: { flex: 1 },
+  searchWrapper: { paddingHorizontal: 16, marginTop: 20 },
+  filterWrapper: { marginTop: 12 },
 });
