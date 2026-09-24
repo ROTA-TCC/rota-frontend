@@ -29,7 +29,9 @@ export default function ProfileScreen() {
       >
         <ProfileHeader />
 
-        <ProfileListCard title="Preferências da Conta" items={accountSettings} />
+        <View style={styles.settingsSection}>
+          <ProfileListCard title="Preferências da Conta" items={accountSettings} />
+        </View>
         <ProfileListCard title="Suporte e Legal" items={supportSettings} />
 
       </ScrollView>
@@ -52,4 +54,8 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     gap: 24,
   },
+  settingsSection: {
+    marginTop: 30, // Aumenta o espaçamento
+  },
 });
+

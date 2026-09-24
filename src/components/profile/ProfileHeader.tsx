@@ -30,9 +30,9 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 55, // "Quase" redondo
+    width: 140,
+    height: 140,
+    borderRadius: 60, // "Quase" redondo, mais quadrado nas bordas
   },
   cameraIconWrapper: {
     position: 'absolute',
