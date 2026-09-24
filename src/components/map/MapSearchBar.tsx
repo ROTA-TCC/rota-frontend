@@ -1,22 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { SportDropdown } from './SportDropdown';
 
-export const MapSearchBar = () => (
-  <View style={styles.searchBar}>
-    <View style={styles.brandSection}>
-      <FontAwesome5 name="shoe-prints" size={18} color="#E34F1E" style={{ transform: [{ rotate: '-30deg' }] }} />
-      <Ionicons name="chevron-down" size={11} color="white" />
+export const MapSearchBar = () => {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [activeSport, setActiveSport] = useState('corrida');
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.searchBar}>
+        <TouchableOpacity style={styles.brandSection} onPress={() => setDropdownVisible(!dropdownVisible)}>
+          <FontAwesome5 name={activeSport === 'corrida' ? 'shoe-prints' : 'bars-progress'} size={18} color="#E34F1E" style={{ transform: [{ rotate: '-30deg' }] }} />
+          <Ionicons name={dropdownVisible ? "chevron-up" : "chevron-down"} size={11} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.searchText}>Procurar locais</Text>
+        <TouchableOpacity style={styles.savedBtn}>
+          <Ionicons name="bookmark-outline" size={16} color="white" />
+          <Text style={styles.savedText}>Salvo</Text>
+        </TouchableOpacity>
+      </View>
+      {dropdownVisible && <SportDropdown activeSport={activeSport} onSelect={setActiveSport} onClose={() => setDropdownVisible(false)} />}
     </View>
-    <Text style={styles.searchText}>Procurar locais</Text>
-    <TouchableOpacity style={styles.savedBtn}>
-      <Ionicons name="bookmark-outline" size={16} color="white" />
-      <Text style={styles.savedText}>Salvo</Text>
-    </TouchableOpacity>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
+  container: { position: 'relative', zIndex: 30 },
   searchBar: {
     backgroundColor: 'rgba(15, 15, 15, 0.95)',
     height: 52,
