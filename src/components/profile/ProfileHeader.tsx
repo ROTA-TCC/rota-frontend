@@ -11,7 +11,7 @@ export function ProfileHeader() {
           style={styles.avatar} 
         />
         <View style={styles.cameraIconWrapper}>
-          <Ionicons name="camera" size={16} color="#FFFFFF" />
+          <Ionicons name="camera" size={16} color="#050505" />
         </View>
       </TouchableOpacity>
       
@@ -38,14 +38,12 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    borderWidth: 3,
-    borderColor: '#D4ED6D',
   },
   cameraIconWrapper: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: '#151517',
+    backgroundColor: '#FFFFFF',
     width: 32,
     height: 32,
     borderRadius: 16,

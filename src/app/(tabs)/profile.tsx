@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar, Text } from 'react-native';
+import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar } from 'react-native';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { ProfileListCard } from '@/components/profile/ProfileListCard';
 
@@ -22,10 +22,6 @@ export default function ProfileScreen() {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#050505" />
 
-      <View style={styles.topBar}>
-        <Text style={styles.screenTitle}>Perfil</Text>
-      </View>
-
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContent}
@@ -46,25 +42,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#050505',
   },
-  topBar: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 16,
-    alignItems: 'center',
-  },
-  screenTitle: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-  },
   container: {
     flex: 1,
     backgroundColor: '#050505',
   },
   scrollContent: {
     paddingHorizontal: 20,
+    paddingTop: 20,
     paddingBottom: 40,
     gap: 24,
   },
 });
-

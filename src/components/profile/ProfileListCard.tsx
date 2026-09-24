@@ -25,7 +25,7 @@ export const ProfileListCard = ({ title, items }: ProfileListCardProps) => {
           >
             <View style={styles.itemLeft}>
               <View style={styles.iconWrapper}>
-                <Ionicons name={item.icon as any} size={20} color="#FFFFFF" />
+                <Ionicons name={item.icon as any} size={22} color="#FFFFFF" />
               </View>
               <Text style={styles.itemText}>{item.title}</Text>
             </View>
@@ -42,10 +42,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sectionTitle: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '700',
+    color: '#8E8E93',
+    fontSize: 14,
+    fontWeight: '600',
     paddingHorizontal: 4,
+    textTransform: 'uppercase',
   },
   card: {
     backgroundColor: '#151517',
@@ -68,10 +69,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   iconWrapper: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#2A2A2E',
+    width: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
