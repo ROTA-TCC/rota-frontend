@@ -5,10 +5,18 @@ import { ThemedText } from '../themed-text';
 
 const filters = ['Rotas', 'Extensão', 'Dificuldade', 'Elevação'];
 
-export const MapFilterCarousel = () => (
+interface MapFilterCarouselProps {
+  onFilterPress?: (filter: string) => void;
+}
+
+export const MapFilterCarousel = ({ onFilterPress }: MapFilterCarouselProps) => (
   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.carousel}>
     {filters.map((filter, index) => (
-      <TouchableOpacity key={filter} style={[styles.chip, index === 0 && styles.activeChip]}>
+      <TouchableOpacity 
+        key={filter} 
+        style={[styles.chip, index === 0 && styles.activeChip]}
+        onPress={() => onFilterPress?.(filter)}
+      >
         <ThemedText style={[styles.chipText, index === 0 && styles.activeChipText]}>{filter}</ThemedText>
         {index === 0 && <Ionicons name="chevron-down" size={10} color="#E34F1E" style={{ marginLeft: 4 }} />}
       </TouchableOpacity>

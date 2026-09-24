@@ -24,10 +24,13 @@ export default function MapaScreen() {
         </View>
 
         <View style={styles.filterWrapper}>
-          {/* Example triggering the bottom sheet from the first filter chip */}
-          <View onTouchEnd={() => setSheetVisible(true)}>
-            <MapFilterCarousel />
-          </View>
+          <MapFilterCarousel 
+            onFilterPress={(filter) => {
+              if (filter === 'Rotas') {
+                setSheetVisible(true);
+              }
+            }}
+          />
         </View>
 
         <MapFab />

@@ -10,7 +10,7 @@ interface MapOption {
 }
 
 const options: MapOption[] = [
-  { id: 'rotas', title: 'Rotas', description: 'Recomendações de rotas baseadas em dados da comunidade.', icon: 'route' },
+  { id: 'rotas', title: 'Rotas', description: 'Recomendações de rotas baseadas em dados da comunidade.', icon: 'map-marker-path' },
   { id: 'mapa', title: 'Somente mapa', description: 'Explore os heatmaps, pontos de interesse e outros detalhes em uma tela limpa.', icon: 'map-marker-outline' },
 ];
 
@@ -23,31 +23,33 @@ interface MapBottomSheetProps {
 export const MapBottomSheet = ({ activeOption, onSelect, onClose }: MapBottomSheetProps) => {
   return (
     <Modal visible={true} transparent={true} animationType="slide">
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay} />
-      </TouchableWithoutFeedback>
-      <View style={styles.bottomSheet}>
-        <View style={styles.sheetHeader}>
-          <Text style={styles.headerTitle}>Escolha recursos no mapa</Text>
-          <TouchableOpacity onPress={onClose}>
-            <Ionicons name="close" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.optionList}>
-          {options.map((option) => (
-            <TouchableOpacity key={option.id} style={styles.optionItem} onPress={() => onSelect(option.id)}>
-              <View style={styles.optionIcon}>
-                <MaterialCommunityIcons name={option.icon as any} size={24} color="white" />
-              </View>
-              <View style={styles.optionContent}>
-                <Text style={styles.optionTitle}>{option.title}</Text>
-                <Text style={styles.optionDesc}>{option.description}</Text>
-              </View>
-              <View style={[styles.radioBtn, activeOption === option.id && styles.selectedRadio]}>
-                {activeOption === option.id && <View style={styles.radioInner} />}
-              </View>
+      <View style={styles.modalContainer}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
+        <View style={styles.bottomSheet}>
+          <View style={styles.sheetHeader}>
+            <Text style={styles.headerTitle}>Escolha recursos no mapa</Text>
+            <TouchableOpacity onPress={onClose}>
+              <Ionicons name="close" size={24} color="white" />
             </TouchableOpacity>
-          ))}
+          </View>
+          <View style={styles.optionList}>
+            {options.map((option) => (
+              <TouchableOpacity key={option.id} style={styles.optionItem} onPress={() => onSelect(option.id)}>
+                <View style={styles.optionIcon}>
+                  <MaterialCommunityIcons name={option.icon as any} size={24} color="white" />
+                </View>
+                <View style={styles.optionContent}>
+                  <Text style={styles.optionTitle}>{option.title}</Text>
+                  <Text style={styles.optionDesc}>{option.description}</Text>
+                </View>
+                <View style={[styles.radioBtn, activeOption === option.id && styles.selectedRadio]}>
+                  {activeOption === option.id && <View style={styles.radioInner} />}
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </View>
     </Modal>
@@ -55,7 +57,11 @@ export const MapBottomSheet = ({ activeOption, onSelect, onClose }: MapBottomShe
 };
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)' },
+  modalContainer: { flex: 1, justifyContent: 'flex-end' },
+  overlay: { 
+    ...StyleSheet.absoluteFillObject, 
+    backgroundColor: 'rgba(0,0,0,0.75)' 
+  },
   bottomSheet: {
     backgroundColor: '#1F1F1F',
     borderTopLeftRadius: 12,
