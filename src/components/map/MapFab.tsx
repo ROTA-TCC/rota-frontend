@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Animated } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Animated, Text } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 
 export const MapFab = () => {
