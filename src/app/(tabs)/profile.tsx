@@ -1,10 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
-import { ProfileStats } from '@/components/profile/ProfileStats';
-import { GoalCard } from '@/components/profile/GoalCard';
-import { ActivityHistory } from '@/components/profile/ActivityHistory';
 
 export default function ProfileScreen() {
   return (
@@ -22,20 +19,25 @@ export default function ProfileScreen() {
       >
         <ProfileHeader />
         
-        {/* Nova seção de Configurações inspirada no Leaderboard */}
-        <View style={styles.configCard}>
-          <TouchableOpacity style={styles.configItem} activeOpacity={0.7}>
-            <View style={styles.configIconWrapper}>
-              <Ionicons name="settings-outline" size={20} color="#FFFFFF" />
+        {/* Seção de Configurações como cards estáticos */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Configurações</Text>
+          
+          <View style={styles.settingItem}>
+            <View style={styles.iconWrapper}>
+              <Ionicons name="notifications-outline" size={20} color="#FFFFFF" />
             </View>
-            <Text style={styles.configText}>Configurações</Text>
-            <Ionicons name="chevron-forward" size={20} color="#8E8E93" />
-          </TouchableOpacity>
+            <Text style={styles.settingText}>Notificações</Text>
+          </View>
+
+          <View style={styles.settingItem}>
+            <View style={styles.iconWrapper}>
+              <Ionicons name="lock-closed-outline" size={20} color="#FFFFFF" />
+            </View>
+            <Text style={styles.settingText}>Privacidade</Text>
+          </View>
         </View>
 
-        <ProfileStats />
-        <GoalCard />
-        <ActivityHistory />
       </ScrollView>
     </SafeAreaView>
   );
@@ -62,32 +64,37 @@ const styles = StyleSheet.create({
     backgroundColor: '#050505',
   },
   scrollContent: {
+    paddingHorizontal: 20,
     paddingBottom: 40,
     gap: 24,
-    paddingHorizontal: 20,
   },
-  configCard: {
-    backgroundColor: '#151517',
-    borderRadius: 20,
-    padding: 16,
+  card: { 
+    backgroundColor: '#151517', 
+    borderRadius: 20, 
+    padding: 20, 
+    gap: 20 
   },
-  configItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+  cardTitle: { 
+    color: '#FFFFFF', 
+    fontSize: 16, 
+    fontWeight: '700' 
   },
-  configIconWrapper: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#050505',
+  settingItem: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 12 
+  },
+  iconWrapper: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#2A2A2E',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  configText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-    flex: 1,
+  settingText: { 
+    color: '#FFFFFF', 
+    fontSize: 15, 
+    fontWeight: '700' 
   },
 });
