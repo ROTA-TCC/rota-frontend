@@ -57,10 +57,14 @@ export const MapBottomSheet = ({ activeOption, onSelect, onClose }: MapBottomShe
 };
 
 const styles = StyleSheet.create({
-  modalContainer: { flex: 1, justifyContent: 'flex-end' },
+  modalContainer: { 
+    flex: 1, 
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.5)', // Moved background color to container
+  },
   overlay: { 
     ...StyleSheet.absoluteFillObject, 
-    backgroundColor: 'rgba(0,0,0,0.75)' 
+    // Removed background color here to avoid conflict
   },
   bottomSheet: {
     backgroundColor: '#1F1F1F',
