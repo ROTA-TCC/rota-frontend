@@ -10,12 +10,17 @@ const bestRunners = [
   { name: 'Cody Fisher', points: 84, rank: 6, direction: 'up', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80' },
 ];
 
+const topClubs = [
+  { name: 'Running Rebels', members: 1223 },
+];
+
 export default function LeaderboardsScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <LeaderboardPodium />
       <RankCard rank={8} />
       <LeaderboardList title="Best Runners" items={bestRunners} />
+      <LeaderboardList title="Top Club Running" items={topClubs} isClub />
     </ScrollView>
   );
 }
