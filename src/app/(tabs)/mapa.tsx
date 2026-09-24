@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ImageBackground, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
+import MapView from 'react-native-maps';
 import { MapSearchBar } from '@/components/map/MapSearchBar';
 import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
 import { MapFab } from '@/components/map/MapFab';
@@ -13,30 +14,40 @@ export default function MapaScreen() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <ImageBackground 
-        source={{ uri: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80' }} 
-        style={styles.mapBackground}
-      />
       
-      <SafeAreaView style={styles.overlay}>
-        <View style={styles.searchWrapper}>
-          <MapSearchBar />
-        </View>
+      {/* 1. O Mapa fica ao fundo */}
+      <MapView
+        style={StyleSheet.absoluteFillObject}
+        initialRegion={{
+          latitude: -23.55052,
+          longitude: -46.633308,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      />
 
-        <View style={styles.filterWrapper}>
-          <MapFilterCarousel 
-            onFilterPress={(filter) => {
-              if (filter === 'Rotas') {
-                setSheetVisible(true);
-              }
-            }}
-          />
-        </View>
+      {/* 2. Camada de UI flutuante sobreposta */}
+      <View style={styles.overlay} pointerEvents="box-none">
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.searchWrapper}>
+            <MapSearchBar />
+          </View>
 
-        <MapFab />
-        
-        <MapRouteCarousel />
-      </SafeAreaView>
+          <View style={styles.filterWrapper}>
+            <MapFilterCarousel 
+              onFilterPress={(filter) => {
+                if (filter === 'Rotas') {
+                  setSheetVisible(true);
+                }
+              }}
+            />
+          </View>
+
+          <MapFab />
+          
+          <MapRouteCarousel />
+        </SafeAreaView>
+      </View>
 
       {sheetVisible && (
         <MapBottomSheet 
@@ -54,8 +65,11 @@ export default function MapaScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#070707' },
-  mapBackground: { position: 'absolute', width: '100%', height: '100%' },
-  overlay: { flex: 1 },
+  overlay: { 
+    ...StyleSheet.absoluteFillObject, 
+    justifyContent: 'space-between' 
+  },
+  safeArea: { flex: 1, justifyContent: 'space-between' },
   searchWrapper: { paddingHorizontal: 16, marginTop: 20 },
   filterWrapper: { marginTop: 12 },
 });
