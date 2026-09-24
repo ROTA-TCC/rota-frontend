@@ -7,7 +7,7 @@ export const RankCard = ({ rank }: { rank: number }) => (
     <Text style={styles.text}>Currently Rank</Text>
     <View style={styles.value}>
       <Text style={styles.valueText}>{rank}</Text>
-      <MaterialCommunityIcons name="chevron-triple-up" size={14} color="#9ED872" />
+      <MaterialCommunityIcons name="chevron-double-up" size={16} color="#9ED872" />
     </View>
   </View>
 );
