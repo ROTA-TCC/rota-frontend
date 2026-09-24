@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Animated, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Animated } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { ThemedText } from '../themed-text';
 
 export const MapFab = () => {
   const [active, setActive] = useState(false);
@@ -11,7 +12,7 @@ export const MapFab = () => {
         <>
           <View style={[styles.subFab, styles.layer3]}>
             <Ionicons name="layers" size={18} color="white" />
-            <View style={styles.badge}><Text style={styles.badgeText}>1</Text></View>
+            <View style={styles.badge}><ThemedText style={styles.badgeText}>1</ThemedText></View>
           </View>
           <View style={[styles.subFab, styles.layer2]}><Ionicons name="locate" size={18} color="white" /></View>
           <View style={[styles.subFab, styles.layer1]}><FontAwesome5 name="pencil-alt" size={18} color="white" /></View>
