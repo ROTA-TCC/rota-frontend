@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, ImageBackground, SafeAreaView, StatusBar } from 'react-native';
 import { MapSearchBar } from '@/components/map/MapSearchBar';
 import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
 import { MapFab } from '@/components/map/MapFab';
 import { MapRouteCarousel } from '@/components/map/MapRouteCarousel';
+import { MapBottomSheet } from '@/components/map/MapBottomSheet';
 
 export default function MapaScreen() {
+  const [sheetVisible, setSheetVisible] = useState(false);
+  const [activeOption, setActiveOption] = useState('rotas');
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -20,13 +24,27 @@ export default function MapaScreen() {
         </View>
 
         <View style={styles.filterWrapper}>
-          <MapFilterCarousel />
+          {/* Example triggering the bottom sheet from the first filter chip */}
+          <View onTouchEnd={() => setSheetVisible(true)}>
+            <MapFilterCarousel />
+          </View>
         </View>
 
         <MapFab />
         
         <MapRouteCarousel />
       </SafeAreaView>
+
+      {sheetVisible && (
+        <MapBottomSheet 
+          activeOption={activeOption} 
+          onSelect={(id) => {
+            setActiveOption(id);
+            setSheetVisible(false);
+          }}
+          onClose={() => setSheetVisible(false)}
+        />
+      )}
     </View>
   );
 }

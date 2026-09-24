@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
 interface SportItem {
@@ -11,7 +11,7 @@ interface SportItem {
 
 const sports: SportItem[] = [
   { id: 'corrida', name: 'Corrida', icon: 'shoe-prints', isIconAwesome: true },
-  { id: 'esteira', name: 'Esteira', icon: 'bars-progress', isIconAwesome: true },
+  { id: 'esteira', name: 'treadmill', icon: 'material-community', isIconAwesome: false },
 ];
 
 interface SportDropdownProps {
@@ -22,36 +22,49 @@ interface SportDropdownProps {
 
 export const SportDropdown = ({ activeSport, onSelect, onClose }: SportDropdownProps) => {
   return (
-    <View style={styles.dropdown}>
-      {sports.map((sport) => (
-        <TouchableOpacity
-          key={sport.id}
-          style={[styles.sportItem, activeSport === sport.id && styles.activeItem]}
-          onPress={() => {
-            onSelect(sport.id);
-            onClose();
-          }}
-        >
-          <View style={styles.sportIcon}>
-            {sport.isIconAwesome ? (
-              <FontAwesome5 name={sport.icon} size={16} color={activeSport === sport.id ? '#E34F1E' : '#999'} />
-            ) : (
-              <Ionicons name={sport.icon as any} size={16} color={activeSport === sport.id ? '#E34F1E' : '#999'} />
-            )}
-          </View>
-          <Text style={[styles.sportName, activeSport === sport.id && styles.activeText]}>{sport.name}</Text>
-          {activeSport === sport.id && <Ionicons name="checkmark" size={14} color="#E34F1E" />}
-        </TouchableOpacity>
-      ))}
-    </View>
+    <Modal visible={true} transparent={true} animationType="fade">
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.overlay} />
+      </TouchableWithoutFeedback>
+      <View style={styles.dropdown}>
+        {sports.map((sport) => (
+          <TouchableOpacity
+            key={sport.id}
+            style={[styles.sportItem, activeSport === sport.id && styles.activeItem]}
+            onPress={() => {
+              onSelect(sport.id);
+              onClose();
+            }}
+          >
+            <View style={styles.sportIcon}>
+              {sport.isIconAwesome ? (
+                <FontAwesome5 name={sport.icon} size={16} color={activeSport === sport.id ? '#E34F1E' : '#999'} />
+              ) : (
+                <Ionicons name="fitness" size={18} color={activeSport === sport.id ? '#E34F1E' : '#999'} />
+              )}
+            </View>
+            <Text style={[styles.sportName, activeSport === sport.id && styles.activeText]}>{sport.name}</Text>
+            {activeSport === sport.id && <Ionicons name="checkmark" size={14} color="#E34F1E" />}
+          </TouchableOpacity>
+        ))}
+      </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   dropdown: {
     position: 'absolute',
-    top: 62,
-    left: 0,
+    top: 80, // Adjusted top position to be below the search bar
+    left: 16,
     width: 190,
     backgroundColor: '#1A1A1A',
     borderRadius: 14,
