@@ -1,13 +1,27 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar, Text } from 'react-native';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
-import { SettingsCard } from '@/components/profile/SettingsCard';
+import { ProfileListCard } from '@/components/profile/ProfileListCard';
 
 export default function ProfileScreen() {
+  const accountSettings = [
+    { icon: 'person-outline', title: 'Informações Pessoais' },
+    { icon: 'notifications-outline', title: 'Notificações' },
+    { icon: 'lock-closed-outline', title: 'Privacidade' },
+    { icon: 'shield-outline', title: 'Segurança' },
+  ];
+
+  const supportSettings = [
+    { icon: 'help-circle-outline', title: 'Ajuda e Suporte' },
+    { icon: 'document-text-outline', title: 'Termos de Uso' },
+    { icon: 'information-circle-outline', title: 'Sobre' },
+    { icon: 'log-out-outline', title: 'Sair' },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" backgroundColor="#050505" />
-      
+
       <View style={styles.topBar}>
         <Text style={styles.screenTitle}>Perfil</Text>
       </View>
@@ -18,7 +32,10 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <ProfileHeader />
-        <SettingsCard />
+
+        <ProfileListCard title="Preferências da Conta" items={accountSettings} />
+        <ProfileListCard title="Suporte e Legal" items={supportSettings} />
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -50,3 +67,4 @@ const styles = StyleSheet.create({
     gap: 24,
   },
 });
+
