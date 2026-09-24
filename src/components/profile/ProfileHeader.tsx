@@ -16,11 +16,6 @@ export function ProfileHeader() {
       </TouchableOpacity>
       
       <Text style={styles.name}>Sarah Jenkins</Text>
-      
-      <View style={styles.locationWrapper}>
-        <Ionicons name="location" size={14} color="#D4ED6D" />
-        <Text style={styles.location}>Sydney, Australia</Text>
-      </View>
     </View>
   );
 }
@@ -35,20 +30,18 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 55, // "Quase" redondo
   },
   cameraIconWrapper: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
+    bottom: 5,
+    right: 5,
     backgroundColor: '#FFFFFF',
     width: 32,
     height: 32,
     borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#050505',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -56,15 +49,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 22,
     fontWeight: '800',
-  },
-  locationWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  location: {
-    color: '#8E8E93',
-    fontSize: 14,
-    fontWeight: '500',
   },
 });
