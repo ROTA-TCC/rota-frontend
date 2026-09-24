@@ -1,9 +1,14 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 
 export const LeaderboardPodium = () => (
   <View style={styles.card}>
+    {/* Confetti simulation - minimal version for mobile */}
+    <View style={[styles.confetti, { top: '15%', left: '10%', transform: [{ rotate: '45deg' }] }]} />
+    <View style={[styles.confetti, { top: '20%', left: '20%', transform: [{ rotate: '-20deg' }] }]} />
+    <View style={[styles.confetti, { top: '25%', right: '25%', borderRadius: 5 }]} />
+    
     <Text style={styles.title}>Leaderboards</Text>
     <Text style={styles.subtitle}>November 2023</Text>
     
@@ -18,7 +23,7 @@ export const LeaderboardPodium = () => (
 const PodiumCol = ({ rank, name, points, image, isFirst }: any) => (
   <View style={[styles.podiumCol, isFirst && styles.first]}>
     <View style={[styles.awardIcon, rank === 1 ? styles.trophy : styles.star]}>
-      {rank === 1 ? <Ionicons name="trophy" size={24} color="#FFD700" /> : <Ionicons name="star-outline" size={20} color={rank === 2 ? '#C0C0C0' : '#CD7F32'} />}
+      {rank === 1 ? <FontAwesome5 name="trophy" size={20} color="#FFD700" /> : <FontAwesome5 name="star" size={20} color={rank === 2 ? '#C0C0C0' : '#CD7F32'} />}
       {rank !== 1 && <Text style={styles.rankNum}>{rank}</Text>}
     </View>
     <View style={styles.avatarRing}>
@@ -30,16 +35,19 @@ const PodiumCol = ({ rank, name, points, image, isFirst }: any) => (
 );
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#151517', borderRadius: 24, padding: 24, alignItems: 'center' },
-  title: { color: '#FFFFFF', fontSize: 22, fontWeight: '700' },
+  card: { backgroundColor: '#151517', borderRadius: 24, padding: 24, alignItems: 'center', overflow: 'hidden' },
+  confetti: { position: 'absolute', width: 8, height: 14, backgroundColor: '#3B5B8E', opacity: 0.5 },
+  title: { color: '#FFFFFF', fontSize: 22, fontWeight: '700', marginBottom: 4 },
   subtitle: { color: '#8E8E93', fontSize: 12, fontWeight: '600', marginBottom: 32 },
   podiumContainer: { flexDirection: 'row', alignItems: 'flex-end', gap: 20 },
   podiumCol: { alignItems: 'center' },
   first: { marginBottom: 20 },
   awardIcon: { marginBottom: 8, justifyContent: 'center', alignItems: 'center' },
+  star: { position: 'relative' },
+  trophy: { },
   rankNum: { position: 'absolute', fontSize: 10, fontWeight: '800', color: '#FFFFFF' },
-  avatarRing: { width: 64, height: 64, borderRadius: 32, marginBottom: 12 },
+  avatarRing: { width: 64, height: 64, borderRadius: 32, marginBottom: 12, borderWidth: 2, borderColor: '#151517' },
   avatarImg: { width: '100%', height: '100%', borderRadius: 32 },
-  userName: { color: '#9ED872', fontSize: 12, fontWeight: '700' },
+  userName: { color: '#9ED872', fontSize: 12, fontWeight: '700', marginBottom: 2 },
   userPts: { color: '#8E8E93', fontSize: 11, fontWeight: '600' },
 });
