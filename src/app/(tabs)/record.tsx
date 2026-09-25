@@ -1,8 +1,13 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { env } from '@/config/env';
 
 export default function RecordScreen() {
+  const tileUrl = env.cartodbApiKey
+    ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${env.cartodbApiKey}`
+    : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+
   const mapHTML = `
     <!DOCTYPE html>
     <html>
@@ -19,7 +24,7 @@ export default function RecordScreen() {
         <script>
           const map = L.map('map', { zoomControl: false }).setView([42.882004, 74.582748], 13);
           
-          L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          L.tileLayer('${tileUrl}', {
             maxZoom: 19,
             subdomains: 'abcd',
             attribution: '&copy; OpenStreetMap &copy; CARTO'
