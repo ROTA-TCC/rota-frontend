@@ -46,6 +46,7 @@ export default function MapaScreen() {
         originWhitelist={['*']}
         source={{ html: mapHTML }}
         style={[StyleSheet.absoluteFillObject, { backgroundColor: 'transparent' }]}
+        containerStyle={{ backgroundColor: 'transparent' }}
         scrollEnabled={false}
       />
 
