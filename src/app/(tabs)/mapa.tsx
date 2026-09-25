@@ -24,7 +24,6 @@ export default function MapaScreen() {
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
-        mapType="none"
       >
         <UrlTile
           urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
