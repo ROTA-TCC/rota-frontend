@@ -50,7 +50,7 @@ export default function MapaScreen() {
       />
 
       {/* 2. Camada de UI flutuante sobreposta */}
-      <View style={styles.overlay} pointerEvents="box-none">
+      <View style={[styles.overlay, { zIndex: 1 }]} pointerEvents="box-none">
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.searchWrapper}>
             <MapSearchBar />
