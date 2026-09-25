@@ -71,7 +71,7 @@ export default function MapaScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#070707' },
+  container: { flex: 1, backgroundColor: 'transparent' },
   overlay: { 
     ...StyleSheet.absoluteFillObject, 
     justifyContent: 'space-between' 
