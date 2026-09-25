@@ -7,7 +7,6 @@ export default function RecordScreen() {
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        mapType="none"
         initialRegion={{
           latitude: 42.882004,
           longitude: 74.582748,
@@ -18,9 +17,12 @@ export default function RecordScreen() {
         showsMyLocationButton={true}
       >
         <UrlTile
-          urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          // Servidor do OSM
+          urlTemplate="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           maximumZ={19}
           tileSize={256}
+          // OBRIGATÓRIO: O OSM exige um User-Agent para liberar o acesso aos tiles
+          userAgent="RotaFrontendApp/1.0"
           shouldReplaceMapContent={true}
         />
       </MapView>
