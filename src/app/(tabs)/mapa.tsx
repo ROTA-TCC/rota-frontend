@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { UrlTile } from 'react-native-maps';
 import { MapSearchBar } from '@/components/map/MapSearchBar';
 import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
 import { MapFab } from '@/components/map/MapFab';
@@ -24,7 +24,14 @@ export default function MapaScreen() {
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
-      />
+        mapType="none"
+      >
+        <UrlTile
+          urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maximumZ={19}
+          flipY={false}
+        />
+      </MapView>
 
       {/* 2. Camada de UI flutuante sobreposta */}
       <View style={styles.overlay} pointerEvents="box-none">
