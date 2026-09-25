@@ -42,13 +42,13 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      <WebView
+      {/* <WebView
         originWhitelist={['*']}
         source={{ html: mapHTML }}
         style={[StyleSheet.absoluteFillObject, { backgroundColor: 'transparent' }]}
         containerStyle={{ backgroundColor: 'transparent' }}
         scrollEnabled={false}
-      />
+      /> */}
 
       {/* 2. Camada de UI flutuante sobreposta */}
       <View style={[styles.overlay, { zIndex: 1 }]} pointerEvents="box-none">
