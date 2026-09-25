@@ -7,18 +7,21 @@ export default function RecordScreen() {
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        region={{
+        mapType="none"
+        initialRegion={{
           latitude: 42.882004,
           longitude: 74.582748,
           latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421
+          longitudeDelta: 0.0421,
         }}
         showsUserLocation={true}
+        showsMyLocationButton={true}
       >
         <UrlTile
-          // OpenStreetMap tile server
           urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maximumZ={19}
+          tileSize={256}
+          shouldReplaceMapContent={true}
         />
       </MapView>
     </View>
