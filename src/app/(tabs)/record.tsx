@@ -1,12 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { UrlTile } from 'react-native-maps';
 
 export default function RecordScreen() {
   return (
     <View style={styles.container}>
       <MapView
-        provider={PROVIDER_GOOGLE}
         style={styles.map}
         region={{
           latitude: 42.882004,
@@ -15,7 +14,13 @@ export default function RecordScreen() {
           longitudeDelta: 0.0421
         }}
         showsUserLocation={true}
-      />
+      >
+        <UrlTile
+          // OpenStreetMap tile server
+          urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maximumZ={19}
+        />
+      </MapView>
     </View>
   );
 }
