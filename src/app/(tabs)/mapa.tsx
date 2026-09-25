@@ -45,7 +45,7 @@ export default function MapaScreen() {
       <WebView
         originWhitelist={['*']}
         source={{ html: mapHTML }}
-        style={StyleSheet.absoluteFillObject}
+        style={[StyleSheet.absoluteFillObject, { backgroundColor: 'transparent' }]}
         scrollEnabled={false}
       />
 
