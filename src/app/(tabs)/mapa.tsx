@@ -92,7 +92,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject, 
     justifyContent: 'space-between' 
   },
-  safeArea: { flex: 1, justifyContent: 'space-between' },
-  searchWrapper: { paddingHorizontal: 16, marginTop: 20 },
+  safeArea: { 
+    flex: 1, 
+    justifyContent: 'space-between',
+    paddingTop: 40 // Adiciona espaçamento para não ficar atrás da barra de status
+  },
+  searchWrapper: { paddingHorizontal: 16 },
   filterWrapper: { marginTop: 12 },
 });
