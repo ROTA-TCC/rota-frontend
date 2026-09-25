@@ -9,49 +9,49 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#D4ED6D', // accent-lime
-        tabBarInactiveTintColor: '#8E8E93', // text-secondary
+        tabBarActiveTintColor: '#E34F1E', // Matching accent color from UI
+        tabBarInactiveTintColor: '#999999', // Matching text-muted
         tabBarShowLabel: true,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       }}
     >
       <Tabs.Screen
-        name="home"
+        name="explore"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} />,
+          title: 'Explorar',
+          tabBarIcon: ({ color }) => <Ionicons name="compass-outline" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="leaderboards"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <Ionicons name="compass" size={24} color={color} />,
+          title: 'Rankings',
+          tabBarIcon: ({ color }) => <Ionicons name="trophy-outline" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="record"
         options={{
-          title: 'Record',
-          tabBarIcon: ({ color }) => (
+          title: '',
+          tabBarIcon: () => (
             <View style={styles.recordButton}>
-              <Ionicons name="radio-button-on" size={32} color="#FFFFFF" />
+              <Ionicons name="add" size={28} color="#FFFFFF" />
             </View>
           ),
-          tabBarLabelStyle: { marginTop: -4 },
         }}
       />
       <Tabs.Screen
-        name="community"
+        name="mapa"
         options={{
-          title: 'Community',
-          tabBarIcon: ({ color }) => <Ionicons name="people" size={24} color={color} />,
+          title: 'Mapa',
+          tabBarIcon: ({ color }) => <Ionicons name="map-outline" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'You',
-          tabBarIcon: ({ color }) => <Ionicons name="person-circle" size={24} color={color} />,
+          title: 'Perfil',
+          tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={24} color={color} />,
         }}
       />
     </Tabs>
@@ -60,16 +60,25 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#050505',
+    backgroundColor: '#070707', // midnight-black
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
-    height: 84,
-    paddingTop: 12,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    height: 70,
+    paddingTop: 8,
+    paddingBottom: 8,
   },
   recordButton: {
-    marginTop: -20,
-    backgroundColor: '#151515',
-    borderRadius: 30,
-    padding: 4,
+    backgroundColor: '#E34F1E', // accent color
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
