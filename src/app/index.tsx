@@ -25,7 +25,7 @@ export default function SplashScreen() {
     logoOpacity.value = withDelay(1500, withTiming(1, { duration: 500 }));
 
     setTimeout(() => {
-      router.replace('(tabs)/explore.tsx');
+      router.replace('/(tabs)/explore.tsx');
     }, 2500);
   }, [iconTranslateY, iconScale, iconRotate, logoOpacity]);
 
