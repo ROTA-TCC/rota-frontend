@@ -90,11 +90,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'transparent' },
   overlay: { 
     ...StyleSheet.absoluteFillObject, 
-    justifyContent: 'space-between',
-    zIndex: 10,
-    elevation: 10
+    justifyContent: 'space-between' 
   },
   safeArea: { flex: 1, justifyContent: 'space-between' },
-  searchWrapper: { paddingHorizontal: 16, marginTop: 20 },
-  filterWrapper: { marginTop: 12 },
+  searchWrapper: { paddingHorizontal: 16, marginTop: 20, zIndex: 10, elevation: 10 },
+  filterWrapper: { marginTop: 12, zIndex: 10, elevation: 10 },
 });
