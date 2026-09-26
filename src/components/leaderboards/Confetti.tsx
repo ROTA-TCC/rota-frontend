@@ -1,9 +1,4 @@
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useEffect,
-} from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useEffect } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
@@ -24,9 +19,9 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 export const Confetti = forwardRef < ConfettiRef,
   ConfettiProps > ((props, ref) => {
     const {
-      count = 50,
-        origin = { x: SCREEN_WIDTH / 2, y: -10 },
-        manualstart = false,
+      count = 80,
+        origin = { x: SCREEN_WIDTH / 2, y: -60 },
+        manualstart = true,
         fadeOut = true,
         colors = ['#3B5B8E', '#FFD700', '#9ED872', '#FF453A', '#007AFF'],
     } = props;
@@ -56,6 +51,8 @@ export const Confetti = forwardRef < ConfettiRef,
         autoStart={!manualstart}
         fadeOut={fadeOut}
         colors={colors}
+        explosionSpeed={800}
+        fallSpeed={4000}
       />
     </View>
     );

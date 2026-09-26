@@ -34,7 +34,7 @@ export default function LeaderboardsScreen() {
         <TopClubsList title="Top Club Running" clubs={topClubs} />
       </ScrollView>
 
-      <Confetti ref={confettiRef} count={60} manualstart={false} />
+      <Confetti ref={confettiRef} count={80} manualstart={true} />
     </View>
   );
 }

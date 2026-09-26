@@ -40,7 +40,7 @@ export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps)
 
 const PodiumCol = ({ rank, name, points, image, isFirst, onPress }: any) => (
   <TouchableOpacity
-    activeOpacity={isFirst ? 0.8 : 1}
+    activeOpacity={1}
     onPress={onPress}
     style={[styles.podiumCol, isFirst && styles.first]}
   >
@@ -73,8 +73,13 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   title: { color: '#FFFFFF', fontSize: 22, fontWeight: '700', marginBottom: 4 },
-  subtitle: { color: '#8E8E93', fontSize: 12, fontWeight: '600', marginBottom: 32 },
-  podiumContainer: { flexDirection: 'row', alignItems: 'flex-end', gap: 20 },
+  subtitle: { color: '#8E8E93', fontSize: 12, fontWeight: '600', marginBottom: 0 },
+  podiumContainer: { 
+    flexDirection: 'row', 
+    alignItems: 'flex-end', 
+    gap: 20,
+    marginTop: 24 
+  },
   podiumCol: { alignItems: 'center' },
   first: { marginBottom: 20 },
   awardIcon: { marginBottom: 8, justifyContent: 'center', alignItems: 'center' },
