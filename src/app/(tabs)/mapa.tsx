@@ -13,6 +13,7 @@ export default function MapaScreen() {
 
   const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
+  // HTML revertido exatamente para sua versão funcional original
   const mapHTML = `
     <!DOCTYPE html>
     <html>
@@ -21,8 +22,7 @@ export default function MapaScreen() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
-          html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #121212; }
-          #map { width: 100%; height: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
+          html, body, #map { margin: 0; padding: 0; height: 100%; width: 100%; background-color: transparent; }
         </style>
       </head>
       <body>
@@ -43,22 +43,33 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* 1. Camada do Mapa (Z-Index 0 natural) */}
-      <WebView
-        originWhitelist={['*']}
-        source={{ html: mapHTML }}
-        style={StyleSheet.absoluteFillObject}
-        containerStyle={{ backgroundColor: '#121212' }}
-        scrollEnabled={false}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-      />
+      {/* 
+        1. CAMADA DO MAPA (BACKGROUND)
+        O mapa agora está preso num container absoluto, cobrindo todo o fundo.
+        O flex: 1 dentro dele garante que o WebView renderize.
+      */}
+      <View style={StyleSheet.absoluteFillObject}>
+        <WebView
+          originWhitelist={['*']}
+          source={{ html: mapHTML }}
+          style={{ flex: 1, backgroundColor: 'transparent' }}
+          containerStyle={{ backgroundColor: 'transparent' }}
+          scrollEnabled={false}
+          bounces={false}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
 
-      {/* 2. Camada de UI flutuante sobreposta */}
-      <View style={styles.overlay} pointerEvents="box-none">
+      {/* 
+        2. CAMADA DA INTERFACE DE USUÁRIO (FOREGROUND)
+        Usamos FLEX normal e NÃO posições absolutas. 
+        Isso faz a tela reconhecer automaticamente o menu inferior de Tabs e parar acima dele.
+      */}
+      <View style={styles.uiLayer} pointerEvents="box-none">
         
-        {/* Parte Superior (Busca e Filtros) */}
-        <View style={styles.topContainer} pointerEvents="box-none">
+        {/* TOPO (Busca e Filtros) */}
+        <View style={styles.topSection} pointerEvents="box-none">
           <View style={styles.searchWrapper} pointerEvents="box-none">
             <MapSearchBar />
           </View>
@@ -74,15 +85,15 @@ export default function MapaScreen() {
           </View>
         </View>
 
-        {/* Parte Inferior (FAB e Carrossel de Rotas) */}
-        <View style={styles.bottomContainer} pointerEvents="box-none">
+        {/* RODAPÉ (FAB e Rotas) */}
+        <View style={styles.bottomSection} pointerEvents="box-none">
           <MapFab />
           <MapRouteCarousel />
         </View>
-        
+
       </View>
 
-      {/* 3. Modal / BottomSheet */}
+      {/* 3. MODAL (BottomSheet) */}
       {sheetVisible && (
         <MapBottomSheet
           activeOption={activeOption}
@@ -99,30 +110,28 @@ export default function MapaScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1, // Container mestre que respeita o espaço das Tabs
+    backgroundColor: '#1a1a1a',
+  },
+  uiLayer: {
     flex: 1,
-    backgroundColor: '#121212',
+    justifyContent: 'space-between',
+    // Empurra a UI pra baixo para não sumir atrás da câmera/notch
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 54,
+    // Adiciona uma leve folga em relação ao menu inferior (Tab Bar)
+    paddingBottom: 16, 
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject, // Ocupa a tela toda em cima do WebView
+  topSection: {
+    width: '100%',
     zIndex: 10,
-    justifyContent: 'space-between', // Joga o topContainer pro topo e bottomContainer pro rodapé
   },
-  topContainer: {
+  bottomSection: {
     width: '100%',
-    // Sem SafeAreaView, calculamos a margem do topo manualmente:
-    // Pega a altura do StatusBar no Android ou usa 50px de segurança no iOS
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 50,
-    zIndex: 20, 
-  },
-  bottomContainer: {
-    width: '100%',
-    // Empurra os elementos pra cima para não ficarem escondidos atrás da Tab Bar do Expo/iOS/Android
-    paddingBottom: 95, 
     zIndex: 10,
   },
   searchWrapper: {
     paddingHorizontal: 16,
-    zIndex: 30, // Z-index alto para o dropdown sobrepor os filtros
+    zIndex: 20, // Garante que o dropdown cubra os filtros de baixo
   },
   filterWrapper: {
     marginTop: 12,
