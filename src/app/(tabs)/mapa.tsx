@@ -21,7 +21,13 @@ export default function MapaScreen() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
-          html, body, #map { margin: 0; padding: 0; height: 100%; width: 100%; background-color: transparent; }
+          html, body, #map {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background-color: transparent;
+          }
         </style>
       </head>
       <body>
@@ -33,6 +39,14 @@ export default function MapaScreen() {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           }).addTo(map);
+
+          // Força o Leaflet a recalcular o tamanho correto do container (corrige o mapa cinza)
+          setTimeout(function() {
+            map.invalidateSize();
+          }, 300);
+          window.addEventListener('resize', function() {
+            map.invalidateSize();
+          });
         </script>
       </body>
     </html>
@@ -43,15 +57,14 @@ export default function MapaScreen() {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* 1. CAMADA DO MAPA (BACKGROUND) */}
-      <View style={[StyleSheet.absoluteFillObject, { zIndex: 0 }]}>
+      <View style={StyleSheet.absoluteFillObject}>
         <WebView
           originWhitelist={['*']}
           source={{ html: mapHTML }}
-          // opacity: 0.99 resolve o bug de tela preta/invisível do WebView transparente no Android
-          style={{ flex: 1, backgroundColor: 'transparent', opacity: 0.99 }}
+          style={{ width: '100%', height: '100%', backgroundColor: 'transparent', opacity: 0.99 }}
           containerStyle={{ backgroundColor: 'transparent' }}
-          javaScriptEnabled={true} // Obrigatório para o Leaflet rodar
-          domStorageEnabled={true} // Ajuda no cache dos tiles
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
           scrollEnabled={false}
           bounces={false}
           showsHorizontalScrollIndicator={false}
@@ -59,11 +72,11 @@ export default function MapaScreen() {
         />
       </View>
 
-      {/* 2. CAMADA DA INTERFACE DE USUÁRIO (FOREGROUND) 
-          Mantemos box-none APENAS no container mestre da UI */}
+      {/* 2. CAMADA DA INTERFACE DE USUÁRIO (FOREGROUND)
+          'box-none' aqui permite tocar no mapa nos espaços vazios da tela */}
       <View style={styles.uiLayer} pointerEvents="box-none">
 
-        {/* TOPO (Busca e Filtros) - Removido box-none */}
+        {/* TOPO (Busca e Filtros) */}
         <View style={styles.topSection}>
           <View style={styles.searchWrapper}>
             <MapSearchBar />
@@ -80,7 +93,7 @@ export default function MapaScreen() {
           </View>
         </View>
 
-        {/* RODAPÉ (FAB e Rotas) - Removido box-none para destravar o carrossel */}
+        {/* RODAPÉ (FAB e Rotas) */}
         <View style={styles.bottomSection}>
           <MapFab />
           <MapRouteCarousel />
@@ -112,8 +125,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 54,
-    paddingBottom: 16,
-    zIndex: 1, // Garante que fica acima do mapa
   },
   topSection: {
     width: '100%',
@@ -122,6 +133,7 @@ const styles = StyleSheet.create({
   bottomSection: {
     width: '100%',
     zIndex: 10,
+    paddingBottom: 16,
   },
   searchWrapper: {
     paddingHorizontal: 16,

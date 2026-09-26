@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 export const MapRouteCarousel = () => (
+  // Removi o position 'absolute' daqui
   <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.carousel} contentContainerStyle={styles.carouselContent}>
     {[1, 2].map((_, i) => (
       <View key={i} style={styles.routeCard}>
@@ -31,7 +32,8 @@ export const MapRouteCarousel = () => (
 );
 
 const styles = StyleSheet.create({
-  carousel: { position: 'absolute', bottom: 24, left: 0, right: 0 },
+  // Sem position absolute! Adicionei marginTop para espaçar do FAB
+  carousel: { marginTop: 16, marginBottom: 16 }, 
   carouselContent: { paddingHorizontal: 16, gap: 12 },
   routeCard: { width: 320, backgroundColor: 'rgba(15, 15, 15, 0.95)', borderRadius: 16, flexDirection: 'row', overflow: 'hidden' },
   routeImage: { width: 105 },
