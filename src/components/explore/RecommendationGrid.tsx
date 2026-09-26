@@ -12,7 +12,7 @@ export function RecommendationGrid() {
         imageStyle={styles.cardImageStyle}
       >
         <Image
-          source={require('../../assets/images/gradiente-verde-card.png')}
+          source={require('../../../assets/images/gradiente-verde-card.png')}
           style={StyleSheet.absoluteFillObject}
         />
         <View style={styles.greenCardContent}>
