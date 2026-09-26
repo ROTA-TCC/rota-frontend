@@ -20,7 +20,7 @@ export default function FloatingButtons({ onBack }: FloatingButtonsProps) {
         activeOpacity={0.8}
         hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       >
-        <Ionicons name="chevron-back" size={26} color="white" />
+        <Ionicons name="chevron-back" size={26} color="white" style={styles.iconFix} />
       </TouchableOpacity>
 
       <View style={styles.fabWrapper} pointerEvents="box-none">
@@ -42,9 +42,13 @@ const styles = StyleSheet.create({
     zIndex: 1000, 
     elevation: 20,
   },
+  iconFix: {
+    marginLeft: -2,
+    marginTop: 1,
+  },
   fabWrapper: {
     ...StyleSheet.absoluteFillObject,
-    transform: [{ translateY: 20 }], 
+    transform: [{ translateY: 5 }], 
     zIndex: 900,
     elevation: 15,
   },
