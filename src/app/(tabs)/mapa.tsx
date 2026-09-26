@@ -21,32 +21,22 @@ export default function MapaScreen() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
-          html, body, #map {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            width: 100vw;
-            background-color: transparent;
+          html, body, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #2b3a42; }
+          #map::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(43, 58, 66, 0.5);
+            pointer-events: none;
+            z-index: 1000;
           }
         </style>
       </head>
       <body>
         <div id="map"></div>
         <script>
-          const map = L.map('map', { zoomControl: false }).setView([-23.55052, -46.633308], 13);
-
-          L.tileLayer('${tileUrl}', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          }).addTo(map);
-
-          // Força o Leaflet a recalcular o tamanho correto do container (corrige o mapa cinza)
-          setTimeout(function() {
-            map.invalidateSize();
-          }, 300);
-          window.addEventListener('resize', function() {
-            map.invalidateSize();
-          });
+          const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([-23.55052, -46.633308], 13);
+          L.tileLayer('${tileUrl}', { maxZoom: 19 }).addTo(map);
         </script>
       </body>
     </html>
@@ -56,27 +46,16 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* 1. CAMADA DO MAPA (BACKGROUND) */}
       <View style={StyleSheet.absoluteFillObject}>
         <WebView
           originWhitelist={['*']}
           source={{ html: mapHTML }}
-          style={{ width: '100%', height: '100%', backgroundColor: 'transparent', opacity: 0.99 }}
-          containerStyle={{ backgroundColor: 'transparent' }}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
+          style={styles.map}
           scrollEnabled={false}
-          bounces={false}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
         />
       </View>
 
-      {/* 2. CAMADA DA INTERFACE DE USUÁRIO (FOREGROUND)
-          'box-none' aqui permite tocar no mapa nos espaços vazios da tela */}
       <View style={styles.uiLayer} pointerEvents="box-none">
-
-        {/* TOPO (Busca e Filtros) */}
         <View style={styles.topSection}>
           <View style={styles.searchWrapper}>
             <MapSearchBar />
@@ -93,15 +72,12 @@ export default function MapaScreen() {
           </View>
         </View>
 
-        {/* RODAPÉ (FAB e Rotas) */}
         <View style={styles.bottomSection}>
           <MapFab />
           <MapRouteCarousel />
         </View>
-
       </View>
 
-      {/* 3. MODAL (BottomSheet) */}
       {sheetVisible && (
         <MapBottomSheet
           activeOption={activeOption}
@@ -119,12 +95,16 @@ export default function MapaScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#121212',
+  },
+  map: {
+    flex: 1,
   },
   uiLayer: {
     flex: 1,
     justifyContent: 'space-between',
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 54,
+    paddingBottom: 16,
   },
   topSection: {
     width: '100%',
@@ -133,7 +113,6 @@ const styles = StyleSheet.create({
   bottomSection: {
     width: '100%',
     zIndex: 10,
-    paddingBottom: 16,
   },
   searchWrapper: {
     paddingHorizontal: 16,
