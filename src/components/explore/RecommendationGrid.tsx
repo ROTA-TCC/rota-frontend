@@ -5,23 +5,26 @@ import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 export function RecommendationGrid() {
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=500&q=80' }}
-        style={styles.greenCard}
-        imageStyle={styles.cardImageStyle}
-      >
+      <View style={styles.greenCard}>
+        <Image
+          source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=500&q=80' }}
+          style={StyleSheet.absoluteFillObject}
+          resizeMode="cover"
+        />
+        
         <Image
           source={require('../../../assets/images/gradiente-verde-card.png')}
-          style={[StyleSheet.absoluteFillObject, { opacity: 0.75, zIndex: 1 }]}
-          resizeMode="stretch"
+          style={styles.gradientOverlay}
+          resizeMode="cover"
         />
+        
         <View style={styles.greenCardContent}>
           <Text style={styles.greenTitle}>Resfriamento Pós-Corrida</Text>
           <Text style={styles.greenSubtitle}>
             Top 5 passos para um resfriamento seguro após a corrida
           </Text>
         </View>
-      </ImageBackground>
+      </View>
 
       <View style={styles.rightColumn}>
         <ImageBackground
@@ -85,12 +88,23 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 24,
     overflow: 'hidden',
+    position: 'relative',
+  },
+  gradientOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '60%', 
+    opacity: 0.85,
+    zIndex: 1,
   },
   greenCardContent: {
+    flex: 1,
     padding: 20,
     zIndex: 2,
+    elevation: 2,
     justifyContent: 'flex-start',
-    flex: 1,
   },
   greenTitle: {
     color: '#111111',
