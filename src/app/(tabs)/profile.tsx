@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   settingsSection: {
-    marginTop: 30, // Aumenta o espaçamento
+    marginTop: 30,
   },
 });
 

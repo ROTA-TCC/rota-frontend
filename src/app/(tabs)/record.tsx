@@ -1,16 +1,13 @@
-// src/app/(tabs)/record.tsx
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-// Importando os componentes (ajuste o caminho conforme sua estrutura)
 import FloatingButtons from '../../components/Record/FloatingButtons';
 import BottomPanel from '../../components/Record/BottomPanel';
 
 export default function RecordScreen() {
   const [isPaused, setIsPaused] = useState(false);
   
-  // Estado que gerencia as informações na tela
   const [stats, setStats] = useState({
     statusText: 'Corrida',
     time: '11:09',
@@ -42,7 +39,6 @@ export default function RecordScreen() {
   };
 
   const handleFinish = () => {
-    // Lógica para finalizar a corrida
     console.log("Corrida concluída!");
   };
 
@@ -57,7 +53,6 @@ export default function RecordScreen() {
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
           html, body, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #2b3a42; }
-          /* Overlay escuro em cima do mapa para combinar com o design */
           #map::after {
             content: '';
             position: absolute;
@@ -80,7 +75,6 @@ export default function RecordScreen() {
 
   return (
     <View style={styles.container}>
-      {/* WebView de Fundo */}
       <WebView
         originWhitelist={['*']}
         source={{ html: mapHTML }}
@@ -88,10 +82,8 @@ export default function RecordScreen() {
         scrollEnabled={false}
       />
       
-      {/* Overlay de Botões (Sobre o mapa) */}
       <FloatingButtons />
-
-      {/* Painel Inferior de Estatísticas e Controles */}
+      
       <BottomPanel 
         isPaused={isPaused}
         stats={stats}

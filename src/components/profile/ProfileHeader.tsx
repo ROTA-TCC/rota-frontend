@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 140,
     height: 140,
-    borderRadius: 60, // "Quase" redondo, mais quadrado nas bordas
+    borderRadius: 60,
   },
   cameraIconWrapper: {
     position: 'absolute',

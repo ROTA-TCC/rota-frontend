@@ -21,7 +21,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     setLoading(true);
-    setErrors({}); // Clear previous errors
+    setErrors({});
     try {
       await login(formData);
     } catch (error: any) {
@@ -108,7 +108,6 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  // ... (rest of the styles)
   container: { flex: 1, backgroundColor: '#ffffff' },
   header: { backgroundColor: '#F69919', height: 110, justifyContent: 'flex-end', padding: 20 },
   headerContent: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },

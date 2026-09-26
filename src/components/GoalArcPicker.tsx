@@ -141,7 +141,6 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
           />
         ))}
 
-        {/* NÓ: NOVATO */}
         <G transform="translate(82.2, 227.8)" onPress={() => onSelectLevel('novice')}>
           <Circle cx="0" cy="0" r="32" fill="transparent" />
           <Circle
@@ -168,7 +167,6 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
           </SvgText>
         </G>
 
-        {/* NÓ: INTERMEDIÁRIO */}
         <G transform="translate(160, 40)" onPress={() => onSelectLevel('intermediate')}>
           <Circle cx="0" cy="0" r="32" fill="transparent" />
           <Circle
@@ -195,7 +193,6 @@ export const GoalArcPicker: React.FC<GoalArcPickerProps> = ({
           </SvgText>
         </G>
 
-        {/* NÓ: AVANÇADO */}
         <G transform="translate(237.8, 227.8)" onPress={() => onSelectLevel('advanced')}>
           <Circle cx="0" cy="0" r="32" fill="transparent" />
           <Circle
@@ -234,5 +231,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// Exportação Default e Named juntas para evitar erro de importação
 export default GoalArcPicker;

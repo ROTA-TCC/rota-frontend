@@ -6,7 +6,6 @@ import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 export function RecommendationGrid() {
   return (
     <View style={styles.container}>
-      {/* Card da Esquerda: Cooling After Run (Destaque Verde Lime) */}
       <ImageBackground
         source={{ uri: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=500&q=80' }}
         style={styles.greenCard}
@@ -26,9 +25,7 @@ export function RecommendationGrid() {
         </View>
       </ImageBackground>
 
-      {/* Coluna da Direita */}
       <View style={styles.rightColumn}>
-        {/* Card Superior Direita: Join With Us */}
         <ImageBackground
           source={{ uri: 'https://images.unsplash.com/photo-1552674605-171ff3ea36f0?auto=format&fit=crop&w=400&q=80' }}
           style={styles.darkCard}
@@ -65,7 +62,6 @@ export function RecommendationGrid() {
           </View>
         </ImageBackground>
 
-        {/* Card Inferior Direita: Em Breve COM Imagem de Fundo + Overlay Vermelho */}
         <ImageBackground
           source={{ uri: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=500&q=80' }}
           style={styles.redCard}
@@ -95,7 +91,6 @@ const styles = StyleSheet.create({
   cardImageStyle: {
     borderRadius: 24,
   },
-  /* Card Verde */
   greenCard: {
     flex: 1,
     borderRadius: 24,
@@ -119,12 +114,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 15,
   },
-  /* Coluna Direita */
   rightColumn: {
     flex: 1,
     gap: 12,
   },
-  /* Card Escuro */
   darkCard: {
     flex: 1,
     borderRadius: 24,
@@ -176,7 +169,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '500',
   },
-  /* Card Vermelho com Imagem */
   redCard: {
     flex: 1,
     borderRadius: 24,

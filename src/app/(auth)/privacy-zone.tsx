@@ -20,7 +20,6 @@ export default function PrivacyZoneScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        {/* Glow de Fundo */}
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <Image
             source={require('../../../assets/images/background-blur.png')}
@@ -40,7 +39,6 @@ export default function PrivacyZoneScreen() {
           showsVerticalScrollIndicator={false}
           bounces={true}
         >
-          {/* Cabeçalho */}
           <View style={styles.header}>
             <View style={styles.progressBar}>
               <View style={styles.step} />
@@ -55,7 +53,6 @@ export default function PrivacyZoneScreen() {
             </Text>
           </View>
 
-          {/* Card do Mapa com Zona de Seleção */}
           <View style={styles.mapWrapper}>
             <ImageBackground
               source={{
@@ -64,10 +61,8 @@ export default function PrivacyZoneScreen() {
               style={styles.mapCard}
               imageStyle={styles.mapImageStyle}
             >
-              {/* Overlay Escuro para Contraste */}
               <View style={styles.mapOverlay} />
 
-              {/* Pill Superior do Mapa */}
               <View style={styles.infoPill}>
                 <Text style={styles.infoPillText}>Área Oculta</Text>
                 <Svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -81,7 +76,6 @@ export default function PrivacyZoneScreen() {
                 </Svg>
               </View>
 
-              {/* Círculo Interativo de Seleção de Zona */}
               <View style={styles.interactiveZone}>
                 <View style={[styles.zoneAnchor, styles.anchorTop]} />
                 <View style={[styles.zoneAnchor, styles.anchorBottom]} />
@@ -92,7 +86,6 @@ export default function PrivacyZoneScreen() {
             </ImageBackground>
           </View>
 
-          {/* Botões do Rodapé */}
           <View style={styles.footer}>
             <TouchableOpacity
               style={styles.btnNext}

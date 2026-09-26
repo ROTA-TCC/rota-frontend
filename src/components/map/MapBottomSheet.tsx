@@ -60,11 +60,10 @@ const styles = StyleSheet.create({
   modalContainer: { 
     flex: 1, 
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)', // Moved background color to container
+    backgroundColor: 'rgba(0,0,0,0.5)', 
   },
   overlay: { 
     ...StyleSheet.absoluteFillObject, 
-    // Removed background color here to avoid conflict
   },
   bottomSheet: {
     backgroundColor: '#1F1F1F',

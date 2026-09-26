@@ -9,8 +9,8 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#E34F1E', // Matching accent color from UI
-        tabBarInactiveTintColor: '#999999', // Matching text-muted
+        tabBarActiveTintColor: '#E34F1E',
+        tabBarInactiveTintColor: '#999999',
         tabBarShowLabel: true,
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       }}
@@ -60,7 +60,7 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#070707', // midnight-black
+    backgroundColor: '#070707',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
     height: 70,
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   recordButton: {
-    backgroundColor: '#E34F1E', // accent color
+    backgroundColor: '#E34F1E',
     width: 48,
     height: 48,
     borderRadius: 24,

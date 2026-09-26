@@ -1,4 +1,3 @@
-// src/components/Record/BottomPanel.tsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,7 +22,6 @@ export default function BottomPanel({ isPaused, stats, onPause, onResume, onFini
 
   return (
     <View style={styles.container}>
-      {/* Card de Estatísticas */}
       <View style={styles.statsCardWrapper}>
         <View style={styles.statsCard}>
           <View style={[styles.statsHeader, isPaused && styles.statsHeaderPaused]}>
@@ -31,13 +29,12 @@ export default function BottomPanel({ isPaused, stats, onPause, onResume, onFini
               {stats.statusText}
             </Text>
             <Ionicons 
-              name="chevron-up" 
+              name="expand-outline" 
               size={18} 
               color={isPaused ? "#000" : "#fff"} 
               style={styles.expandIcon} 
             />
           </View>
-
           <View style={styles.statsBody}>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{stats.time}</Text>
@@ -55,8 +52,7 @@ export default function BottomPanel({ isPaused, stats, onPause, onResume, onFini
         </View>
       </View>
 
-      {/* Card Base (Controles) */}
-      <View style={[styles.controlsCard, { paddingBottom: insets.bottom + 20 }]}>
+      <View style={[styles.controlsCard, { paddingBottom: Math.max(insets.bottom, 12) + 12 }]}>
         <View style={styles.dragHandle} />
         
         <View style={styles.actionButtonsWrapper}>
@@ -67,13 +63,11 @@ export default function BottomPanel({ isPaused, stats, onPause, onResume, onFini
             </TouchableOpacity>
           ) : (
             <View style={styles.pausedActionsContainer}>
-              {/* Botão Retomar à esquerda */}
               <TouchableOpacity style={[styles.btnAction, styles.btnResume]} onPress={onResume}>
                 <Ionicons name="play" size={20} color="white" />
                 <Text style={styles.btnTextWhite}>Retomar</Text>
               </TouchableOpacity>
               
-              {/* Botão Concluir à direita */}
               <TouchableOpacity style={[styles.btnAction, styles.btnFinish]} onPress={onFinish}>
                 <Ionicons name="stop" size={20} color="black" />
                 <Text style={styles.btnTextBlack}>Concluir</Text>
@@ -95,7 +89,7 @@ const styles = StyleSheet.create({
   },
   statsCardWrapper: {
     paddingHorizontal: 16,
-    marginBottom: -16, // Para sobrepor levemente e conectar fluidamente com o painel de baixo
+    marginBottom: -12,
     zIndex: 2,
   },
   statsCard: {
@@ -104,7 +98,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   statsHeader: {
-    paddingVertical: 12,
+    paddingVertical: 10,
     backgroundColor: '#1e1e1e',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -116,7 +110,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: '#ffffff',
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: 13,
     textTransform: 'uppercase',
   },
   headerTextPaused: {
@@ -130,28 +124,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 28,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
   },
   statItem: {
     alignItems: 'center',
   },
   statItemCenter: {
     alignItems: 'center',
-    marginBottom: -4,
+    marginBottom: -2,
   },
   statValue: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '700',
     color: '#ffffff',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   statValueGiant: {
-    fontSize: 38,
+    fontSize: 34,
     fontWeight: '700',
     color: '#ffffff',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   statLabel: {
     fontSize: 12,
@@ -159,10 +153,10 @@ const styles = StyleSheet.create({
   },
   controlsCard: {
     backgroundColor: '#121212',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 36, // Espaço extra para compensar o margin negativo de cima
-    paddingHorizontal: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 20,
+    paddingHorizontal: 16,
     alignItems: 'center',
     zIndex: 1,
   },
@@ -171,15 +165,15 @@ const styles = StyleSheet.create({
     height: 4,
     backgroundColor: 'rgba(255, 255, 255, 0.4)',
     borderRadius: 2,
-    marginBottom: 24,
+    marginBottom: 12,
   },
   actionButtonsWrapper: {
     width: '100%',
-    height: 60,
+    height: 52,
   },
   btnAction: {
-    height: 60,
-    borderRadius: 30,
+    height: 52,
+    borderRadius: 26,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -205,12 +199,12 @@ const styles = StyleSheet.create({
   },
   btnTextWhite: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
   },
   btnTextBlack: {
     color: '#000000',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
   },
 });

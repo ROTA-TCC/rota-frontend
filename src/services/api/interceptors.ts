@@ -37,7 +37,6 @@ export const setupInterceptors = (api: AxiosInstance) => {
       if (error.response) {
         const { status, data } = error.response;
         
-        // Extract backend error details, assuming structure: { message: string, field?: string }
         const backendData = data as any;
         const backendMessage = backendData?.message;
         const field = backendData?.field;
@@ -64,7 +63,6 @@ export const setupInterceptors = (api: AxiosInstance) => {
         }
       }
       
-      // Network errors
       if (error.request) {
         throw new ApiError('Erro de conexão. Verifique sua internet.');
       }

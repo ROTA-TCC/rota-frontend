@@ -98,7 +98,6 @@ export const PickerModal: React.FC<PickerModalProps> = ({
   const scrollY = useSharedValue(0);
   const flatListRef = useRef<FlatList<string>>(null);
 
-  // Gerar lista de itens baseado no min, max, step e unit
   const items = useMemo(() => {
     const list: string[] = [];
     for (let val = min; val <= max + 0.0001; val += step) {
@@ -108,7 +107,6 @@ export const PickerModal: React.FC<PickerModalProps> = ({
     return list;
   }, [min, max, step, decimals, unit]);
 
-  // Identificar item atualmente focado/selecionado
   const activeValue = selectedValue || initialValue || items[0];
   const initialIndex = useMemo(() => {
     const idx = items.indexOf(activeValue);
@@ -117,7 +115,6 @@ export const PickerModal: React.FC<PickerModalProps> = ({
 
   useEffect(() => {
     if (isVisible) {
-      // Animação simples de subida
       translateY.value = withTiming(0, {
         duration: 250,
         easing: Easing.out(Easing.quad),
@@ -130,7 +127,6 @@ export const PickerModal: React.FC<PickerModalProps> = ({
         flatListRef.current?.scrollToOffset({ offset: targetOffset, animated: false });
       }, 50);
     } else {
-      // Animação simples de descida
       translateY.value = withTiming(SHEET_HEIGHT, {
         duration: 200,
         easing: Easing.in(Easing.quad),
@@ -165,7 +161,6 @@ export const PickerModal: React.FC<PickerModalProps> = ({
     }
   };
 
-  // Gesto Pan apenas para a área da aba superior / arrasto
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       if (event.translationY > 0) {
@@ -190,14 +185,11 @@ export const PickerModal: React.FC<PickerModalProps> = ({
 
   return (
     <>
-      {/* Backdrop */}
       <Animated.View style={[styles.backdrop, backdropStyle]}>
         <TouchableOpacity style={StyleSheet.absoluteFill} onPress={handleClose} activeOpacity={1} />
       </Animated.View>
 
-      {/* Sheet Container */}
       <Animated.View style={[styles.bottomSheet, sheetStyle]}>
-        {/* Top bar com detector de arrasto */}
         <GestureDetector gesture={panGesture}>
           <View style={styles.dragZone}>
             <View style={styles.dragHandle} />
@@ -213,9 +205,7 @@ export const PickerModal: React.FC<PickerModalProps> = ({
           </View>
         </GestureDetector>
 
-        {/* Picker Container com Rolagem */}
         <View style={styles.pickerContainer}>
-          {/* Fundo Iluminação */}
           <Image
             source={require('../../assets/images/ambient-light.png')}
             style={styles.ambientGlowImage}
@@ -223,7 +213,6 @@ export const PickerModal: React.FC<PickerModalProps> = ({
             pointerEvents="none"
           />
 
-          {/* Faixa Central com Transparência */}
           <Image
             source={require('../../assets/images/selection-strip.png')}
             style={styles.selectionStripImage}
@@ -326,7 +315,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: ITEM_HEIGHT + 6,
     transform: [{ translateY: -(ITEM_HEIGHT + 6) / 2 }],
-    opacity: 0.6, // Transparência aplicada na faixa de seleção
+    opacity: 0.6,
   },
   pickerItem: {
     height: ITEM_HEIGHT,

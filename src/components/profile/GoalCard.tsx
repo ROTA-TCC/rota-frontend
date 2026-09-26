@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export function GoalCard() {
-  const progress = 75; // Porcentagem concluída
+  const progress = 75;
 
   return (
     <View style={styles.container}>
