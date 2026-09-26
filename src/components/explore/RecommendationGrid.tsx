@@ -11,9 +11,9 @@ export function RecommendationGrid() {
         imageStyle={styles.cardImageStyle}
       >
         <Image
-          source={require('../../../assets/images/gradiente-verde-card.png')}
-          style={[StyleSheet.absoluteFillObject, { opacity: 0.75 }]}
-          resizeMode="cover"
+          source={require('../../assets/images/gradiente-verde-card.png')}
+          style={[StyleSheet.absoluteFillObject, { opacity: 0.75, zIndex: 1 }]}
+          resizeMode="stretch"
         />
         <View style={styles.greenCardContent}>
           <Text style={styles.greenTitle}>Resfriamento Pós-Corrida</Text>
@@ -85,11 +85,12 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 24,
     overflow: 'hidden',
-    padding: 20,
-    justifyContent: 'flex-start',
   },
   greenCardContent: {
+    padding: 20,
     zIndex: 2,
+    justifyContent: 'flex-start',
+    flex: 1,
   },
   greenTitle: {
     color: '#111111',
