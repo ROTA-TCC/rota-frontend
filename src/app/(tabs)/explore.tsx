@@ -5,9 +5,9 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { HeaderSearch } from '@/components/explore/HeaderSearch';
 import { FilterChips } from '@/components/explore/FilterChips';
@@ -16,7 +16,7 @@ import { TrackCarousel } from '@/components/explore/TrackCarousel';
 
 export default function ExploreScreen() {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="light-content" backgroundColor="#050505" />
       <View style={styles.container}>
         <View style={styles.header}>
