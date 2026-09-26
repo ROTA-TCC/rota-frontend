@@ -13,7 +13,6 @@ export default function MapaScreen() {
 
   const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-  // HTML revertido exatamente para sua versão funcional original
   const mapHTML = `
     <!DOCTYPE html>
     <html>
@@ -43,17 +42,16 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* 
-        1. CAMADA DO MAPA (BACKGROUND)
-        O mapa agora está preso num container absoluto, cobrindo todo o fundo.
-        O flex: 1 dentro dele garante que o WebView renderize.
-      */}
-      <View style={StyleSheet.absoluteFillObject}>
+      {/* 1. CAMADA DO MAPA (BACKGROUND) */}
+      <View style={[StyleSheet.absoluteFillObject, { zIndex: 0 }]}>
         <WebView
           originWhitelist={['*']}
           source={{ html: mapHTML }}
-          style={{ flex: 1, backgroundColor: 'transparent' }}
+          // opacity: 0.99 resolve o bug de tela preta/invisível do WebView transparente no Android
+          style={{ flex: 1, backgroundColor: 'transparent', opacity: 0.99 }}
           containerStyle={{ backgroundColor: 'transparent' }}
+          javaScriptEnabled={true} // Obrigatório para o Leaflet rodar
+          domStorageEnabled={true} // Ajuda no cache dos tiles
           scrollEnabled={false}
           bounces={false}
           showsHorizontalScrollIndicator={false}
@@ -61,20 +59,17 @@ export default function MapaScreen() {
         />
       </View>
 
-      {/* 
-        2. CAMADA DA INTERFACE DE USUÁRIO (FOREGROUND)
-        Usamos FLEX normal e NÃO posições absolutas. 
-        Isso faz a tela reconhecer automaticamente o menu inferior de Tabs e parar acima dele.
-      */}
+      {/* 2. CAMADA DA INTERFACE DE USUÁRIO (FOREGROUND) 
+          Mantemos box-none APENAS no container mestre da UI */}
       <View style={styles.uiLayer} pointerEvents="box-none">
-        
-        {/* TOPO (Busca e Filtros) */}
-        <View style={styles.topSection} pointerEvents="box-none">
-          <View style={styles.searchWrapper} pointerEvents="box-none">
+
+        {/* TOPO (Busca e Filtros) - Removido box-none */}
+        <View style={styles.topSection}>
+          <View style={styles.searchWrapper}>
             <MapSearchBar />
           </View>
 
-          <View style={styles.filterWrapper} pointerEvents="box-none">
+          <View style={styles.filterWrapper}>
             <MapFilterCarousel
               onFilterPress={(filter) => {
                 if (filter === 'Rotas') {
@@ -85,8 +80,8 @@ export default function MapaScreen() {
           </View>
         </View>
 
-        {/* RODAPÉ (FAB e Rotas) */}
-        <View style={styles.bottomSection} pointerEvents="box-none">
+        {/* RODAPÉ (FAB e Rotas) - Removido box-none para destravar o carrossel */}
+        <View style={styles.bottomSection}>
           <MapFab />
           <MapRouteCarousel />
         </View>
@@ -110,16 +105,15 @@ export default function MapaScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // Container mestre que respeita o espaço das Tabs
+    flex: 1,
     backgroundColor: '#1a1a1a',
   },
   uiLayer: {
     flex: 1,
     justifyContent: 'space-between',
-    // Empurra a UI pra baixo para não sumir atrás da câmera/notch
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 54,
-    // Adiciona uma leve folga em relação ao menu inferior (Tab Bar)
-    paddingBottom: 16, 
+    paddingBottom: 16,
+    zIndex: 1, // Garante que fica acima do mapa
   },
   topSection: {
     width: '100%',
@@ -131,7 +125,7 @@ const styles = StyleSheet.create({
   },
   searchWrapper: {
     paddingHorizontal: 16,
-    zIndex: 20, // Garante que o dropdown cubra os filtros de baixo
+    zIndex: 20,
   },
   filterWrapper: {
     marginTop: 12,
