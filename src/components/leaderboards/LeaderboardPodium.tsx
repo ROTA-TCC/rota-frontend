@@ -1,19 +1,14 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { Confetti, ConfettiRef } from './Confetti';
 
-export const LeaderboardPodium = () => {
-  const confettiRef = useRef<ConfettiRef>(null);
+type LeaderboardPodiumProps = {
+  onTriggerConfetti?: () => void;
+};
 
-  const handleTriggerConfetti = () => {
-    confettiRef.current?.fire();
-  };
-
+export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps) => {
   return (
     <View style={styles.card}>
-      <Confetti ref={confettiRef} count={60} manualstart={false} />
-
       <Text style={styles.title}>Leaderboards</Text>
       <Text style={styles.subtitle}>November 2023</Text>
 
@@ -30,7 +25,7 @@ export const LeaderboardPodium = () => {
           points="250 pt"
           image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80"
           isFirst
-          onPress={handleTriggerConfetti}
+          onPress={onTriggerConfetti}
         />
         <PodiumCol
           rank={3}
@@ -75,7 +70,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     alignItems: 'center',
-    overflow: 'hidden',
     position: 'relative',
   },
   title: { color: '#FFFFFF', fontSize: 22, fontWeight: '700', marginBottom: 4 },

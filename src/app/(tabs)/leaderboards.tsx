@@ -1,9 +1,10 @@
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, ScrollView, View } from 'react-native';
 import { LeaderboardPodium } from '@/components/leaderboards/LeaderboardPodium';
 import { RankCard } from '@/components/leaderboards/RankCard';
 import { LeaderboardList } from '@/components/leaderboards/LeaderboardList';
 import { TopClubsList } from '@/components/leaderboards/TopClubCard';
+import { Confetti, ConfettiRef } from '@/components/Confetti';
 
 const bestRunners = [
   { name: 'Esther Howard', points: 99, rank: 4, direction: 'up', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
@@ -18,13 +19,23 @@ const topClubs = [
 ];
 
 export default function LeaderboardsScreen() {
+  const confettiRef = useRef<ConfettiRef>(null);
+
+  const handleTriggerConfetti = () => {
+    confettiRef.current?.fire();
+  };
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      <LeaderboardPodium />
-      <RankCard rank={8} />
-      <LeaderboardList title="Best Runners" items={bestRunners} />
-      <TopClubsList title="Top Club Running" clubs={topClubs} />
-    </ScrollView>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <LeaderboardPodium onTriggerConfetti={handleTriggerConfetti} />
+        <RankCard rank={8} />
+        <LeaderboardList title="Best Runners" items={bestRunners} />
+        <TopClubsList title="Top Club Running" clubs={topClubs} />
+      </ScrollView>
+
+      <Confetti ref={confettiRef} count={60} manualstart={false} />
+    </View>
   );
 }
 

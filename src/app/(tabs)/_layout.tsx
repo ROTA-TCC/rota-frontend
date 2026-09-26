@@ -23,10 +23,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="leaderboards"
+        name="mapa"
         options={{
-          title: 'Rankings',
-          tabBarIcon: ({ color }) => <Ionicons name="trophy-outline" size={24} color={color} />,
+          title: 'Mapa',
+          tabBarIcon: ({ color }) => <Ionicons name="map-outline" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -41,10 +41,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="mapa"
+        name="leaderboards"
         options={{
-          title: 'Mapa',
-          tabBarIcon: ({ color }) => <Ionicons name="map-outline" size={24} color={color} />,
+          title: 'Rankings',
+          tabBarIcon: ({ color }) => <Ionicons name="trophy-outline" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
