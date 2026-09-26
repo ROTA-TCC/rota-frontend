@@ -21,9 +21,8 @@ export default function MapaScreen() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
-          html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-          /* O mapa precisa de um ID com altura e largura totais explícitas */
-          #map { width: 100%; height: 100%; } 
+          html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #121212; }
+          #map { width: 100%; height: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
         </style>
       </head>
       <body>
@@ -33,15 +32,8 @@ export default function MapaScreen() {
 
           L.tileLayer('${tileUrl}', {
             maxZoom: 19,
-            attribution: '&copy; OpenStreetMap'
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           }).addTo(map);
-
-          // CORREÇÃO DA TELA CINZA:
-          // Aguarda o WebView e o Layout Nativo esticarem a tela,
-          // e então força o Leaflet a recalcular o mapa e pintar os "tiles"
-          setTimeout(function() {
-            map.invalidateSize();
-          }, 600);
         </script>
       </body>
     </html>
@@ -51,30 +43,27 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* 1. CAMADA DE FUNDO (MAPA) */}
-      <View style={styles.mapLayer}>
-        <WebView
-          originWhitelist={['*']}
-          source={{ html: mapHTML }}
-          style={{ flex: 1 }}
-          scrollEnabled={false} // Desativa o scroll do WebView (deixa o scroll só no mapa web)
-          bounces={false}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
+      {/* 1. Camada do Mapa (Z-Index 0 natural) */}
+      <WebView
+        originWhitelist={['*']}
+        source={{ html: mapHTML }}
+        style={StyleSheet.absoluteFillObject}
+        containerStyle={{ backgroundColor: '#121212' }}
+        scrollEnabled={false}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+      />
 
-      {/* 2. CAMADA FRONTAL (INTERFACE DE USUÁRIO) */}
-      <View style={styles.uiLayer} pointerEvents="box-none">
+      {/* 2. Camada de UI flutuante sobreposta */}
+      <View style={styles.overlay} pointerEvents="box-none">
         
-        {/* PARTE SUPERIOR (Permite toque nos espaços vazios irem pro mapa) */}
-        <View style={styles.topSection} pointerEvents="box-none">
-          {/* Envelopamos a busca em "auto" para restaurar totalmente o foco nativo dela */}
-          <View pointerEvents="auto" style={styles.searchWrapper}>
+        {/* Parte Superior (Busca e Filtros) */}
+        <View style={styles.topContainer} pointerEvents="box-none">
+          <View style={styles.searchWrapper} pointerEvents="box-none">
             <MapSearchBar />
           </View>
 
-          <View pointerEvents="auto" style={styles.filterWrapper}>
+          <View style={styles.filterWrapper} pointerEvents="box-none">
             <MapFilterCarousel
               onFilterPress={(filter) => {
                 if (filter === 'Rotas') {
@@ -85,26 +74,15 @@ export default function MapaScreen() {
           </View>
         </View>
 
-        {/* PARTE INFERIOR (Permite toque nos espaços vazios irem pro mapa) */}
-        <View style={styles.bottomSection} pointerEvents="box-none">
-          
-          {/* 
-            CORREÇÃO DO BLOQUEIO DE TOQUE: 
-            Isolamos o botão flutuante e o carrossel usando pointerEvents="auto".
-            Isso obriga o Android a habilitar o ScrollView/FlatList deles.
-          */}
-          <View pointerEvents="auto">
-            <MapFab />
-          </View>
-
-          <View pointerEvents="auto">
-            <MapRouteCarousel />
-          </View>
-          
+        {/* Parte Inferior (FAB e Carrossel de Rotas) */}
+        <View style={styles.bottomContainer} pointerEvents="box-none">
+          <MapFab />
+          <MapRouteCarousel />
         </View>
+        
       </View>
 
-      {/* 3. MODAL DE OPÇÕES */}
+      {/* 3. Modal / BottomSheet */}
       {sheetVisible && (
         <MapBottomSheet
           activeOption={activeOption}
@@ -122,30 +100,29 @@ export default function MapaScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a', // Fallback
+    backgroundColor: '#121212',
   },
-  mapLayer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 0,
-  },
-  uiLayer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1,
-    justifyContent: 'space-between', // Separa o topSection e o bottomSection
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 54,
-    paddingBottom: 95, // Impede que os botões caiam atrás da barra nativa do menu (Tabs)
-  },
-  topSection: {
-    width: '100%',
+  overlay: {
+    ...StyleSheet.absoluteFillObject, // Ocupa a tela toda em cima do WebView
     zIndex: 10,
+    justifyContent: 'space-between', // Joga o topContainer pro topo e bottomContainer pro rodapé
   },
-  bottomSection: {
+  topContainer: {
     width: '100%',
+    // Sem SafeAreaView, calculamos a margem do topo manualmente:
+    // Pega a altura do StatusBar no Android ou usa 50px de segurança no iOS
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 50,
+    zIndex: 20, 
+  },
+  bottomContainer: {
+    width: '100%',
+    // Empurra os elementos pra cima para não ficarem escondidos atrás da Tab Bar do Expo/iOS/Android
+    paddingBottom: 95, 
     zIndex: 10,
   },
   searchWrapper: {
     paddingHorizontal: 16,
-    zIndex: 20, 
+    zIndex: 30, // Z-index alto para o dropdown sobrepor os filtros
   },
   filterWrapper: {
     marginTop: 12,
