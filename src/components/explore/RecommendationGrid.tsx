@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, View, Text, ImageBackground, Image, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 
 export function RecommendationGrid() {
@@ -13,10 +12,11 @@ export function RecommendationGrid() {
       >
         <Image
           source={require('../../../assets/images/gradiente-verde-card.png')}
-          style={StyleSheet.absoluteFillObject}
+          style={[StyleSheet.absoluteFillObject, { opacity: 0.75 }]}
+          resizeMode="cover"
         />
         <View style={styles.greenCardContent}>
-          <Text style={styles.greenTitle}>Cooling After Run</Text>
+          <Text style={styles.greenTitle}>Resfriamento Pós-Corrida</Text>
           <Text style={styles.greenSubtitle}>
             Top 5 passos para um resfriamento seguro após a corrida
           </Text>
@@ -29,10 +29,6 @@ export function RecommendationGrid() {
           style={styles.darkCard}
           imageStyle={styles.cardImageStyle}
         >
-          <LinearGradient
-            colors={['rgba(21, 21, 21, 0.75)', 'rgba(21, 21, 21, 0.95)']}
-            style={StyleSheet.absoluteFillObject}
-          />
           <View style={styles.darkCardTop}>
             <View style={styles.avatarStack}>
               <Image
@@ -65,10 +61,6 @@ export function RecommendationGrid() {
           style={styles.redCard}
           imageStyle={styles.cardImageStyle}
         >
-          <LinearGradient
-            colors={['rgba(216, 96, 80, 0.82)', 'rgba(163, 53, 42, 0.94)']}
-            style={StyleSheet.absoluteFillObject}
-          />
           <FontAwesome6 name="strava" size={18} color="#FFFFFF" style={styles.stravaIcon} />
           <View style={styles.redCardContent}>
             <Text style={styles.redTitle}>EM BREVE</Text>
