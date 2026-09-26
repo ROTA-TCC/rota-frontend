@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { SportDropdown } from './SportDropdown';
+import { SportDropdown } from './SportDropdown'; // Certifique-se de que este componente não tem absolute/elevation quebrando o layout
 
 export const MapSearchBar = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -44,24 +44,25 @@ export const MapSearchBar = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    position: 'relative', 
-    zIndex: 30,
+  container: {
+    // Removi propriedades absolutas e zIndex daqui para evitar conflito com a View pai. 
+    // O empilhamento agora é gerenciado de forma segura no arquivo mapa.tsx
   },
   searchBar: {
-    backgroundColor: 'rgba(15, 15, 15, 0.95)',
+    backgroundColor: 'rgba(20, 20, 20, 0.95)',
     height: 52,
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
-    elevation: 6,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    // O elevation SÓ PODE existir em views com backgroundColor sólido para não bugar no Android
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   brandSection: {
     flexDirection: 'row',
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     marginRight: 14,
   },
   searchText: {
-    color: '#999999',
+    color: '#A0A0A0',
     fontSize: 15,
     fontWeight: '600',
     flex: 1,

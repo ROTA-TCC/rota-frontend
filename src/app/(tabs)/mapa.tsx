@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, SafeAreaView, StatusBar, Platform } from 'react-native';
+import { StyleSheet, View, StatusBar, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { MapSearchBar } from '@/components/map/MapSearchBar';
 import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
@@ -43,7 +43,7 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* 1. Camada do Mapa */}
+      {/* 1. Camada do Mapa (Z-Index 0 natural) */}
       <WebView
         originWhitelist={['*']}
         source={{ html: mapHTML }}
@@ -56,33 +56,33 @@ export default function MapaScreen() {
 
       {/* 2. Camada de UI flutuante sobreposta */}
       <View style={styles.overlay} pointerEvents="box-none">
-        <SafeAreaView style={styles.safeArea} pointerEvents="box-none">
-          {/* Parte Superior (Busca e Filtros) */}
-          <View style={styles.topContainer} pointerEvents="box-none">
-            <View style={styles.searchWrapper}>
-              <MapSearchBar />
-            </View>
-
-            <View style={styles.filterWrapper}>
-              <MapFilterCarousel
-                onFilterPress={(filter) => {
-                  if (filter === 'Rotas') {
-                    setSheetVisible(true);
-                  }
-                }}
-              />
-            </View>
+        
+        {/* Parte Superior (Busca e Filtros) */}
+        <View style={styles.topContainer} pointerEvents="box-none">
+          <View style={styles.searchWrapper} pointerEvents="box-none">
+            <MapSearchBar />
           </View>
 
-          {/* Parte Inferior (FAB e Carrossel de Rotas) */}
-          <View style={styles.bottomContainer} pointerEvents="box-none">
-            <MapFab />
-            <MapRouteCarousel />
+          <View style={styles.filterWrapper} pointerEvents="box-none">
+            <MapFilterCarousel
+              onFilterPress={(filter) => {
+                if (filter === 'Rotas') {
+                  setSheetVisible(true);
+                }
+              }}
+            />
           </View>
-        </SafeAreaView>
+        </View>
+
+        {/* Parte Inferior (FAB e Carrossel de Rotas) */}
+        <View style={styles.bottomContainer} pointerEvents="box-none">
+          <MapFab />
+          <MapRouteCarousel />
+        </View>
+        
       </View>
 
-      {/* Modal / BottomSheet */}
+      {/* 3. Modal / BottomSheet */}
       {sheetVisible && (
         <MapBottomSheet
           activeOption={activeOption}
@@ -103,24 +103,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#121212',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFillObject, // Ocupa a tela toda em cima do WebView
     zIndex: 10,
-  },
-  safeArea: {
-    flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between', // Joga o topContainer pro topo e bottomContainer pro rodapé
   },
   topContainer: {
     width: '100%',
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 10 : 0,
+    // Sem SafeAreaView, calculamos a margem do topo manualmente:
+    // Pega a altura do StatusBar no Android ou usa 50px de segurança no iOS
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 50,
+    zIndex: 20, 
   },
   bottomContainer: {
     width: '100%',
-    paddingBottom: Platform.OS === 'android' ? 16 : 0,
+    // Empurra os elementos pra cima para não ficarem escondidos atrás da Tab Bar do Expo/iOS/Android
+    paddingBottom: 95, 
+    zIndex: 10,
   },
   searchWrapper: {
     paddingHorizontal: 16,
-    zIndex: 20,
+    zIndex: 30, // Z-index alto para o dropdown sobrepor os filtros
   },
   filterWrapper: {
     marginTop: 12,
