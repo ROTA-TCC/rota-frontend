@@ -11,8 +11,6 @@ export default function MapaScreen() {
   const [sheetVisible, setSheetVisible] = useState(false);
   const [activeOption, setActiveOption] = useState('rotas');
 
-  const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-
   const mapHTML = `
     <!DOCTYPE html>
     <html>
@@ -21,14 +19,12 @@ export default function MapaScreen() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
-          html, body, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #2b3a42; }
-          #map::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(43, 58, 66, 0.5);
-            pointer-events: none;
-            z-index: 1000;
+          html, body, #map { 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            width: 100%; 
+            background-color: #121212; 
           }
         </style>
       </head>
@@ -36,7 +32,7 @@ export default function MapaScreen() {
         <div id="map"></div>
         <script>
           const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([-23.55052, -46.633308], 13);
-          L.tileLayer('${tileUrl}', { maxZoom: 19 }).addTo(map);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
         </script>
       </body>
     </html>
@@ -48,18 +44,19 @@ export default function MapaScreen() {
 
       <WebView
         originWhitelist={['*']}
-        source={{ html: mapHTML }}
-        style={StyleSheet.absoluteFillObject}
+        source={{ html: mapHTML, baseUrl: 'https://localhost' }}
+        style={styles.map}
         scrollEnabled={false}
-        userAgent="Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        cacheEnabled={false}
       />
 
       <View style={styles.uiLayer} pointerEvents="box-none">
-        <View style={styles.topSection}>
+        <View pointerEvents="box-none" style={styles.topSection}>
           <View style={styles.searchWrapper}>
             <MapSearchBar />
           </View>
-
           <View style={styles.filterWrapper}>
             <MapFilterCarousel
               onFilterPress={(filter) => {
@@ -71,7 +68,7 @@ export default function MapaScreen() {
           </View>
         </View>
 
-        <View style={styles.bottomSection}>
+        <View pointerEvents="box-none" style={styles.bottomSection}>
           <MapFab />
           <MapRouteCarousel />
         </View>
@@ -96,26 +93,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#121212',
   },
+  map: {
+    flex: 1,
+  },
   uiLayer: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'space-between',
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 54,
     paddingBottom: 16,
+    zIndex: 10,
   },
   topSection: {
     width: '100%',
-    zIndex: 10,
   },
   bottomSection: {
     width: '100%',
-    zIndex: 10,
   },
   searchWrapper: {
     paddingHorizontal: 16,
-    zIndex: 20,
   },
   filterWrapper: {
     marginTop: 12,
-    zIndex: 10,
   },
 });
