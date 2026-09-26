@@ -83,7 +83,7 @@ export default function BottomPanel({ isPaused, stats, onPause, onResume, onFini
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 20,
     width: '100%',
     zIndex: 20,
   },
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#121212',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingTop: 20,
+    paddingTop: 18,
     paddingHorizontal: 16,
     alignItems: 'center',
     zIndex: 1,
