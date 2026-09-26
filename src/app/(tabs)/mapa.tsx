@@ -46,14 +46,13 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      <View style={StyleSheet.absoluteFillObject}>
-        <WebView
-          originWhitelist={['*']}
-          source={{ html: mapHTML }}
-          style={styles.map}
-          scrollEnabled={false}
-        />
-      </View>
+      <WebView
+        originWhitelist={['*']}
+        source={{ html: mapHTML }}
+        style={StyleSheet.absoluteFillObject}
+        scrollEnabled={false}
+        userAgent="Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+      />
 
       <View style={styles.uiLayer} pointerEvents="box-none">
         <View style={styles.topSection}>
@@ -97,11 +96,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#121212',
   },
-  map: {
-    flex: 1,
-  },
   uiLayer: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'space-between',
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 54,
     paddingBottom: 16,
