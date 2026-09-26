@@ -26,6 +26,7 @@ export function TrackCarousel() {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
+      style={styles.scrollView}
       contentContainerStyle={styles.container}
     >
       {TRACKS.map((item) => (
@@ -52,7 +53,6 @@ export function TrackCarousel() {
             </View>
           </View>
 
-          {/* Botão DENTRO do card na parte inferior */}
           <TouchableOpacity style={styles.cardButton} activeOpacity={0.8}>
             <Text style={styles.cardButtonText}>Explorar rota</Text>
           </TouchableOpacity>
@@ -63,7 +63,11 @@ export function TrackCarousel() {
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    marginHorizontal: -20,
+  },
   container: {
+    paddingHorizontal: 20,
     gap: 14,
     paddingVertical: 4,
   },
@@ -75,7 +79,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.08)',
     padding: 12,
     gap: 12,
-    justify: 'space-between',
+    justifyContent: 'space-between',
   },
   imageWrapper: {
     width: '100%',
