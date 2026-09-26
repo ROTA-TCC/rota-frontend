@@ -11,7 +11,7 @@ export function RecommendationGrid() {
         imageStyle={styles.cardImageStyle}
       >
         <Image
-          source={require('../../assets/images/gradiente-verde-card.png')}
+          source={require('../../../assets/images/gradiente-verde-card.png')}
           style={[StyleSheet.absoluteFillObject, { opacity: 0.75, zIndex: 1 }]}
           resizeMode="stretch"
         />
