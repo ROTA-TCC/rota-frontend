@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { SportDropdown } from './SportDropdown'; // Certifique-se de que este componente não tem absolute/elevation quebrando o layout
+import { SportDropdown } from './SportDropdown';
 
 export const MapSearchBar = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -10,16 +10,16 @@ export const MapSearchBar = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchBar}>
-        <TouchableOpacity 
-          style={styles.brandSection} 
+        <TouchableOpacity
+          style={styles.brandSection}
           onPress={() => setDropdownVisible(!dropdownVisible)}
           activeOpacity={0.7}
         >
-          <FontAwesome5 
-            name={activeSport === 'corrida' ? 'shoe-prints' : 'bars-progress'} 
-            size={18} 
-            color="#E34F1E" 
-            style={{ transform: [{ rotate: '-30deg' }] }} 
+          <FontAwesome5
+            name={activeSport === 'corrida' ? 'shoe-prints' : 'running'}
+            size={18}
+            color="#E34F1E"
+            style={activeSport === 'corrida' ? { transform: [{ rotate: '-30deg' }] } : undefined}
           />
           <Ionicons name={dropdownVisible ? "chevron-up" : "chevron-down"} size={11} color="white" />
         </TouchableOpacity>
@@ -33,10 +33,10 @@ export const MapSearchBar = () => {
       </View>
 
       {dropdownVisible && (
-        <SportDropdown 
-          activeSport={activeSport} 
-          onSelect={setActiveSport} 
-          onClose={() => setDropdownVisible(false)} 
+        <SportDropdown
+          activeSport={activeSport}
+          onSelect={setActiveSport}
+          onClose={() => setDropdownVisible(false)}
         />
       )}
     </View>
@@ -44,10 +44,7 @@ export const MapSearchBar = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    // Removi propriedades absolutas e zIndex daqui para evitar conflito com a View pai. 
-    // O empilhamento agora é gerenciado de forma segura no arquivo mapa.tsx
-  },
+  container: {},
   searchBar: {
     backgroundColor: 'rgba(20, 20, 20, 0.95)',
     height: 52,
@@ -57,7 +54,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
-    // O elevation SÓ PODE existir em views com backgroundColor sólido para não bugar no Android
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

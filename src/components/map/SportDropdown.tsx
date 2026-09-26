@@ -12,7 +12,7 @@ interface SportItem {
 
 const sports: SportItem[] = [
   { id: 'corrida', name: 'Corrida', iconName: 'shoe-prints', iconType: 'FontAwesome5', rotate: true },
-  { id: 'esteira', name: 'Esteira', iconName: 'treadmill', iconType: 'MaterialCommunityIcons' },
+  { id: 'esteira', name: 'Esteira', iconName: 'running', iconType: 'FontAwesome5' },
 ];
 
 interface SportDropdownProps {
