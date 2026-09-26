@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
   fabWrapper: {
     ...StyleSheet.absoluteFillObject,
-    transform: [{ translateY: -35 }], 
+    transform: [{ translateY: -50 }], 
     zIndex: 900,
     elevation: 15,
   },
