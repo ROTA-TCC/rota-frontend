@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, View, SafeAreaView, StatusBar, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { MapSearchBar } from '@/components/map/MapSearchBar';
 import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
@@ -10,7 +10,7 @@ import { MapBottomSheet } from '@/components/map/MapBottomSheet';
 export default function MapaScreen() {
   const [sheetVisible, setSheetVisible] = useState(false);
   const [activeOption, setActiveOption] = useState('rotas');
-  
+
   const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   const mapHTML = `
@@ -28,7 +28,7 @@ export default function MapaScreen() {
         <div id="map"></div>
         <script>
           const map = L.map('map', { zoomControl: false }).setView([-23.55052, -46.633308], 13);
-          
+
           L.tileLayer('${tileUrl}', {
             maxZoom: 19,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -40,8 +40,8 @@ export default function MapaScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+
       {/* <WebView
         originWhitelist={['*']}
         source={{ html: mapHTML }}
@@ -50,15 +50,15 @@ export default function MapaScreen() {
         scrollEnabled={false}
       /> */}
 
-      {/* 2. Camada de UI flutuante sobreposta */}
-      <View style={[styles.overlay, { zIndex: 1 }]} pointerEvents="box-none">
-        <SafeAreaView style={styles.safeArea}>
+      {/* Camada de UI flutuante sobreposta */}
+      <SafeAreaView style={styles.overlay} pointerEvents="box-none">
+        <View style={styles.topContainer} pointerEvents="box-none">
           <View style={styles.searchWrapper}>
             <MapSearchBar />
           </View>
 
           <View style={styles.filterWrapper}>
-            <MapFilterCarousel 
+            <MapFilterCarousel
               onFilterPress={(filter) => {
                 if (filter === 'Rotas') {
                   setSheetVisible(true);
@@ -66,16 +66,17 @@ export default function MapaScreen() {
               }}
             />
           </View>
+        </View>
 
+        <View style={styles.bottomContainer} pointerEvents="box-none">
           <MapFab />
-          
           <MapRouteCarousel />
-        </SafeAreaView>
-      </View>
+        </View>
+      </SafeAreaView>
 
       {sheetVisible && (
-        <MapBottomSheet 
-          activeOption={activeOption} 
+        <MapBottomSheet
+          activeOption={activeOption}
           onSelect={(id) => {
             setActiveOption(id);
             setSheetVisible(false);
@@ -88,12 +89,30 @@ export default function MapaScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: 'transparent' },
-  overlay: { 
-    ...StyleSheet.absoluteFillObject, 
-    justifyContent: 'space-between' 
+  container: {
+    flex: 1,
+    backgroundColor: '#121212', // Cor de fundo escura para caso o mapa/webview esteja desativado
   },
-  safeArea: { flex: 1, justifyContent: 'space-between' },
-  searchWrapper: { paddingHorizontal: 16, marginTop: 20, zIndex: 10, elevation: 10 },
-  filterWrapper: { marginTop: 12, zIndex: 10, elevation: 10 },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'space-between',
+    zIndex: 1,
+  },
+  topContainer: {
+    width: '100%',
+    // Compensa a barra de status no Android
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 10 : 10,
+    zIndex: 10,
+  },
+  bottomContainer: {
+    width: '100%',
+  },
+  searchWrapper: {
+    paddingHorizontal: 16,
+    zIndex: 20,
+  },
+  filterWrapper: {
+    marginTop: 12,
+    zIndex: 10,
+  },
 });
