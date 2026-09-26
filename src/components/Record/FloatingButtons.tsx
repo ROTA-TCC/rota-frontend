@@ -6,25 +6,24 @@ import { MapFab } from '../map/MapFab';
 
 type FloatingButtonsProps = {
   onBack?: () => void;
-  bottomOffset?: number;
 };
 
-export default function FloatingButtons({ onBack, bottomOffset = 215 }: FloatingButtonsProps) {
+export default function FloatingButtons({ onBack }: FloatingButtonsProps) {
   const insets = useSafeAreaInsets();
   const topInset = Math.max(insets.top, 20);
 
   return (
-    <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
+    <View style={styles.overlay} pointerEvents="box-none">
       <TouchableOpacity 
         style={[styles.btnCircle, { top: topInset + 10, left: 20 }]} 
         onPress={onBack}
         activeOpacity={0.8}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
       >
         <Ionicons name="chevron-back" size={26} color="white" />
       </TouchableOpacity>
 
-      <View style={[styles.fabWrapper, { bottom: bottomOffset }]} pointerEvents="box-none">
+      <View style={styles.fabWrapper} pointerEvents="box-none">
         <MapFab />
       </View>
     </View>
@@ -32,6 +31,11 @@ export default function FloatingButtons({ onBack, bottomOffset = 215 }: Floating
 }
 
 const styles = StyleSheet.create({
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 9999, 
+    elevation: 9999,
+  },
   btnCircle: {
     position: 'absolute',
     width: 44,
@@ -40,13 +44,13 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 30,
-    elevation: 10,
+    zIndex: 10000,
+    elevation: 10000,
   },
   fabWrapper: {
-    position: 'absolute',
-    right: 16,
-    zIndex: 25,
-    elevation: 10,
+    ...StyleSheet.absoluteFillObject,
+    transform: [{ translateY: 45 }],
+    zIndex: 9999,
+    elevation: 9999,
   },
 });

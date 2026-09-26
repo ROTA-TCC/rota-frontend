@@ -28,13 +28,12 @@ export default function BottomPanel({ isPaused, stats, onPause, onResume, onFini
             <Text style={[styles.headerText, isPaused && styles.headerTextPaused]}>
               {stats.statusText}
             </Text>
-            <TouchableOpacity style={styles.expandIcon}>
-              <Ionicons 
-                name="expand-outline" 
-                size={18} 
-                color={isPaused ? "#000" : "#fff"} 
-              />
-            </TouchableOpacity>
+            <Ionicons 
+              name="expand-outline" 
+              size={18} 
+              color={isPaused ? "#000" : "#fff"} 
+              style={styles.expandIcon} 
+            />
           </View>
           <View style={styles.statsBody}>
             <View style={styles.statItem}>
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
   },
   statsCardWrapper: {
     paddingHorizontal: 16,
-    marginBottom: -12,
+    marginBottom: 16, // AQUI ESTÁ A DISTÂNCIA: Era -12 (sobreposto), agora é 16 (separado)
     zIndex: 2,
     elevation: 12,
   },
