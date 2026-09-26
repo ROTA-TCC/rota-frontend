@@ -11,11 +11,9 @@ export function RecommendationGrid() {
         style={styles.greenCard}
         imageStyle={styles.cardImageStyle}
       >
-        <LinearGradient
-          colors={['rgba(212, 237, 109, 1)', 'rgba(212, 237, 109, 0.6)']}
+        <Image
+          source={require('../../assets/images/gradiente-verde-card.png')}
           style={StyleSheet.absoluteFillObject}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
         />
         <View style={styles.greenCardContent}>
           <Text style={styles.greenTitle}>Cooling After Run</Text>
@@ -198,4 +196,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-

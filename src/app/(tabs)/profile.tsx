@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, SafeAreaView, StatusBar } from 'react-native';
+import { StyleSheet, View, ScrollView, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProfileHeader } from '@/components/profile/ProfileHeader';
 import { ProfileListCard } from '@/components/profile/ProfileListCard';
 
@@ -58,4 +59,3 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
 });
-
