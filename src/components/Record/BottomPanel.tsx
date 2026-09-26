@@ -28,12 +28,13 @@ export default function BottomPanel({ isPaused, stats, onPause, onResume, onFini
             <Text style={[styles.headerText, isPaused && styles.headerTextPaused]}>
               {stats.statusText}
             </Text>
-            <Ionicons 
-              name="expand-outline" 
-              size={18} 
-              color={isPaused ? "#000" : "#fff"} 
-              style={styles.expandIcon} 
-            />
+            <TouchableOpacity style={styles.expandIcon}>
+              <Ionicons 
+                name="expand-outline" 
+                size={18} 
+                color={isPaused ? "#000" : "#fff"} 
+              />
+            </TouchableOpacity>
           </View>
           <View style={styles.statsBody}>
             <View style={styles.statItem}>
@@ -83,14 +84,16 @@ export default function BottomPanel({ isPaused, stats, onPause, onResume, onFini
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 0,
     width: '100%',
     zIndex: 20,
+    elevation: 10,
   },
   statsCardWrapper: {
     paddingHorizontal: 16,
     marginBottom: -12,
     zIndex: 2,
+    elevation: 12,
   },
   statsCard: {
     backgroundColor: '#1e1e1e',

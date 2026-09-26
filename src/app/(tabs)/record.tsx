@@ -42,6 +42,10 @@ export default function RecordScreen() {
     console.log("Corrida concluída!");
   };
 
+  const handleBack = () => {
+    console.log("Voltar pressionado");
+  };
+
   const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
   const mapHTML = `
@@ -82,7 +86,7 @@ export default function RecordScreen() {
         scrollEnabled={false}
       />
       
-      <FloatingButtons />
+      <FloatingButtons onBack={handleBack} />
       
       <BottomPanel 
         isPaused={isPaused}
