@@ -21,7 +21,8 @@ export default function MapaScreen() {
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <style>
-          html, body, #map { margin: 0; padding: 0; height: 100%; width: 100%; }
+          html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #121212; }
+          #map { width: 100%; height: 100%; position: absolute; top: 0; bottom: 0; left: 0; right: 0; }
         </style>
       </head>
       <body>
@@ -42,38 +43,46 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* <WebView
+      {/* 1. Camada do Mapa */}
+      <WebView
         originWhitelist={['*']}
         source={{ html: mapHTML }}
-        style={[StyleSheet.absoluteFillObject, { backgroundColor: 'transparent' }]}
-        containerStyle={{ backgroundColor: 'transparent' }}
+        style={StyleSheet.absoluteFillObject}
+        containerStyle={{ backgroundColor: '#121212' }}
         scrollEnabled={false}
-      /> */}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+      />
 
-      {/* Camada de UI flutuante sobreposta */}
-      <SafeAreaView style={styles.overlay} pointerEvents="box-none">
-        <View style={styles.topContainer} pointerEvents="box-none">
-          <View style={styles.searchWrapper}>
-            <MapSearchBar />
+      {/* 2. Camada de UI flutuante sobreposta */}
+      <View style={styles.overlay} pointerEvents="box-none">
+        <SafeAreaView style={styles.safeArea} pointerEvents="box-none">
+          {/* Parte Superior (Busca e Filtros) */}
+          <View style={styles.topContainer} pointerEvents="box-none">
+            <View style={styles.searchWrapper}>
+              <MapSearchBar />
+            </View>
+
+            <View style={styles.filterWrapper}>
+              <MapFilterCarousel
+                onFilterPress={(filter) => {
+                  if (filter === 'Rotas') {
+                    setSheetVisible(true);
+                  }
+                }}
+              />
+            </View>
           </View>
 
-          <View style={styles.filterWrapper}>
-            <MapFilterCarousel
-              onFilterPress={(filter) => {
-                if (filter === 'Rotas') {
-                  setSheetVisible(true);
-                }
-              }}
-            />
+          {/* Parte Inferior (FAB e Carrossel de Rotas) */}
+          <View style={styles.bottomContainer} pointerEvents="box-none">
+            <MapFab />
+            <MapRouteCarousel />
           </View>
-        </View>
+        </SafeAreaView>
+      </View>
 
-        <View style={styles.bottomContainer} pointerEvents="box-none">
-          <MapFab />
-          <MapRouteCarousel />
-        </View>
-      </SafeAreaView>
-
+      {/* Modal / BottomSheet */}
       {sheetVisible && (
         <MapBottomSheet
           activeOption={activeOption}
@@ -91,21 +100,23 @@ export default function MapaScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212', // Cor de fundo escura para caso o mapa/webview esteja desativado
+    backgroundColor: '#121212',
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+  },
+  safeArea: {
+    flex: 1,
     justifyContent: 'space-between',
-    zIndex: 1,
   },
   topContainer: {
     width: '100%',
-    // Compensa a barra de status no Android
-    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 10 : 10,
-    zIndex: 10,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 10 : 0,
   },
   bottomContainer: {
     width: '100%',
+    paddingBottom: Platform.OS === 'android' ? 16 : 0,
   },
   searchWrapper: {
     paddingHorizontal: 16,
