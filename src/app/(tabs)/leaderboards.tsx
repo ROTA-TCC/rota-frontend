@@ -4,7 +4,7 @@ import { LeaderboardPodium } from '@/components/leaderboards/LeaderboardPodium';
 import { RankCard } from '@/components/leaderboards/RankCard';
 import { LeaderboardList } from '@/components/leaderboards/LeaderboardList';
 import { TopClubsList } from '@/components/leaderboards/TopClubCard';
-import { Confetti, ConfettiRef } from '@/components/Confetti';
+import { Confetti, ConfettiRef } from '@/components/leaderboards/Confetti';
 
 const bestRunners = [
   { name: 'Esther Howard', points: 99, rank: 4, direction: 'up', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
