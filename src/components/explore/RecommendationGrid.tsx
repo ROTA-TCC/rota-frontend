@@ -176,8 +176,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 14,
     left: 14,
-    width: 18,
-    height: 18,
+    width: 28,
+    height: 28,
     zIndex: 2,
   },
   redCardContent: {
