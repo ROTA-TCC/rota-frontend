@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, ImageBackground, Image, TouchableOpacity } from 'react-native';
-import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 
 export function RecommendationGrid() {
   return (
@@ -56,7 +56,11 @@ export function RecommendationGrid() {
           style={styles.redCard}
           imageStyle={styles.cardImageStyle}
         >
-          <FontAwesome6 name="strava" size={18} color="#FFFFFF" style={styles.stravaIcon} />
+          <Image
+            source={require('../../../assets/brand/logo-sem-fundo.png')}
+            style={styles.brandIcon}
+            resizeMode="contain"
+          />
           <View style={styles.redCardContent}>
             <Text style={styles.redTitle}>EM BREVE</Text>
             <Text style={styles.redSubtitle}>Novos recursos e estatísticas</Text>
@@ -168,10 +172,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     position: 'relative',
   },
-  stravaIcon: {
+  brandIcon: {
     position: 'absolute',
     top: 14,
     left: 14,
+    width: 18,
+    height: 18,
     zIndex: 2,
   },
   redCardContent: {
