@@ -35,11 +35,9 @@ export function InteractiveZoneCircle({
   const startRadius = useSharedValue(70);
   const prevContainerSize = useSharedValue(containerSize);
 
-  // Ângulo fixo do ícone (-45 graus / Top-Right)
   const handleAngleRad = (-45 * Math.PI) / 180;
-  const gapAngleDeg = 48; // Abertura na linha exatamente do tamanho do ícone
+  const gapAngleDeg = 48; 
 
-  // Controle para evitar disparos excessivos de estado no React
   const lastDistRef = useRef('');
 
   const calculateDistance = (radiusPx: number) => {
@@ -60,7 +58,6 @@ export function InteractiveZoneCircle({
     }
   };
 
-  // Reage suavemente ao redimensionamento para tela cheia ou card
   useEffect(() => {
     if (prevContainerSize.value !== containerSize) {
       const scaleRatio = containerSize / prevContainerSize.value;
@@ -69,7 +66,6 @@ export function InteractiveZoneCircle({
     }
   }, [containerSize]);
 
-  // Atualiza o texto dinamicamente enquanto a animação do círculo acontece
   useAnimatedReaction(
     () => radius.value,
     (currentRadius) => {
@@ -120,7 +116,7 @@ export function InteractiveZoneCircle({
 
     return {
       transform: [
-        { translateX: hX - 24 }, // Centraliza hitbox de 48px
+        { translateX: hX - 24 },
         { translateY: hY - 24 },
       ],
     };
@@ -153,7 +149,6 @@ export function InteractiveZoneCircle({
 
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.cleanHandle, animatedHandleStyle]}>
-          {/* Ícone Preto, Fino (1.5) e Maior (36px) */}
           <Svg width="36" height="36" viewBox="0 0 24 24" fill="none">
             <Path
               d="M14 10L21 3M21 3H16M21 3V8M10 14L3 21M3 21H8M3 21V16"
@@ -201,11 +196,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     borderWidth: 0,
-    // Brilho muito sutil para não sumir no fundo escuro
-    shadowColor: '#FFFFFF',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    elevation: 3,
   },
 });

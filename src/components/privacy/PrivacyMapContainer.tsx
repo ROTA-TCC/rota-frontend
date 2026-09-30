@@ -13,7 +13,7 @@ import { LeafletMap } from '../map/LeafletMap';
 import { InteractiveZoneCircle } from './InteractiveZoneCircle';
 import { MapControls } from './MapControls';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_SIZE = SCREEN_WIDTH - 48;
 
 interface PrivacyMapContainerProps {
@@ -30,54 +30,12 @@ export function PrivacyMapContainer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [distanceText, setDistanceText] = useState('0 m');
 
-  // Script Genial Injetado: Intercepta a montagem interna do Leaflet,
-  // lembra o último ponto e dispara um flyTo suave ocultando a trepidação do recarregamento.
-  const customMapCSSAndScript = `
-    <style>
-      .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
-      body, #map { background-color: #070707 !important; margin: 0; padding: 0; }
-      .leaflet-control-container { display: none; }
-    </style>
-    <script>
-      (function() {
-        try {
-          var origMap = window.L.map;
-          window.L.map = function(id, opts) {
-            var m = origMap(id, opts);
-            var curLat = ${mapCenter[0]};
-            var curLng = ${mapCenter[1]};
-            var lastLat = localStorage.getItem('rota_lat');
-            var lastLng = localStorage.getItem('rota_lng');
-            
-            localStorage.setItem('rota_lat', curLat);
-            localStorage.setItem('rota_lng', curLng);
-            
-            if (lastLat && lastLng) {
-              var oLat = parseFloat(lastLat);
-              var oLng = parseFloat(lastLng);
-              var isMoved = Math.abs(oLat - curLat) > 0.0001 || Math.abs(oLng - curLng) > 0.0001;
-              
-              if (isMoved) {
-                var origSetView = m.setView;
-                var isFirst = true;
-                m.setView = function(center, z, options) {
-                  if (isFirst) {
-                    isFirst = false;
-                    origSetView.call(this, [oLat, oLng], z, { animate: false });
-                    setTimeout(function() {
-                      m.flyTo([curLat, curLng], z, { duration: 1.5, easeLinearity: 0.25 });
-                    }, 250);
-                    return this;
-                  }
-                  return origSetView.call(this, center, z, options);
-                };
-              }
-            }
-            return m;
-          };
-        } catch(e) {}
-      })();
-    </script>
+  // CSS Puro - Removido o script que estava quebrando o render do WebView
+  const customMapCSS = `
+    .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important; }
+    body { background-color: #070707 !important; margin: 0; padding: 0; }
+    #map { background-color: #070707 !important; }
+    .leaflet-control-container { display: none !important; }
   `;
 
   const renderMapContent = (size: number, isFull: boolean) => (
@@ -86,7 +44,7 @@ export function PrivacyMapContainer({
         center={mapCenter}
         zoom={zoom}
         style={styles.map}
-        customCSS={customMapCSSAndScript}
+        customCSS={customMapCSS}
       />
       <View style={styles.mapOverlay} pointerEvents="none" />
 
@@ -112,7 +70,6 @@ export function PrivacyMapContainer({
         {renderMapContent(CARD_SIZE, false)}
       </View>
 
-      {/* Animação Simples e Direta (Fade) cobrindo 100% da tela */}
       <Modal
         visible={isFullscreen}
         animationType="fade"
