@@ -14,7 +14,7 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 interface InteractiveZoneCircleProps {
   containerSize: number;
-  centerCoords: [number, number]; // [lat, lng]
+  centerCoords: [number, number];
   zoom: number;
   onDistanceChange?: (formattedDistance: string) => void;
 }
@@ -26,33 +26,28 @@ export function InteractiveZoneCircle({
   onDistanceChange,
 }: InteractiveZoneCircleProps) {
   const center = containerSize / 2;
-  const minRadius = 35;
-  const maxRadius = containerSize / 2 - 28;
+  const minRadius = 40;
+  const maxRadius = containerSize / 2 - 32;
 
   const radius = useSharedValue(70);
   const startRadius = useSharedValue(70);
 
-  // Ângulo fixo do manipulador (Top-Right: -45º)
   const handleAngleRad = (-45 * Math.PI) / 180;
-  const gapAngleDeg = 42; // Abertura na borda para o ícone sem poluição visual
+  const gapAngleDeg = 48; // Espaço exato para o ícone maior
 
-  // Cálculo de distância geográfica real (Metros por pixel no Leaflet)
   const calculateDistance = (radiusPx: number) => {
     const latitude = centerCoords[0];
     const latRad = (latitude * Math.PI) / 180;
     const metersPerPx = (156543.03392 * Math.cos(latRad)) / Math.pow(2, zoom);
     const meters = Math.round(radiusPx * metersPerPx);
 
-    if (meters < 1000) {
-      return `${meters} m`;
-    }
+    if (meters < 1000) return `${meters} m`;
     return `${(meters / 1000).toFixed(1)} km`;
   };
 
   const updateDistance = (currentRadiusPx: number) => {
     if (onDistanceChange) {
-      const formatted = calculateDistance(currentRadiusPx);
-      onDistanceChange(formatted);
+      onDistanceChange(calculateDistance(currentRadiusPx));
     }
   };
 
@@ -60,7 +55,6 @@ export function InteractiveZoneCircle({
     updateDistance(radius.value);
   }, [centerCoords, zoom]);
 
-  // Gesto de Arraste (Pan)
   const panGesture = Gesture.Pan()
     .onStart(() => {
       startRadius.value = radius.value;
@@ -76,7 +70,6 @@ export function InteractiveZoneCircle({
       runOnJS(updateDistance)(newR);
     });
 
-  // Arco SVG com abertura (Gap) exata para o ícone
   const animatedArcProps = useAnimatedProps(() => {
     const r = radius.value;
     const gapRad = (gapAngleDeg * Math.PI) / 180;
@@ -90,18 +83,15 @@ export function InteractiveZoneCircle({
     const y2 = center + r * Math.sin(endAngle);
 
     const pathD = `M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}`;
-
     return { d: pathD };
   });
 
-  // Preenchimento interno translúcido
   const animatedFillStyle = useAnimatedStyle(() => ({
     width: radius.value * 2,
     height: radius.value * 2,
     borderRadius: radius.value,
   }));
 
-  // Posição do Ícone Flutuante (Sem fundo e sem borda)
   const animatedHandleStyle = useAnimatedStyle(() => {
     const r = radius.value;
     const hX = center + r * Math.cos(handleAngleRad);
@@ -109,8 +99,8 @@ export function InteractiveZoneCircle({
 
     return {
       transform: [
-        { translateX: hX - 22 }, // Centraliza a área de toque de 44px
-        { translateY: hY - 22 },
+        { translateX: hX - 24 }, // Metade do container de 48px
+        { translateY: hY - 24 },
       ],
     };
   });
@@ -123,16 +113,13 @@ export function InteractiveZoneCircle({
       ]}
       pointerEvents="box-none"
     >
-      {/* Círculo Transparente de Fundo */}
       <Animated.View
         style={[styles.zoneFill, animatedFillStyle]}
         pointerEvents="none"
       />
 
-      {/* Ponto de Referência no Centro */}
       <View style={[styles.centerDot, { top: center - 5, left: center - 5 }]} />
 
-      {/* Borda SVG Interrompida no Ícone */}
       <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
         <AnimatedPath
           animatedProps={animatedArcProps}
@@ -143,15 +130,14 @@ export function InteractiveZoneCircle({
         />
       </Svg>
 
-      {/* Ícone de Expansão Limpo e Maior (32px visual em hit-target de 44px) */}
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.cleanHandle, animatedHandleStyle]}>
-          <Svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-            {/* Setas opostas em diagonal */}
+          {/* Ícone Preto, Maior (36px) e com linha fina (1.2) */}
+          <Svg width="36" height="36" viewBox="0 0 24 24" fill="none">
             <Path
               d="M14 10L21 3M21 3H16M21 3V8M10 14L3 21M3 21H8M3 21V16"
-              stroke={ORANGE}
-              strokeWidth="2.8"
+              stroke="#000000"
+              strokeWidth="1.2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -188,11 +174,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent', // Sem fundo
-    borderWidth: 0, // Sem borda
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    // Brilho muito suave atrás do ícone preto apenas para dar contraste no mapa escuro
+    shadowColor: '#FFFFFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 3,
   },
 });
