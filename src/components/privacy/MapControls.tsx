@@ -5,24 +5,23 @@ import Svg, { Circle, Path } from 'react-native-svg';
 const ORANGE = '#FF8C00';
 
 interface MapControlsProps {
-  radiusKm: string;
+  distanceText: string;
   isFullscreen: boolean;
   onToggleFullscreen: () => void;
   onLocateUser: () => void;
-  isLocating?: boolean;
 }
 
 export function MapControls({
-  radiusKm,
+  distanceText,
   isFullscreen,
   onToggleFullscreen,
   onLocateUser,
 }: MapControlsProps) {
   return (
     <>
-      {/* Pill Superior - Informação do Raio */}
+      {/* Indicador Superior do Raio Real */}
       <View style={styles.infoPill} pointerEvents="none">
-        <Text style={styles.infoPillText}>Área Oculta ({radiusKm} km)</Text>
+        <Text style={styles.infoPillText}>Área Oculta ({distanceText})</Text>
         <Svg width="16" height="16" viewBox="0 0 24 24" fill="none">
           <Circle cx="12" cy="12" r="10" stroke={ORANGE} strokeWidth="2" />
           <Path
@@ -34,9 +33,9 @@ export function MapControls({
         </Svg>
       </View>
 
-      {/* Botões de Ação no Canto Inferior Direito */}
+      {/* Botões Flutuantes no Canto Inferior */}
       <View style={styles.actionCluster}>
-        {/* Botão Minha Localização */}
+        {/* Botão de Centralizar no Usuário */}
         <TouchableOpacity
           style={styles.controlBtn}
           onPress={onLocateUser}
@@ -54,7 +53,7 @@ export function MapControls({
           </Svg>
         </TouchableOpacity>
 
-        {/* Botão Expansão / Tela Cheia */}
+        {/* Botão de Tela Cheia / Expansão */}
         <TouchableOpacity
           style={styles.controlBtn}
           onPress={onToggleFullscreen}
@@ -62,7 +61,6 @@ export function MapControls({
         >
           <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             {isFullscreen ? (
-              // Ícone de Encolher (Minimize)
               <Path
                 d="M8 3V8H3M16 3V8H21M8 21V16H3M16 21V16H21"
                 stroke="#FFFFFF"
@@ -71,7 +69,6 @@ export function MapControls({
                 strokeLinejoin="round"
               />
             ) : (
-              // Ícone de Expandir (Maximize)
               <Path
                 d="M15 3H21V9M9 21H3V15M21 3L14 10M3 21L10 14"
                 stroke="#FFFFFF"
@@ -101,12 +98,8 @@ const styles = StyleSheet.create({
     gap: 8,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
     zIndex: 10,
+    elevation: 4,
   },
   infoPillText: {
     color: '#FFFFFF',
@@ -116,24 +109,24 @@ const styles = StyleSheet.create({
   },
   actionCluster: {
     position: 'absolute',
-    bottom: 16,
-    right: 16,
-    gap: 10,
+    bottom: 20,
+    right: 20,
+    gap: 12,
     zIndex: 10,
   },
   controlBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     backgroundColor: '#141416',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.4,
     shadowRadius: 6,
-    elevation: 5,
+    elevation: 6,
   },
 });

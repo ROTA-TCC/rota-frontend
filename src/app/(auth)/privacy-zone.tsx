@@ -14,20 +14,19 @@ export default function PrivacyZoneScreen() {
   const router = useRouter();
   const [mapCenter, setMapCenter] = useState<[number, number]>(DEFAULT_CENTER);
 
-  // Solicitar permissão e pegar localização atual do usuário
   const requestUserLocation = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
           'Permissão negada',
-          'Permita o acesso à localização para centralizar o mapa na sua posição.'
+          'Permita a localização para centralizar o mapa na sua posição.'
         );
         return;
       }
 
       const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
+        accuracy: Location.Accuracy.High,
       });
 
       setMapCenter([location.coords.latitude, location.coords.longitude]);
@@ -43,6 +42,7 @@ export default function PrivacyZoneScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
+        {/* Glow de Fundo */}
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <Image
             source={require('../../../assets/images/background-blur.png')}
@@ -62,17 +62,14 @@ export default function PrivacyZoneScreen() {
           showsVerticalScrollIndicator={false}
           bounces={true}
         >
-          {/* Cabeçalho */}
           <PrivacyHeader />
 
-          {/* Container do Mapa com Interatividade e Fullscreen */}
           <PrivacyMapContainer
             mapCenter={mapCenter}
             zoom={14}
             onLocateUser={requestUserLocation}
           />
 
-          {/* Ações do Rodapé */}
           <PrivacyFooter
             onComplete={() => router.push('/')}
             onSkip={() => router.push('/')}
