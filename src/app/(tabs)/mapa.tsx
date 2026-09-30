@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, StatusBar, Platform } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { LeafletMap } from '@/components/map/LeafletMap';
 import { MapSearchBar } from '@/components/map/MapSearchBar';
 import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
 import { MapFab } from '@/components/map/MapFab';
@@ -11,45 +11,14 @@ export default function MapaScreen() {
   const [sheetVisible, setSheetVisible] = useState(false);
   const [activeOption, setActiveOption] = useState('rotas');
 
-  const mapHTML = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <style>
-          html, body, #map { 
-            margin: 0; 
-            padding: 0; 
-            height: 100%; 
-            width: 100%; 
-            background-color: #121212; 
-          }
-        </style>
-      </head>
-      <body>
-        <div id="map"></div>
-        <script>
-          const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([-23.55052, -46.633308], 13);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-        </script>
-      </body>
-    </html>
-  `;
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      <WebView
-        originWhitelist={['*']}
-        source={{ html: mapHTML, baseUrl: 'https://localhost' }}
+      <LeafletMap
+        center={[-23.55052, -46.633308]}
+        zoom={13}
         style={styles.map}
-        scrollEnabled={false}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        cacheEnabled={false}
       />
 
       <View style={styles.uiLayer} pointerEvents="box-none">
