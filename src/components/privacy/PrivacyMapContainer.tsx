@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,7 +7,7 @@ import {
   Modal,
   SafeAreaView,
 } from 'react-native';
-import Animated, { FadeIn, FadeOut, ZoomIn, ZoomOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { LeafletMap } from '../map/LeafletMap';
 import { InteractiveZoneCircle } from './InteractiveZoneCircle';
@@ -30,49 +30,54 @@ export function PrivacyMapContainer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [distanceText, setDistanceText] = useState('0 m');
 
-  // Controla a coordenada anterior para fazer a animação de Vôo (flyTo)
-  const prevCenterRef = useRef(mapCenter);
-  const prevCenter = prevCenterRef.current;
-  
-  useEffect(() => {
-    prevCenterRef.current = mapCenter;
-  }, [mapCenter]);
-
-  // Script injetado que fecha o Style original, implementa a lógica flyTo, e reabre o Style
+  // Script Genial Injetado: Intercepta a montagem interna do Leaflet,
+  // lembra o último ponto e dispara um flyTo suave ocultando a trepidação do recarregamento.
   const customMapCSSAndScript = `
+    <style>
+      .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
+      body, #map { background-color: #070707 !important; margin: 0; padding: 0; }
+      .leaflet-control-container { display: none; }
     </style>
     <script>
-      (function(){
+      (function() {
         try {
           var origMap = window.L.map;
           window.L.map = function(id, opts) {
-            var mapInstance = origMap(id, opts);
-            var origSetView = mapInstance.setView;
-            mapInstance.setView = function(center, zoom, options) {
-              if (!window.__mapStarted) {
-                window.__mapStarted = true;
-                // Inicializa no ponto antigo primeiro
-                origSetView.call(this, [${prevCenter[0]}, ${prevCenter[1]}], zoom, options);
-                // Vôo suave para o novo ponto
-                setTimeout(function() {
-                  mapInstance.flyTo(center, zoom, { duration: 1.5 });
-                }, 150);
-              } else {
-                origSetView.call(this, center, zoom, options);
+            var m = origMap(id, opts);
+            var curLat = ${mapCenter[0]};
+            var curLng = ${mapCenter[1]};
+            var lastLat = localStorage.getItem('rota_lat');
+            var lastLng = localStorage.getItem('rota_lng');
+            
+            localStorage.setItem('rota_lat', curLat);
+            localStorage.setItem('rota_lng', curLng);
+            
+            if (lastLat && lastLng) {
+              var oLat = parseFloat(lastLat);
+              var oLng = parseFloat(lastLng);
+              var isMoved = Math.abs(oLat - curLat) > 0.0001 || Math.abs(oLng - curLng) > 0.0001;
+              
+              if (isMoved) {
+                var origSetView = m.setView;
+                var isFirst = true;
+                m.setView = function(center, z, options) {
+                  if (isFirst) {
+                    isFirst = false;
+                    origSetView.call(this, [oLat, oLng], z, { animate: false });
+                    setTimeout(function() {
+                      m.flyTo([curLat, curLng], z, { duration: 1.5, easeLinearity: 0.25 });
+                    }, 250);
+                    return this;
+                  }
+                  return origSetView.call(this, center, z, options);
+                };
               }
-              return mapInstance;
-            };
-            return mapInstance;
+            }
+            return m;
           };
         } catch(e) {}
       })();
     </script>
-    <style>
-    /* Filtro para modo noturno limpo e seguro */
-    .leaflet-layer {
-      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-    }
-    body, #map { background-color: #070707 !important; }
   `;
 
   const renderMapContent = (size: number, isFull: boolean) => (
@@ -107,26 +112,18 @@ export function PrivacyMapContainer({
         {renderMapContent(CARD_SIZE, false)}
       </View>
 
+      {/* Animação Simples e Direta (Fade) cobrindo 100% da tela */}
       <Modal
         visible={isFullscreen}
-        animationType="none"
+        animationType="fade"
         transparent={true}
         onRequestClose={() => setIsFullscreen(false)}
       >
         <SafeAreaView style={styles.fullscreenRoot}>
           <Animated.View
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(200)}
-            style={StyleSheet.absoluteFillObject}
-          >
-            <View style={styles.darkBackground} />
-          </Animated.View>
-
-          {/* Animação bonita de Zoom Out/In acoplada ao Fade */}
-          <Animated.View
-            entering={ZoomIn.duration(350).springify().damping(18)}
-            exiting={ZoomOut.duration(250)}
-            style={styles.fullscreenContainer}
+            entering={FadeIn.duration(300)}
+            exiting={FadeOut.duration(300)}
+            style={styles.fullscreenRoot}
           >
             <TouchableOpacity
               style={styles.closeBtn}
@@ -165,14 +162,7 @@ const styles = StyleSheet.create({
   },
   fullscreenRoot: {
     flex: 1,
-    backgroundColor: 'transparent',
-  },
-  darkBackground: {
-    ...StyleSheet.absoluteFillObject,
     backgroundColor: '#070707',
-  },
-  fullscreenContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

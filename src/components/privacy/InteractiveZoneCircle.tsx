@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -6,6 +6,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   runOnJS,
+  withTiming,
+  useAnimatedReaction,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
@@ -31,9 +33,14 @@ export function InteractiveZoneCircle({
 
   const radius = useSharedValue(70);
   const startRadius = useSharedValue(70);
+  const prevContainerSize = useSharedValue(containerSize);
 
+  // Ângulo fixo do ícone (-45 graus / Top-Right)
   const handleAngleRad = (-45 * Math.PI) / 180;
-  const gapAngleDeg = 48; // Espaço exato para o ícone maior
+  const gapAngleDeg = 48; // Abertura na linha exatamente do tamanho do ícone
+
+  // Controle para evitar disparos excessivos de estado no React
+  const lastDistRef = useRef('');
 
   const calculateDistance = (radiusPx: number) => {
     const latitude = centerCoords[0];
@@ -46,14 +53,29 @@ export function InteractiveZoneCircle({
   };
 
   const updateDistance = (currentRadiusPx: number) => {
-    if (onDistanceChange) {
-      onDistanceChange(calculateDistance(currentRadiusPx));
+    const dist = calculateDistance(currentRadiusPx);
+    if (dist !== lastDistRef.current && onDistanceChange) {
+      lastDistRef.current = dist;
+      onDistanceChange(dist);
     }
   };
 
+  // Reage suavemente ao redimensionamento para tela cheia ou card
   useEffect(() => {
-    updateDistance(radius.value);
-  }, [centerCoords, zoom]);
+    if (prevContainerSize.value !== containerSize) {
+      const scaleRatio = containerSize / prevContainerSize.value;
+      radius.value = withTiming(radius.value * scaleRatio, { duration: 350 });
+      prevContainerSize.value = containerSize;
+    }
+  }, [containerSize]);
+
+  // Atualiza o texto dinamicamente enquanto a animação do círculo acontece
+  useAnimatedReaction(
+    () => radius.value,
+    (currentRadius) => {
+      runOnJS(updateDistance)(currentRadius);
+    }
+  );
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -67,7 +89,6 @@ export function InteractiveZoneCircle({
       if (newR > maxRadius) newR = maxRadius;
 
       radius.value = newR;
-      runOnJS(updateDistance)(newR);
     });
 
   const animatedArcProps = useAnimatedProps(() => {
@@ -99,7 +120,7 @@ export function InteractiveZoneCircle({
 
     return {
       transform: [
-        { translateX: hX - 24 }, // Metade do container de 48px
+        { translateX: hX - 24 }, // Centraliza hitbox de 48px
         { translateY: hY - 24 },
       ],
     };
@@ -132,12 +153,12 @@ export function InteractiveZoneCircle({
 
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.cleanHandle, animatedHandleStyle]}>
-          {/* Ícone Preto, Maior (36px) e com linha fina (1.2) */}
+          {/* Ícone Preto, Fino (1.5) e Maior (36px) */}
           <Svg width="36" height="36" viewBox="0 0 24 24" fill="none">
             <Path
               d="M14 10L21 3M21 3H16M21 3V8M10 14L3 21M3 21H8M3 21V16"
               stroke="#000000"
-              strokeWidth="1.2"
+              strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -180,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent',
     borderWidth: 0,
-    // Brilho muito suave atrás do ícone preto apenas para dar contraste no mapa escuro
+    // Brilho muito sutil para não sumir no fundo escuro
     shadowColor: '#FFFFFF',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
