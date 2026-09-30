@@ -25,7 +25,7 @@ export default function SplashScreen() {
     logoOpacity.value = withDelay(1500, withTiming(1, { duration: 500 }));
 
     setTimeout(() => {
-      router.replace('/explore');
+      router.replace('/(auth)/profile-info');
     }, 2500);
   }, [iconTranslateY, iconScale, iconRotate, logoOpacity]);
 
