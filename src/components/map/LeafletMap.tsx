@@ -7,15 +7,13 @@ interface LeafletMapProps {
   zoom: number;
   style?: any;
   customCSS?: string;
-  [key: string]: any; // Aceita props adicionais para não quebrar outros componentes
+  [key: string]: any; 
 }
 
 export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: LeafletMapProps) {
   const webviewRef = useRef<WebView>(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
-  // Renderiza o HTML estático APENAS UMA VEZ na montagem.
-  // Isso resolve de vez a tela preta e o efeito de "tremida/recarga".
   const [htmlContent] = useState(`
     <!DOCTYPE html>
     <html>
@@ -34,11 +32,12 @@ export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: Lea
       <div id="map"></div>
       <script>
         var map = L.map('map', { zoomControl: false }).setView([${center[0]}, ${center[1]}], ${zoom});
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        
+        /* 🔥 COLOQUE O SEU PROVEDOR AQUI DE VOLTA 🔥 */
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19
         }).addTo(map);
         
-        // Salva a instância na janela para podermos mover sem recarregar o HTML
         window.leafletMapInstance = map;
         
         setTimeout(function() {
@@ -49,7 +48,6 @@ export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: Lea
     </html>
   `);
 
-  // Quando as propriedades de centro ou zoom mudam, ele faz a viagem animada internamente
   useEffect(() => {
     if (isMapReady && webviewRef.current) {
       const script = `

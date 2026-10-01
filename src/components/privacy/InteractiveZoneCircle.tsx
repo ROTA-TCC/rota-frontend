@@ -34,15 +34,17 @@ export function InteractiveZoneCircle({
   const radius = useSharedValue(70);
   const startRadius = useSharedValue(70);
   
-  const prevZoom = useSharedValue(zoom);
-  const targetDistanceMeters = useSharedValue(0);
+  // Variáveis seguras para evitar erro de closure no Reanimated
+  const zoomSV = useSharedValue(zoom);
+  const latSV = useSharedValue(centerCoords[0]);
+  
+  const geoRadiusRef = useRef<number | null>(null);
+  const lastDistRef = useRef('');
 
   const handleAngleRad = (-45 * Math.PI) / 180;
   const gapAngleDeg = 48; 
-  const lastDistRef = useRef('');
 
   const getMetersPerPx = (z: number, lat: number) => {
-    'worklet';
     const latRad = (lat * Math.PI) / 180;
     return (156543.03392 * Math.cos(latRad)) / Math.pow(2, z);
   };
@@ -61,26 +63,23 @@ export function InteractiveZoneCircle({
     }
   };
 
-  // Define a distância em metros atual quando o mapa monta
-  useEffect(() => {
-    if (targetDistanceMeters.value === 0) {
-      targetDistanceMeters.value = radius.value * getMetersPerPx(zoom, centerCoords[0]);
-    }
-  }, []);
+  const updateGeoRefJS = (r: number, z: number, lat: number) => {
+    geoRadiusRef.current = r * getMetersPerPx(z, lat);
+  };
 
-  // Quando o ZOOM muda, o círculo recalcula os pixels necessários 
-  // para cobrir a MESMA distância correspondente na vida real
+  // 🔥 Lógica de Escala Corrigida: Mantém o tamanho geográfico quando o zoom muda
   useEffect(() => {
-    if (prevZoom.value !== zoom && targetDistanceMeters.value > 0) {
-      const targetPx = targetDistanceMeters.value / getMetersPerPx(zoom, centerCoords[0]);
-      let clamped = targetPx;
-      if (clamped < minRadius) clamped = minRadius;
-      if (clamped > maxRadius) clamped = maxRadius;
-      
-      radius.value = withTiming(clamped, { duration: 300 });
-      prevZoom.value = zoom;
+    zoomSV.value = zoom;
+    latSV.value = centerCoords[0];
+
+    if (geoRadiusRef.current === null) {
+      geoRadiusRef.current = radius.value * getMetersPerPx(zoom, centerCoords[0]);
+    } else {
+      const targetPx = geoRadiusRef.current / getMetersPerPx(zoom, centerCoords[0]);
+      // Não damos clamp aqui para permitir que o raio cresça ou diminua visualmente livremente
+      radius.value = withTiming(targetPx, { duration: 250 });
     }
-  }, [zoom, centerCoords]);
+  }, [zoom, centerCoords[0]]);
 
   useAnimatedReaction(
     () => radius.value,
@@ -101,107 +100,94 @@ export function InteractiveZoneCircle({
       if (newR > maxRadius) newR = maxRadius;
 
       radius.value = newR;
-      // Salva a nova métrica na vida real
-      targetDistanceMeters.value = newR * getMetersPerPx(zoom, centerCoords[0]);
+      // Atualiza a distância geográfica alvo ao redimensionar manualmente
+      runOnJS(updateGeoRefJS)(newR, zoomSV.value, latSV.value);
     });
 
-  const animatedArcProps = useAnimatedProps(() => {
-    const r = radius.value;
-    const gapRad = (gapAngleDeg * Math.PI) / 180;
-    const startAngle = handleAngleRad + gapRad / 2;
-    const endAngle = handleAngleRad - gapRad / 2 + 2 * Math.PI;
+  const generateArcPath = (cx: number, cy: number, r: number, gapDeg: number) => {
+    'worklet';
+    const halfGapRad = (gapDeg / 2) * (Math.PI / 180);
+    const startAngle = handleAngleRad + halfGapRad;
+    const endAngle = handleAngleRad + 2 * Math.PI - halfGapRad;
+    const startX = cx + r * Math.cos(startAngle);
+    const startY = cy + r * Math.sin(startAngle);
+    const endX = cx + r * Math.cos(endAngle);
+    const endY = cy + r * Math.sin(endAngle);
+    const largeArcFlag = 2 * Math.PI - gapDeg * (Math.PI / 180) > Math.PI ? 1 : 0;
+    return `M ${startX} ${startY} A ${r} ${r} 0 ${largeArcFlag} 1 ${endX} ${endY}`;
+  };
 
-    const x1 = center + r * Math.cos(startAngle);
-    const y1 = center + r * Math.sin(startAngle);
-    const x2 = center + r * Math.cos(endAngle);
-    const y2 = center + r * Math.sin(endAngle);
-
-    return { d: `M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}` };
-  });
-
-  const animatedFillStyle = useAnimatedStyle(() => ({
-    width: radius.value * 2,
-    height: radius.value * 2,
-    borderRadius: radius.value,
+  const animatedCircleProps = useAnimatedProps(() => ({
+    d: generateArcPath(center, center, radius.value, gapAngleDeg),
   }));
 
-  const animatedHandleStyle = useAnimatedStyle(() => {
+  const handleStyle = useAnimatedStyle(() => {
     const r = radius.value;
     return {
       transform: [
-        { translateX: center + r * Math.cos(handleAngleRad) - 24 },
-        { translateY: center + r * Math.sin(handleAngleRad) - 24 },
+        { translateX: r * Math.cos(handleAngleRad) },
+        { translateY: r * Math.sin(handleAngleRad) },
       ],
     };
   });
 
   return (
-    <View
-      style={[styles.overlayContainer, { width: containerSize, height: containerSize }]}
-      pointerEvents="box-none"
-    >
-      <Animated.View style={[styles.zoneFill, animatedFillStyle]} pointerEvents="none" />
-      <View style={[styles.centerDot, { top: center - 5, left: center - 5 }]} />
-
-      <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      <Svg width={containerSize} height={containerSize} style={StyleSheet.absoluteFill}>
         <AnimatedPath
-          animatedProps={animatedArcProps}
+          animatedProps={animatedCircleProps}
           stroke={ORANGE}
-          strokeWidth={2.5}
-          fill="none"
+          strokeWidth="3"
           strokeLinecap="round"
+          strokeDasharray="6 8"
+          fill="rgba(255, 140, 0, 0.15)"
         />
       </Svg>
 
-      <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.cleanHandle, animatedHandleStyle]}>
-          {/* Ícone PRETO, FINO (1.2), MAIOR (36) e SEM SOMBRA (CleanHandle zera shadow) */}
-          <Svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-            <Path
-              d="M14 10L21 3M21 3H16M21 3V8M10 14L3 21M3 21H8M3 21V16"
-              stroke="#000000"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </Svg>
-        </Animated.View>
-      </GestureDetector>
+      <View
+        style={[styles.handleContainer, { left: center, top: center }]}
+        pointerEvents="box-none"
+      >
+        <GestureDetector gesture={panGesture}>
+          <Animated.View style={[styles.handle, handleStyle]}>
+            <View style={styles.handleInner} />
+          </Animated.View>
+        </GestureDetector>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  overlayContainer: {
+  handleContainer: {
     position: 'absolute',
-    top: 0,
-    left: 0,
+    width: 0,
+    height: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 5,
   },
-  zoneFill: {
+  handle: {
     position: 'absolute',
-    backgroundColor: 'rgba(255, 140, 0, 0.16)',
+    width: 44,
+    height: 44,
+    marginLeft: -22,
+    marginTop: -22,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
-  centerDot: {
-    position: 'absolute',
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+  handleInner: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     backgroundColor: ORANGE,
-    borderWidth: 2,
-    borderColor: '#070707',
-  },
-  cleanHandle: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    borderWidth: 0,
+    borderWidth: 3,
+    borderColor: '#FFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });

@@ -5,8 +5,9 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
-  SafeAreaView,
 } from 'react-native';
+// 🔥 Aviso resolvido com o novo import da SafeAreaView
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 import { LeafletMap } from '../map/LeafletMap';
@@ -30,7 +31,6 @@ export function PrivacyMapContainer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [distanceText, setDistanceText] = useState('0 m');
 
-  // Apenas estilos limpos. O voo animado agora é nativo do LeafletMap.tsx
   const customMapCSS = `
     .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important; }
     .leaflet-control-container { display: none !important; }
@@ -75,7 +75,6 @@ export function PrivacyMapContainer({
         onRequestClose={() => setIsFullscreen(false)}
       >
         <SafeAreaView style={styles.fullscreenRoot}>
-          {/* Animação simples de FadeIn cobrindo 100% da tela */}
           <Animated.View
             entering={FadeIn.duration(250)}
             exiting={FadeOut.duration(250)}
