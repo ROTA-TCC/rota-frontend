@@ -50,12 +50,21 @@ export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: Lea
 
   useEffect(() => {
     if (isMapReady && webviewRef.current) {
+      // Script inteligente: Só faz o flyTo se a distância for maior que 5 metros.
+      // Isso impede que atualizações duplicadas do React causem a tremedeira.
       const script = `
         if (window.leafletMapInstance) {
-          window.leafletMapInstance.flyTo([${center[0]}, ${center[1]}], ${zoom}, {
-            animate: true,
-            duration: 1.2
-          });
+          var currentCenter = window.leafletMapInstance.getCenter();
+          var targetLat = ${center[0]};
+          var targetLng = ${center[1]};
+          var dist = window.leafletMapInstance.distance(currentCenter, [targetLat, targetLng]);
+          
+          if (dist > 5) {
+            window.leafletMapInstance.flyTo([targetLat, targetLng], ${zoom}, {
+              animate: true,
+              duration: 1.2
+            });
+          }
         }
         true;
       `;
@@ -69,10 +78,11 @@ export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: Lea
         ref={webviewRef}
         source={{ html: htmlContent }}
         style={styles.webview}
-        scrollEnabled={false}
+        // 🔥 Removi o scrollEnabled={false} que estava impedindo você de mexer no mapa!
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         bounces={false}
+        overScrollMode="never"
         onMessage={(event) => {
           try {
             const data = JSON.parse(event.nativeEvent.data);

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
-// 🔥 Aviso resolvido com o novo import da SafeAreaView
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
