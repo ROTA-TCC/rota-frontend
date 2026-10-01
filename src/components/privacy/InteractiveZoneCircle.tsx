@@ -6,7 +6,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   runOnJS,
-  withTiming,
   useAnimatedReaction,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
@@ -33,16 +32,11 @@ export function InteractiveZoneCircle({
 
   const radius = useSharedValue(70);
   const startRadius = useSharedValue(70);
-  
-  const zoomSV = useSharedValue(zoom);
-  const latSV = useSharedValue(centerCoords[0]);
-  const targetMeters = useSharedValue(0); // Armazena a área real em metros
+  const lastDistRef = useRef('');
 
   const handleAngleRad = (-45 * Math.PI) / 180;
   const gapAngleDeg = 48; 
-  const lastDistRef = useRef('');
 
-  // Matemática de conversão: Pixels vs Metros Reais
   const getMetersPerPx = (z: number, lat: number) => {
     'worklet';
     const latRad = (lat * Math.PI) / 180;
@@ -55,37 +49,23 @@ export function InteractiveZoneCircle({
     return `${(meters / 1000).toFixed(1)} km`;
   };
 
-  const updateDistanceJS = (currentRadiusPx: number) => {
-    const dist = calculateDistanceStr(currentRadiusPx, zoom, centerCoords[0]);
+  const updateDistanceJS = (currentRadiusPx: number, currentZoom: number, currentLat: number) => {
+    const dist = calculateDistanceStr(currentRadiusPx, currentZoom, currentLat);
     if (dist !== lastDistRef.current && onDistanceChange) {
       lastDistRef.current = dist;
       onDistanceChange(dist);
     }
   };
 
-  // 1. Inicia os metros alvo quando o mapa carrega
+  // Quando o zoom muda, o círculo NÃO muda de tamanho, mas atualizamos o texto apresentado instantaneamente
   useEffect(() => {
-    targetMeters.value = radius.value * getMetersPerPx(zoom, centerCoords[0]);
-  }, []);
-
-  // 2. Escala o círculo quando o Zoom muda, preservando a área física
-  useEffect(() => {
-    if (targetMeters.value > 0) {
-      const targetPx = targetMeters.value / getMetersPerPx(zoom, centerCoords[0]);
-      let clamped = targetPx;
-      if (clamped < minRadius) clamped = minRadius;
-      if (clamped > maxRadius) clamped = maxRadius;
-      
-      radius.value = withTiming(clamped, { duration: 300 });
-    }
-    zoomSV.value = zoom;
-    latSV.value = centerCoords[0];
+    updateDistanceJS(radius.value, zoom, centerCoords[0]);
   }, [zoom, centerCoords[0]]);
 
   useAnimatedReaction(
     () => radius.value,
     (currentRadius) => {
-      runOnJS(updateDistanceJS)(currentRadius);
+      runOnJS(updateDistanceJS)(currentRadius, zoom, centerCoords[0]);
     }
   );
 
@@ -101,8 +81,6 @@ export function InteractiveZoneCircle({
       if (newR > maxRadius) newR = maxRadius;
 
       radius.value = newR;
-      // Atualiza os metros físicos que você acabou de configurar na mão
-      targetMeters.value = newR * getMetersPerPx(zoomSV.value, latSV.value);
     });
 
   const animatedArcProps = useAnimatedProps(() => {
@@ -155,7 +133,6 @@ export function InteractiveZoneCircle({
 
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.cleanHandle, animatedHandleStyle]}>
-          {/* O Seu Ícone Original: Preto, Fino, Grande, Sem sombra */}
           <Svg width="36" height="36" viewBox="0 0 24 24" fill="none">
             <Path
               d="M14 10L21 3M21 3H16M21 3V8M10 14L3 21M3 21H8M3 21V16"
