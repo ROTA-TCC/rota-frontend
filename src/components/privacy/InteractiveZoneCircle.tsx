@@ -33,43 +33,59 @@ export function InteractiveZoneCircle({
 
   const radius = useSharedValue(70);
   const startRadius = useSharedValue(70);
-  const prevContainerSize = useSharedValue(containerSize);
+  
+  const prevZoom = useSharedValue(zoom);
+  const targetDistanceMeters = useSharedValue(0);
 
   const handleAngleRad = (-45 * Math.PI) / 180;
   const gapAngleDeg = 48; 
-
   const lastDistRef = useRef('');
 
-  const calculateDistance = (radiusPx: number) => {
-    const latitude = centerCoords[0];
-    const latRad = (latitude * Math.PI) / 180;
-    const metersPerPx = (156543.03392 * Math.cos(latRad)) / Math.pow(2, zoom);
-    const meters = Math.round(radiusPx * metersPerPx);
+  const getMetersPerPx = (z: number, lat: number) => {
+    'worklet';
+    const latRad = (lat * Math.PI) / 180;
+    return (156543.03392 * Math.cos(latRad)) / Math.pow(2, z);
+  };
 
+  const calculateDistanceStr = (rPx: number, z: number, lat: number) => {
+    const meters = Math.round(rPx * getMetersPerPx(z, lat));
     if (meters < 1000) return `${meters} m`;
     return `${(meters / 1000).toFixed(1)} km`;
   };
 
-  const updateDistance = (currentRadiusPx: number) => {
-    const dist = calculateDistance(currentRadiusPx);
+  const updateDistanceJS = (currentRadiusPx: number) => {
+    const dist = calculateDistanceStr(currentRadiusPx, zoom, centerCoords[0]);
     if (dist !== lastDistRef.current && onDistanceChange) {
       lastDistRef.current = dist;
       onDistanceChange(dist);
     }
   };
 
+  // Define a distância em metros atual quando o mapa monta
   useEffect(() => {
-    if (prevContainerSize.value !== containerSize) {
-      const scaleRatio = containerSize / prevContainerSize.value;
-      radius.value = withTiming(radius.value * scaleRatio, { duration: 350 });
-      prevContainerSize.value = containerSize;
+    if (targetDistanceMeters.value === 0) {
+      targetDistanceMeters.value = radius.value * getMetersPerPx(zoom, centerCoords[0]);
     }
-  }, [containerSize]);
+  }, []);
+
+  // Quando o ZOOM muda, o círculo recalcula os pixels necessários 
+  // para cobrir a MESMA distância correspondente na vida real
+  useEffect(() => {
+    if (prevZoom.value !== zoom && targetDistanceMeters.value > 0) {
+      const targetPx = targetDistanceMeters.value / getMetersPerPx(zoom, centerCoords[0]);
+      let clamped = targetPx;
+      if (clamped < minRadius) clamped = minRadius;
+      if (clamped > maxRadius) clamped = maxRadius;
+      
+      radius.value = withTiming(clamped, { duration: 300 });
+      prevZoom.value = zoom;
+    }
+  }, [zoom, centerCoords]);
 
   useAnimatedReaction(
     () => radius.value,
     (currentRadius) => {
-      runOnJS(updateDistance)(currentRadius);
+      runOnJS(updateDistanceJS)(currentRadius);
     }
   );
 
@@ -85,12 +101,13 @@ export function InteractiveZoneCircle({
       if (newR > maxRadius) newR = maxRadius;
 
       radius.value = newR;
+      // Salva a nova métrica na vida real
+      targetDistanceMeters.value = newR * getMetersPerPx(zoom, centerCoords[0]);
     });
 
   const animatedArcProps = useAnimatedProps(() => {
     const r = radius.value;
     const gapRad = (gapAngleDeg * Math.PI) / 180;
-
     const startAngle = handleAngleRad + gapRad / 2;
     const endAngle = handleAngleRad - gapRad / 2 + 2 * Math.PI;
 
@@ -99,8 +116,7 @@ export function InteractiveZoneCircle({
     const x2 = center + r * Math.cos(endAngle);
     const y2 = center + r * Math.sin(endAngle);
 
-    const pathD = `M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}`;
-    return { d: pathD };
+    return { d: `M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}` };
   });
 
   const animatedFillStyle = useAnimatedStyle(() => ({
@@ -111,30 +127,20 @@ export function InteractiveZoneCircle({
 
   const animatedHandleStyle = useAnimatedStyle(() => {
     const r = radius.value;
-    const hX = center + r * Math.cos(handleAngleRad);
-    const hY = center + r * Math.sin(handleAngleRad);
-
     return {
       transform: [
-        { translateX: hX - 24 },
-        { translateY: hY - 24 },
+        { translateX: center + r * Math.cos(handleAngleRad) - 24 },
+        { translateY: center + r * Math.sin(handleAngleRad) - 24 },
       ],
     };
   });
 
   return (
     <View
-      style={[
-        styles.overlayContainer,
-        { width: containerSize, height: containerSize },
-      ]}
+      style={[styles.overlayContainer, { width: containerSize, height: containerSize }]}
       pointerEvents="box-none"
     >
-      <Animated.View
-        style={[styles.zoneFill, animatedFillStyle]}
-        pointerEvents="none"
-      />
-
+      <Animated.View style={[styles.zoneFill, animatedFillStyle]} pointerEvents="none" />
       <View style={[styles.centerDot, { top: center - 5, left: center - 5 }]} />
 
       <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
@@ -149,11 +155,12 @@ export function InteractiveZoneCircle({
 
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.cleanHandle, animatedHandleStyle]}>
+          {/* Ícone PRETO, FINO (1.2), MAIOR (36) e SEM SOMBRA (CleanHandle zera shadow) */}
           <Svg width="36" height="36" viewBox="0 0 24 24" fill="none">
             <Path
               d="M14 10L21 3M21 3H16M21 3V8M10 14L3 21M3 21H8M3 21V16"
               stroke="#000000"
-              strokeWidth="1.5"
+              strokeWidth="1.2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />

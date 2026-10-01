@@ -30,11 +30,9 @@ export function PrivacyMapContainer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [distanceText, setDistanceText] = useState('0 m');
 
-  // CSS Puro - Removido o script que estava quebrando o render do WebView
+  // Apenas estilos limpos. O voo animado agora é nativo do LeafletMap.tsx
   const customMapCSS = `
     .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important; }
-    body { background-color: #070707 !important; margin: 0; padding: 0; }
-    #map { background-color: #070707 !important; }
     .leaflet-control-container { display: none !important; }
   `;
 
@@ -77,9 +75,10 @@ export function PrivacyMapContainer({
         onRequestClose={() => setIsFullscreen(false)}
       >
         <SafeAreaView style={styles.fullscreenRoot}>
+          {/* Animação simples de FadeIn cobrindo 100% da tela */}
           <Animated.View
-            entering={FadeIn.duration(300)}
-            exiting={FadeOut.duration(300)}
+            entering={FadeIn.duration(250)}
+            exiting={FadeOut.duration(250)}
             style={styles.fullscreenRoot}
           >
             <TouchableOpacity
