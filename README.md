@@ -55,8 +55,6 @@ O Codespaces é uma alternativa recomendada para desenvolvimento em nuvem, espec
 ## Sobre o Projeto
 O Rota tem como objetivo facilitar a conexão entre passageiros e motoristas, funcionando como um sistema de mobilidade urbana completo para o TCC.
 
----
-
 ## fluxo de trabalho
 
 Se você precisa de ajuda com o fluxo de trabalho e comandos do Git, consulte o nosso guia passo a passo:
