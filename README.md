@@ -23,8 +23,6 @@ Esta seção descreve como preparar o ambiente de desenvolvimento em sua máquin
     npx expo start
     ```
 
----
-
 ## 2. Execução via GitHub Codespaces
 
 O Codespaces é uma alternativa recomendada para desenvolvimento em nuvem, especialmente útil caso você não deseje configurar o ambiente localmente ou esteja utilizando máquinas com restrições.
@@ -49,8 +47,6 @@ O Codespaces é uma alternativa recomendada para desenvolvimento em nuvem, espec
     npx expo start --tunnel
     ```
     Após executar este comando, um código QR aparecerá no terminal. Utilize o aplicativo Expo Go no seu celular para ler o QR Code e visualizar o aplicativo.
-
----
 
 ## Sobre o Projeto
 O Rota tem como objetivo facilitar a conexão entre passageiros e motoristas, funcionando como um sistema de mobilidade urbana completo para o TCC.
