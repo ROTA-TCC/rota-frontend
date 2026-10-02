@@ -59,7 +59,7 @@ O Rota tem como objetivo facilitar a conexão entre passageiros e motoristas, fu
 
 ## fluxo de trabalho
 
-Se você é novo no projeto ou precisa de ajuda com o fluxo de trabalho e comandos do Git, consulte o nosso guia passo a passo:
+Se você precisa de ajuda com o fluxo de trabalho e comandos do Git, consulte o nosso guia passo a passo:
 
 👉 **[Guia Prático de Git e Workflow (`docs/git.md`)](docs/git.md)**
 
