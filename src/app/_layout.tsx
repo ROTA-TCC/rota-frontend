@@ -12,7 +12,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  
+
   const [loaded] = useFonts({
     'Eina03-SemiBold': require('../../assets/fonts/Eina03-SemiBold.ttf'),
   });
@@ -38,8 +38,10 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="run/active-run" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </AuthProvider>
   );
 }
+
