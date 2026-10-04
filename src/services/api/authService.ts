@@ -18,7 +18,7 @@ export const refreshAccessToken = async (): Promise<string | null> => {
       }
     });
 
-    const newAccessToken = response.data.accessToken || response.data.token;
+    const newAccessToken = response.data.data?.accessToken || response.data.accessToken || response.data.token;
     console.log('Refresh successful. New token:', !!newAccessToken);
     
     if (newAccessToken) {
