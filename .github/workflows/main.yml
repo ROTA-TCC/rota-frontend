@@ -1,0 +1,31 @@
+name: Expo CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint_and_test:
+    name: Lint and Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Instalar dependências
+        run: pnpm install
+
+      - name: Rodar o Lint
+        run: pnpm run lint
+
+      - name: Rodar Testes
+        run: pnpm run test
