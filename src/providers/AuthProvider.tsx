@@ -35,9 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (data: LoginDto) => {
     try {
       const response = await api.post('/auth/login', data);
-      console.log('--- LOGIN RESPONSE ---');
-      console.log('Token received:', !!response.data.token);
-      console.log('RefreshToken received:', !!response.data.refreshToken);
+      console.log('--- LOGIN RESPONSE DATA ---', JSON.stringify(response.data, null, 2));
 
       if (response.data.token) {
         await SecureStore.setItemAsync('token', response.data.token);
