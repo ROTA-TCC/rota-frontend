@@ -1,6 +1,5 @@
 import { AxiosInstance, InternalAxiosRequestConfig, AxiosError, AxiosResponse, AxiosStatic } from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import { refreshAccessToken } from './authService';
 
 export class ApiError extends Error {
   constructor(
@@ -15,9 +14,14 @@ export class ApiError extends Error {
 }
 
 let logoutHandler: (() => void) | null = null;
+let refreshHandler: (() => Promise<string | null>) | null = null;
 
 export const setLogoutHandler = (handler: () => void) => {
   logoutHandler = handler;
+};
+
+export const setRefreshHandler = (handler: () => Promise<string | null>) => {
+  refreshHandler = handler;
 };
 
 export const setupInterceptors = (api: AxiosInstance) => {
@@ -39,11 +43,12 @@ export const setupInterceptors = (api: AxiosInstance) => {
 
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
-        const newToken = await refreshAccessToken();
-        
-        if (newToken) {
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return api(originalRequest);
+        if (refreshHandler) {
+          const newToken = await refreshHandler();
+          if (newToken) {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return api(originalRequest);
+          }
         }
       }
 

@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, ReactNode, useEffect, useCa
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
 import api from '../services/api/client';
-import { setLogoutHandler } from '../services/api/interceptors';
+import { setLogoutHandler, setRefreshHandler } from '../services/api/interceptors';
+import { refreshAccessToken } from '../services/api/authService';
 
 import { LoginDto } from '@ROTA-TCC/types';
 
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setLogoutHandler(logout);
+    setRefreshHandler(refreshAccessToken);
   }, [logout]);
 
   const login = async (data: LoginDto) => {
