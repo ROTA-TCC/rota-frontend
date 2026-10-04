@@ -15,8 +15,11 @@ interface LeafletMapProps {
 export function LeafletMap({ center, zoom, style, customCSS = '', route, showMarker = false, ...rest }: LeafletMapProps) {
   const webviewRef = useRef<WebView>(null);
   const [isMapReady, setIsMapReady] = useState(false);
+  const initialCenterRef = useRef(center);
 
   const htmlContent = useMemo(() => {
+    const lat = initialCenterRef.current[0];
+    const lng = initialCenterRef.current[1];
     return `
     <!DOCTYPE html>
     <html>
@@ -34,12 +37,12 @@ export function LeafletMap({ center, zoom, style, customCSS = '', route, showMar
     <body>
       <div id="map"></div>
       <script>
-        var map = L.map('map', { zoomControl: false }).setView([${center[0]}, ${center[1]}], ${zoom});
+        var map = L.map('map', { zoomControl: false }).setView([${lat}, ${lng}], ${zoom});
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
         
         window.leafletMapInstance = map;
         window.routeLine = L.polyline([], { color: '#ff4500', weight: 5, opacity: 0.8 }).addTo(map);
-        window.currentMarker = L.circleMarker([${center[0]}, ${center[1]}], {
+        window.currentMarker = L.circleMarker([${lat}, ${lng}], {
           radius: 8, fillColor: '#007AFF', color: '#FFFFFF', weight: 2, opacity: 1, fillOpacity: 1
         });
         if (${showMarker}) {
@@ -54,6 +57,8 @@ export function LeafletMap({ center, zoom, style, customCSS = '', route, showMar
     </html>
   `;
   }, [customCSS]);
+
+  const mapSource = useMemo(() => ({ html: htmlContent }), [htmlContent]);
 
   useEffect(() => {
     if (isMapReady && webviewRef.current) {
@@ -95,7 +100,7 @@ export function LeafletMap({ center, zoom, style, customCSS = '', route, showMar
     <View style={[styles.container, style]}>
       <WebView
         ref={webviewRef}
-        source={{ html: htmlContent }}
+        source={mapSource}
         style={styles.webview}
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
