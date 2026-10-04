@@ -6,16 +6,26 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 import { PickerModal } from '@/components/PickerModal';
+import { useProfileSetup } from '@/providers/ProfileSetupProvider';
 
 export default function ProfileInfoScreen() {
   const router = useRouter();
   const accentColor = Colors.dark.tint;
+  const { updateProfileData } = useProfileSetup();
 
   const [weight, setWeight] = useState('70.3 kg');
   const [height, setHeight] = useState('175 cm');
   const [age, setAge] = useState('24 anos');
 
   const [activePicker, setActivePicker] = useState<'weight' | 'height' | 'age' | null>(null);
+
+  const handleNext = () => {
+    const peso = parseFloat(weight.replace(' kg', '').replace(',', '.'));
+    const altura = parseFloat(height.replace(' cm', ''));
+    const idade = parseFloat(age.replace(' anos', ''));
+    updateProfileData({ peso, altura, idade });
+    router.push('/set-goals');
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -73,7 +83,7 @@ export default function ProfileInfoScreen() {
         <View style={styles.footer}>
           <TouchableOpacity
             style={[styles.btnNext, { backgroundColor: accentColor }]}
-            onPress={() => router.push('/set-goals')}
+            onPress={handleNext}
             activeOpacity={0.85}
           >
             <ThemedText style={styles.btnNextText}>Próximo</ThemedText>

@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider } from '@/providers/AuthProvider';
+import { ProfileSetupProvider } from '@/providers/ProfileSetupProvider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,20 +28,22 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <Stack
-        screenOptions={{
-          contentStyle: {
-            backgroundColor: colorScheme === 'dark' ? '#121212' : '#ffffff',
-            fontFamily: 'Eina03-SemiBold',
-          },
-        }}
-      >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="run/active-run" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
-      </Stack>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      <ProfileSetupProvider>
+        <Stack
+          screenOptions={{
+            contentStyle: {
+              backgroundColor: colorScheme === 'dark' ? '#121212' : '#ffffff',
+              fontFamily: 'Eina03-SemiBold',
+            },
+          }}
+        >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="run/active-run" options={{ headerShown: false, presentation: 'fullScreenModal' }} />
+        </Stack>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+      </ProfileSetupProvider>
     </AuthProvider>
   );
 }

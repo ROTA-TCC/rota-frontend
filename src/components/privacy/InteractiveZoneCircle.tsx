@@ -18,6 +18,7 @@ interface InteractiveZoneCircleProps {
   centerCoords: [number, number];
   zoom: number;
   onDistanceChange?: (formattedDistance: string) => void;
+  onRadiusMetersChange?: (meters: number) => void;
 }
 
 export function InteractiveZoneCircle({
@@ -25,6 +26,7 @@ export function InteractiveZoneCircle({
   centerCoords,
   zoom,
   onDistanceChange,
+  onRadiusMetersChange,
 }: InteractiveZoneCircleProps) {
   const center = containerSize / 2;
   const minRadius = 40;
@@ -43,21 +45,30 @@ export function InteractiveZoneCircle({
     return (156543.03392 * Math.cos(latRad)) / Math.pow(2, z);
   };
 
-  const calculateDistanceStr = (rPx: number, z: number, lat: number) => {
-    const meters = Math.round(rPx * getMetersPerPx(z, lat));
+  const calculateDistance = (rPx: number, z: number, lat: number) => {
+    'worklet';
+    return Math.round(rPx * getMetersPerPx(z, lat));
+  };
+
+  const calculateDistanceStr = (meters: number) => {
     if (meters < 1000) return `${meters} m`;
     return `${(meters / 1000).toFixed(1)} km`;
   };
 
   const updateDistanceJS = (currentRadiusPx: number, currentZoom: number, currentLat: number) => {
-    const dist = calculateDistanceStr(currentRadiusPx, currentZoom, currentLat);
+    const meters = calculateDistance(currentRadiusPx, currentZoom, currentLat);
+    const dist = calculateDistanceStr(meters);
+    
+    if (onRadiusMetersChange) {
+      onRadiusMetersChange(meters);
+    }
+    
     if (dist !== lastDistRef.current && onDistanceChange) {
       lastDistRef.current = dist;
       onDistanceChange(dist);
     }
   };
 
-  // Quando o zoom muda, o círculo NÃO muda de tamanho, mas atualizamos o texto apresentado instantaneamente
   useEffect(() => {
     updateDistanceJS(radius.value, zoom, centerCoords[0]);
   }, [zoom, centerCoords[0]]);

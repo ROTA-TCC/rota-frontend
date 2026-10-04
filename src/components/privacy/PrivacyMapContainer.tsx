@@ -20,12 +20,14 @@ interface PrivacyMapContainerProps {
   mapCenter: [number, number];
   zoom: number;
   onLocateUser: () => void;
+  onRadiusMetersChange?: (meters: number) => void;
 }
 
 export function PrivacyMapContainer({
   mapCenter,
   zoom,
   onLocateUser,
+  onRadiusMetersChange,
 }: PrivacyMapContainerProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [distanceText, setDistanceText] = useState('0 m');
@@ -50,6 +52,7 @@ export function PrivacyMapContainer({
         centerCoords={mapCenter}
         zoom={zoom}
         onDistanceChange={(dist) => setDistanceText(dist)}
+        onRadiusMetersChange={onRadiusMetersChange}
       />
 
       <MapControls

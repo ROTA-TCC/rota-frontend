@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import * as SecureStore from 'expo-secure-store';
+import { useRouter } from 'expo-router';
 import api from '../services/api/client';
 import { setLogoutHandler } from '../services/api/interceptors';
 
@@ -16,11 +17,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useRouter();
 
   const logout = useCallback(async () => {
     await SecureStore.deleteItemAsync('token');
+    await SecureStore.deleteItemAsync('refreshToken');
     setIsAuthenticated(false);
-  }, []);
+    router.replace('/(auth)/login');
+  }, [router]);
 
   useEffect(() => {
     setLogoutHandler(logout);
@@ -32,21 +36,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (response.data.token) {
         await SecureStore.setItemAsync('token', response.data.token);
       }
+      if (response.data.refreshToken) {
+        await SecureStore.setItemAsync('refreshToken', response.data.refreshToken);
+      }
       setIsAuthenticated(true);
-      console.log('Login bem-sucedido:', response.data);
+      router.replace('/(tabs)/explore');
     } catch (error: any) {
-      console.error('Erro no login:', error.message || error);
       throw error;
     }
   };
 
   const register = async (alias: string, email: string, password: string) => {
     try {
-      console.log('Enviando requisição de registro:', { alias, email, password });
       await api.post('/auth/register', { alias, email, password });
-      console.log('Registro bem-sucedido');
     } catch (error: any) {
-      console.error('Erro no registro:', error.message || error);
       throw error;
     }
   };

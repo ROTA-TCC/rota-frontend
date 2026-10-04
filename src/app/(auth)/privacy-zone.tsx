@@ -8,11 +8,33 @@ import { PrivacyHeader } from '../../components/privacy/PrivacyHeader';
 import { PrivacyFooter } from '../../components/privacy/PrivacyFooter';
 import { PrivacyMapContainer } from '../../components/privacy/PrivacyMapContainer';
 
-const DEFAULT_CENTER: [number, number] = [-23.55052, -46.633308]; // São Paulo Default
+import { updateProfile } from '@/services/api/profileService';
+import { useProfileSetup } from '@/providers/ProfileSetupProvider';
+
+const DEFAULT_CENTER: [number, number] = [-23.55052, -46.633308];
 
 export default function PrivacyZoneScreen() {
   const router = useRouter();
+  const { profileData, resetProfileData } = useProfileSetup();
   const [mapCenter, setMapCenter] = useState<[number, number]>(DEFAULT_CENTER);
+  const [radiusMeters, setRadiusMeters] = useState(70);
+
+  const handleComplete = async () => {
+    try {
+      await updateProfile({
+        ...profileData,
+        mapaOcultacao: {
+          latitude: mapCenter[0],
+          longitude: mapCenter[1],
+          radiusMetres: radiusMeters,
+        },
+      });
+      resetProfileData();
+      router.replace('/(tabs)/explore');
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const requestUserLocation = useCallback(async () => {
     try {
@@ -42,7 +64,6 @@ export default function PrivacyZoneScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        {/* Glow de Fundo */}
         <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <Image
             source={require('../../../assets/images/background-blur.png')}
@@ -68,11 +89,15 @@ export default function PrivacyZoneScreen() {
             mapCenter={mapCenter}
             zoom={14}
             onLocateUser={requestUserLocation}
+            onRadiusMetersChange={setRadiusMeters}
           />
 
           <PrivacyFooter
-            onComplete={() => router.push('/')}
-            onSkip={() => router.push('/')}
+            onComplete={handleComplete}
+            onSkip={() => {
+              resetProfileData();
+              router.push('/');
+            }}
           />
         </ScrollView>
       </View>

@@ -1,5 +1,6 @@
 import { AxiosInstance, InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { refreshAccessToken } from './authService';
 
 export class ApiError extends Error {
   constructor(
@@ -34,6 +35,18 @@ export const setupInterceptors = (api: AxiosInstance) => {
   api.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError) => {
+      const originalRequest = error.config as InternalAxiosRequestConfig;
+
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        const newToken = await refreshAccessToken();
+        
+        if (newToken) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return api(originalRequest);
+        }
+      }
+
       if (error.response) {
         const { status, data } = error.response;
         
@@ -46,6 +59,7 @@ export const setupInterceptors = (api: AxiosInstance) => {
             throw new ApiError(backendMessage || 'Requisição inválida.', status, field, data);
           case 401:
             await SecureStore.deleteItemAsync('token');
+            await SecureStore.deleteItemAsync('refreshToken');
             if (logoutHandler) {
               logoutHandler();
             }

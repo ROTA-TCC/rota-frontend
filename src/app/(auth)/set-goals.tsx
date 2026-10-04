@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import Svg, { Circle } from 'react-native-svg';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import GoalArcPicker, { GoalLevel } from '@/components/GoalArcPicker';
+import { useProfileSetup } from '@/providers/ProfileSetupProvider';
 
 const ORANGE = '#FF8C00';
 
@@ -42,6 +43,17 @@ const LEVELS: Record<GoalLevel, LevelData> = {
 export default function SetGoalsScreen() {
   const router = useRouter();
   const [selectedLevel, setSelectedLevel] = useState<GoalLevel>('intermediate');
+  const { updateProfileData } = useProfileSetup();
+
+  const handleNext = () => {
+    const levelMap: Record<GoalLevel, string> = {
+      novice: 'iniciante',
+      intermediate: 'intermediario',
+      advanced: 'avancado',
+    };
+    updateProfileData({ nivelDificuldade: levelMap[selectedLevel] });
+    router.push('/privacy-zone');
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -107,7 +119,7 @@ export default function SetGoalsScreen() {
           <View style={styles.footer}>
             <TouchableOpacity
               style={styles.btnNext}
-              onPress={() => router.push('/privacy-zone')}
+              onPress={handleNext}
               activeOpacity={0.85}
             >
               <Text style={styles.btnNextText}>Próximo</Text>

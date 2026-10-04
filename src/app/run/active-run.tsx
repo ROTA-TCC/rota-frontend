@@ -5,6 +5,7 @@ import { LeafletMap } from '@/components/map/LeafletMap';
 import FloatingButtons from '../../components/Record/FloatingButtons';
 import BottomPanel from '../../components/Record/BottomPanel';
 import { useRunTracker } from '@/hooks/useRunTracker';
+import { createRun } from '@/services/api/runService';
 
 export default function ActiveRunScreen() {
   const { type } = useLocalSearchParams<{ type: string }>();
@@ -32,8 +33,12 @@ export default function ActiveRunScreen() {
     
     if (!payload || payload.trackpoints.length === 0) return;
 
-    console.log(JSON.stringify(payload, null, 2));
-    router.back();
+    try {
+      await createRun(payload);
+      router.replace('/(tabs)/explore');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleBack = () => {
