@@ -1,4 +1,4 @@
-import api from '../client';
+import api from './client';
 import { UpdateProfileDto } from '@ROTA-TCC/types/profile';
 
 export const updateProfile = async (data: UpdateProfileDto): Promise<void> => {
