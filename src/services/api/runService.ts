@@ -1,4 +1,4 @@
-import api from '../client';
+import api from './client';
 import { CreateRunDto } from '@ROTA-TCC/types/runs';
 
 export const createRun = async (data: CreateRunDto): Promise<void> => {
