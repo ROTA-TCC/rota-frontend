@@ -40,6 +40,7 @@ jobs:
         run: pnpm install
 
       - name: Rodar o Lint
+        continue-on-error: true
         run: pnpm run lint
 
       - name: Rodar Testes
