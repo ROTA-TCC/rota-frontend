@@ -23,7 +23,7 @@ export const useRunTracker = () => {
 
     try {
       const loc = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Highest,
+        accuracy: Location.Accuracy.BestForNavigation,
       });
       const coords: [number, number] = [loc.coords.latitude, loc.coords.longitude];
       setCurrentLocation(coords);
@@ -46,10 +46,10 @@ export const useRunTracker = () => {
     }, 1000);
 
     if (locationSubRef.current) locationSubRef.current.remove();
-    
+
     locationSubRef.current = await Location.watchPositionAsync(
       {
-        accuracy: Location.Accuracy.Highest,
+        accuracy: Location.Accuracy.BestForNavigation,
         timeInterval: 1000,
         distanceInterval: 0,
       },
@@ -65,7 +65,7 @@ export const useRunTracker = () => {
             longitude
           );
 
-          if (dist > 0.5 && dist < 50) {
+          if (dist >= 0.3 && dist < 100) {
             totalDistanceRef.current += dist;
             setDistance(totalDistanceRef.current);
             lastLocationRef.current = { latitude, longitude };
