@@ -1,10 +1,11 @@
 name: Expo CI
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ main, master ]
+    branches: [ development ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ development ]
 
 jobs:
   lint_and_test:
@@ -14,6 +15,11 @@ jobs:
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,3 +35,4 @@ jobs:
 
       - name: Rodar Testes
         run: pnpm run test
+
