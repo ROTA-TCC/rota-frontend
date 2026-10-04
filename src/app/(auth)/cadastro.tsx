@@ -28,14 +28,18 @@ export default function CadastroScreen() {
       Alert.alert('Sucesso', 'Conta criada com sucesso!');
       router.push('/(auth)/profile-info');
     } catch (error: any) {
+      console.log('Error object in handleRegister:', error);
       if (error instanceof ApiError) {
         if (error.field) {
           setErrors({ [error.field]: error.message });
         } else {
           setErrors({ general: error.message });
         }
+      } else if (error.response && error.response.data) {
+        const message = error.response.data.message || 'Erro no cadastro';
+        setErrors({ general: message });
       } else {
-        setErrors({ general: 'Falha ao cadastrar' });
+        setErrors({ general: error.message || 'Falha ao cadastrar' });
       }
     } finally {
       setLoading(false);
