@@ -15,9 +15,12 @@ export const refreshAccessToken = async (): Promise<string | null> => {
       }
     });
 
-    const newAccessToken = response.data.token;
-    await SecureStore.setItemAsync('token', newAccessToken);
-    return newAccessToken;
+    const newAccessToken = response.data.accessToken || response.data.token;
+    if (newAccessToken) {
+      await SecureStore.setItemAsync('token', newAccessToken);
+      return newAccessToken;
+    }
+    return null;
   } catch (error) {
     await SecureStore.deleteItemAsync('token');
     await SecureStore.deleteItemAsync('refreshToken');
