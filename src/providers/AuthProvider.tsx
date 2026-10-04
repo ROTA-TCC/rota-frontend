@@ -35,13 +35,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (data: LoginDto) => {
     try {
       const response = await api.post('/auth/login', data);
-      console.log('--- LOGIN RESPONSE DATA ---', JSON.stringify(response.data, null, 2));
+      
+      const { accessToken, refreshToken } = response.data.data;
 
-      if (response.data.token) {
-        await SecureStore.setItemAsync('token', response.data.token);
+      if (accessToken) {
+        await SecureStore.setItemAsync('token', accessToken);
       }
-      if (response.data.refreshToken) {
-        await SecureStore.setItemAsync('refreshToken', response.data.refreshToken);
+      if (refreshToken) {
+        await SecureStore.setItemAsync('refreshToken', refreshToken);
       }
       setIsAuthenticated(true);
       router.replace('/(tabs)/explore');
