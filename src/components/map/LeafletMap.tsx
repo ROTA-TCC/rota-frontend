@@ -42,6 +42,9 @@ export function LeafletMap({ center, zoom, style, customCSS = '', route, showMar
         window.currentMarker = L.circleMarker([${center[0]}, ${center[1]}], {
           radius: 8, fillColor: '#007AFF', color: '#FFFFFF', weight: 2, opacity: 1, fillOpacity: 1
         });
+        if (${showMarker}) {
+          window.currentMarker.addTo(map);
+        }
 
         setTimeout(function() {
           window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'READY' }));

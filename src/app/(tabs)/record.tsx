@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import * as Location from 'expo-location';
+import React, { useEffect } from 'react';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { LeafletMap } from '@/components/map/LeafletMap';
 import FloatingButtons from '../../components/Record/FloatingButtons';
 import BottomPanel from '../../components/Record/BottomPanel';
@@ -20,18 +19,8 @@ export default function RecordScreen() {
     finishRecording
   } = useRunTracker();
 
-  const [initialRegion, setInitialRegion] = useState<[number, number] | null>(null);
-
   useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === 'granted') {
-        const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced
-        });
-        setInitialRegion([location.coords.latitude, location.coords.longitude]);
-      }
-    })();
+    startRecording();
   }, []);
 
   const handleFinish = async () => {
@@ -45,13 +34,19 @@ export default function RecordScreen() {
   const handleBack = () => {
   };
 
-  const mapCenter = currentLocation || initialRegion || [-23.5505, -46.6333];
+  if (!currentLocation) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ff4500" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <LeafletMap
-        center={mapCenter}
-        zoom={currentLocation ? 17 : 14}
+        center={currentLocation}
+        zoom={17}
         route={route}
         showMarker={true}
         style={styles.map}
@@ -79,6 +74,7 @@ export default function RecordScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#121212' },
+  loadingContainer: { flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' },
   map: { flex: 1 },
 });
 
