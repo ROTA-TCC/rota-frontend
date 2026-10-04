@@ -85,7 +85,7 @@ export function LeafletMap({ center, zoom, style, customCSS = '', route, showMar
   }, [center[0], center[1], zoom, isMapReady, showMarker]);
 
   useEffect(() => {
-    if (isMapReady && webviewRef.current && route) {
+    if (isMapReady && webviewRef.current && route && route.length > 0) {
       const routeJson = JSON.stringify(route);
       webviewRef.current.injectJavaScript(`
         if (window.routeLine) {

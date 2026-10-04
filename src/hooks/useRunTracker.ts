@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import * as Location from 'expo-location';
 import { calculateDistance, calculatePace, formatTime } from '../utils/runUtils';
 import { Trackpoint, RunPayload } from '../types/run';
@@ -17,23 +17,18 @@ export const useRunTracker = () => {
   const lastLocationRef = useRef<{ latitude: number; longitude: number } | null>(null);
   const totalDistanceRef = useRef<number>(0);
 
-  const initLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') return;
-
-    try {
-      const loc = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.BestForNavigation,
-      });
-      const coords: [number, number] = [loc.coords.latitude, loc.coords.longitude];
-      setCurrentLocation(coords);
-      lastLocationRef.current = { latitude: loc.coords.latitude, longitude: loc.coords.longitude };
-    } catch (e) {}
-  };
-
   const startRecording = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') return;
+
+    const initialLoc = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.BestForNavigation,
+    });
+    
+    const lat = initialLoc.coords.latitude;
+    const lng = initialLoc.coords.longitude;
+    setCurrentLocation([lat, lng]);
+    lastLocationRef.current = { latitude: lat, longitude: lng };
 
     if (!startTimeRef.current) startTimeRef.current = new Date().toISOString();
     
@@ -50,11 +45,12 @@ export const useRunTracker = () => {
     locationSubRef.current = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.BestForNavigation,
-        timeInterval: 1000,
-        distanceInterval: 0,
+        timeInterval: 2000, 
+        distanceInterval: 0, 
       },
       (location) => {
         const { latitude, longitude, altitude, speed } = location.coords;
+        
         setCurrentLocation([latitude, longitude]);
 
         if (lastLocationRef.current) {
@@ -65,24 +61,22 @@ export const useRunTracker = () => {
             longitude
           );
 
-          if (dist >= 0.3 && dist < 100) {
+          if (dist >= 1) {
             totalDistanceRef.current += dist;
             setDistance(totalDistanceRef.current);
             lastLocationRef.current = { latitude, longitude };
+
+            const newPoint: Trackpoint = {
+              latitude,
+              longitude,
+              altitude: altitude || 0,
+              speedMps: speed || 0,
+              recordedAt: new Date().toISOString()
+            };
+
+            setTrackpoints((prev) => [...prev, newPoint]);
           }
-        } else {
-          lastLocationRef.current = { latitude, longitude };
         }
-
-        const newPoint: Trackpoint = {
-          latitude,
-          longitude,
-          altitude: altitude || 0,
-          speedMps: speed || 0,
-          recordedAt: new Date().toISOString()
-        };
-
-        setTrackpoints((prev) => [...prev, newPoint]);
       }
     );
   };
@@ -112,12 +106,15 @@ export const useRunTracker = () => {
   };
 
   useEffect(() => {
-    initLocation();
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (locationSubRef.current) locationSubRef.current.remove();
     };
   }, []);
+
+  const route = useMemo(() => {
+    return trackpoints.map(pt => [pt.latitude, pt.longitude] as [number, number]);
+  }, [trackpoints]);
 
   return {
     isRecording,
@@ -126,7 +123,7 @@ export const useRunTracker = () => {
     distanceKm: (distance / 1000).toFixed(2).replace('.', ','),
     pace: calculatePace(duration, distance),
     currentLocation,
-    route: trackpoints.map(pt => [pt.latitude, pt.longitude] as [number, number]),
+    route,
     startRecording,
     pauseRecording,
     finishRecording
