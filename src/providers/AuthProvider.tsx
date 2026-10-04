@@ -35,6 +35,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (data: LoginDto) => {
     try {
       const response = await api.post('/auth/login', data);
+      console.log('--- LOGIN RESPONSE ---');
+      console.log('Token received:', !!response.data.token);
+      console.log('RefreshToken received:', !!response.data.refreshToken);
+
       if (response.data.token) {
         await SecureStore.setItemAsync('token', response.data.token);
       }
@@ -44,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsAuthenticated(true);
       router.replace('/(tabs)/explore');
     } catch (error: any) {
+      console.log('--- LOGIN ERROR ---', error);
       throw error;
     }
   };
