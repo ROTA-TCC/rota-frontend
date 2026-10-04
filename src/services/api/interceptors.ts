@@ -24,9 +24,6 @@ export const setupInterceptors = (api: AxiosInstance) => {
   api.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
       const token = await SecureStore.getItemAsync('token');
-      console.log('--- DEBUG INTERCEPTOR ---');
-      console.log('URL:', config.url);
-      console.log('Token found:', !!token);
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
