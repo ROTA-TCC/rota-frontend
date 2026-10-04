@@ -1,1 +1,5 @@
-export type { CreateRunDto as RunPayload, TrackpointDto as Trackpoint } from '@ROTA-TCC/types/runs';
+import { CreateRunDto, TrackpointDto } from '@ROTA-TCC/types';
+
+export type RunPayload = CreateRunDto;
+export type Trackpoint = TrackpointDto;
+

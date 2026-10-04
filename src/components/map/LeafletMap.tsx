@@ -5,14 +5,18 @@ import { WebView } from 'react-native-webview';
 interface LeafletMapProps {
   center: [number, number];
   zoom: number;
-  route?: [number, number][]; // Rota para ser desenhada
   style?: any;
   customCSS?: string;
+  route?: [number, number][];
+  showMarker?: boolean;
+  [key: string]: any;
 }
 
-export function LeafletMap({ center, zoom, route = [], style, customCSS = '' }: LeafletMapProps) {
+export function LeafletMap({ center, zoom, style, customCSS = '', route, showMarker = false, ...rest }: LeafletMapProps) {
   const webviewRef = useRef<WebView>(null);
   const [isMapReady, setIsMapReady] = useState(false);
+
+  const hasTrackingFeatures = route !== undefined || showMarker;
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -32,18 +36,19 @@ export function LeafletMap({ center, zoom, route = [], style, customCSS = '' }: 
       <div id="map"></div>
       <script>
         var map = L.map('map', { zoomControl: false }).setView([${center[0]}, ${center[1]}], ${zoom});
-
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-
-        // Cria a linha da rota
-        window.routeLine = L.polyline([], { color: '#ff4500', weight: 5, opacity: 0.8 }).addTo(map);
-        
-        // Cria o marcador de posição atual
-        window.currentMarker = L.circleMarker([${center[0]}, ${center[1]}], {
-          radius: 8, fillColor: '#007AFF', color: '#FFFFFF', weight: 2, opacity: 1, fillOpacity: 1
-        }).addTo(map);
-
         window.leafletMapInstance = map;
+
+        ${hasTrackingFeatures ? `
+          if (${showMarker}) {
+            window.currentMarker = L.circleMarker([${center[0]},${center[1]}], {
+              radius: 8, fillColor: '#007AFF', color: '#FFFFFF', weight: 2, opacity: 1, fillOpacity: 1
+            }).addTo(map);
+          }
+          if (${route !== undefined}) {
+            window.routeLine = L.polyline([], { color: '#ff4500', weight: 5, opacity: 0.8 }).addTo(map);
+          }
+        ` : ''}
 
         setTimeout(function() {
           window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'READY' }));
@@ -55,22 +60,29 @@ export function LeafletMap({ center, zoom, route = [], style, customCSS = '' }: 
 
   useEffect(() => {
     if (isMapReady && webviewRef.current) {
-      webviewRef.current.injectJavaScript(`
+      const script = `
         if (window.leafletMapInstance) {
           var currentCenter = window.leafletMapInstance.getCenter();
-          var dist = window.leafletMapInstance.distance(currentCenter, [${center[0]}, ${center[1]}]);
-          if (dist > 5) {
-            window.leafletMapInstance.flyTo([${center[0]}, ${center[1]}], ${zoom}, { animate: true, duration: 1.2 });
-            window.currentMarker.setLatLng([${center[0]}, ${center[1]}]);
+          var targetLat = ${center[0]};
+          var targetLng = ${center[1]};
+          var dist = window.leafletMapInstance.distance(currentCenter, [targetLat, targetLng]);
+          if (dist > 2) {
+            window.leafletMapInstance.flyTo([targetLat, targetLng], ${zoom}, { animate: true, duration: 1.2 });
           }
+          ${showMarker ? `
+            if (window.currentMarker) {
+              window.currentMarker.setLatLng([targetLat, targetLng]);
+            }
+          ` : ''}
         }
         true;
-      `);
+      `;
+      webviewRef.current.injectJavaScript(script);
     }
-  }, [center[0], center[1], zoom, isMapReady]);
+  }, [center[0], center[1], zoom, isMapReady, showMarker]);
 
   useEffect(() => {
-    if (isMapReady && webviewRef.current && route.length > 0) {
+    if (isMapReady && webviewRef.current && route) {
       const routeJson = JSON.stringify(route);
       webviewRef.current.injectJavaScript(`
         if (window.routeLine) {
@@ -97,6 +109,7 @@ export function LeafletMap({ center, zoom, route = [], style, customCSS = '' }: 
             if (data.type === 'READY') setIsMapReady(true);
           } catch (e) {}
         }}
+        {...rest}
       />
     </View>
   );

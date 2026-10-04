@@ -13,14 +13,11 @@ export const useRunTracker = () => {
   
   const startTimeRef = useRef<string | null>(null);
   const locationSubRef = useRef<Location.LocationSubscription | null>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startRecording = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Precisamos da permissão de localização para rastrear sua corrida!');
-      return;
-    }
+    if (status !== 'granted') return;
 
     if (!startTimeRef.current) startTimeRef.current = new Date().toISOString();
     
@@ -33,8 +30,8 @@ export const useRunTracker = () => {
 
     locationSubRef.current = await Location.watchPositionAsync(
       {
-        accuracy: Location.Accuracy.BestForNavigation,
-        timeInterval: 2000,
+        accuracy: Location.Accuracy.Highest,
+        timeInterval: 1000,
         distanceInterval: 1,
       },
       (location) => {
@@ -45,7 +42,7 @@ export const useRunTracker = () => {
           if (prev.length > 0) {
             const lastPt = prev[prev.length - 1];
             const dist = calculateDistance(lastPt.latitude, lastPt.longitude, latitude, longitude);
-            if (dist > 0.5 && dist < 50) { 
+            if (dist > 0.2) { 
               setDistance((d) => d + dist);
             }
           }
@@ -106,3 +103,4 @@ export const useRunTracker = () => {
     finishRecording
   };
 };
+
