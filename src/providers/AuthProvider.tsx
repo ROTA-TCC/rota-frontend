@@ -50,7 +50,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await api.post('/auth/register', { alias, email, password });
     } catch (error: any) {
-      throw error;
+      if (error.response && error.response.data) {
+        throw error;
+      }
+      throw new Error('Falha ao cadastrar. Verifique sua conexão.');
     }
   };
 
