@@ -21,29 +21,35 @@ const getPerpendicularDistance = (pt: Trackpoint, lineStart: Trackpoint, lineEnd
   return calculateDistance(pt.latitude, pt.longitude, lat, lon);
 };
 
-export const filterNoise = (points: Trackpoint[], minDistance: number = 2.0, minSpeed: number = 0.1): Trackpoint[] => {
+export const filterNoise = (points: Trackpoint[], minDistance: number = 2.0, minSpeed: number = 0.05): Trackpoint[] => {
   if (points.length === 0) return [];
 
-  const filtered: Trackpoint[] = [points[0]];
-  let lastPoint = points[0];
+  const filtered: Trackpoint[] = [];
+  let lastValidPoint: Trackpoint | null = null;
 
-  for (let i = 1; i < points.length; i++) {
+  for (let i = 0; i < points.length; i++) {
     const current = points[i];
-    const distance = calculateDistance(
-      lastPoint.latitude,
-      lastPoint.longitude,
-      current.latitude,
-      current.longitude
-    );
 
-    if (distance >= minDistance && current.speedMps >= minSpeed) {
-      filtered.push(current);
-      lastPoint = current;
+    if (current.speedMs < minSpeed && filtered.length === 0) {
+      continue;
     }
-  }
 
-  if (filtered.length > 0 && filtered[filtered.length - 1] !== points[points.length - 1]) {
-    filtered.push(points[points.length - 1]);
+    if (!lastValidPoint) {
+      filtered.push(current);
+      lastValidPoint = current;
+    } else {
+      const distance = calculateDistance(
+        lastValidPoint.latitude,
+        lastValidPoint.longitude,
+        current.latitude,
+        current.longitude
+      );
+
+      if (distance >= minDistance || i === points.length - 1) {
+        filtered.push(current);
+        lastValidPoint = current;
+      }
+    }
   }
 
   return filtered;
@@ -81,8 +87,8 @@ export const rdp = (points: Trackpoint[], epsilon: number): Trackpoint[] => {
   return points.filter((_, i) => keep[i] === 1);
 };
 
-export const optimizeRoute = (points: Trackpoint[], epsilon: number = 3.0): Trackpoint[] => {
-  const denoised = filterNoise(points);
+export const optimizeRoute = (points: Trackpoint[], epsilon: number = 2.0): Trackpoint[] => {
+  const denoised = filterNoise(points, 2.0, 0.05);
   return rdp(denoised, epsilon);
 };
 

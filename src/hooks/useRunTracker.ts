@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import * as Location from 'expo-location';
 import { calculateDistance, calculatePace, formatTime } from '../utils/runUtils';
+import { optimizeRoute } from '../utils/routeOptimizer';
 import { Trackpoint, RunPayload } from '../types/run';
 
 export const useRunTracker = () => {
@@ -45,8 +46,8 @@ export const useRunTracker = () => {
     locationSubRef.current = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.BestForNavigation,
-        timeInterval: 2000, 
-        distanceInterval: 0, 
+        timeInterval: 2000,
+        distanceInterval: 0,
       },
       (location) => {
         const { latitude, longitude, altitude, speed } = location.coords;
@@ -64,13 +65,13 @@ export const useRunTracker = () => {
           if (dist >= 1) {
             totalDistanceRef.current += dist;
             setDistance(totalDistanceRef.current);
-            lastLocationRef.current = { latitude, longitude };
+            lastLocationRef.current = { latitude: lat, longitude: lng };
 
             const newPoint: Trackpoint = {
               latitude,
               longitude,
               altitude: altitude || 0,
-              speedMps: speed || 0,
+              speedMs: speed || 0,
               recordedAt: new Date().toISOString()
             };
 
@@ -94,6 +95,7 @@ export const useRunTracker = () => {
     if (!startTimeRef.current) return null;
 
     const calories = Math.round((totalDistanceRef.current / 1000) * 60);
+    const optimizedTrackpoints = optimizeRoute(trackpoints, 2.0);
 
     return {
       startTime: startTimeRef.current,
@@ -101,7 +103,7 @@ export const useRunTracker = () => {
       durationSeconds: duration,
       distanceMeters: Math.round(totalDistanceRef.current),
       calories,
-      trackpoints,
+      trackpoints: optimizedTrackpoints,
     };
   };
 
