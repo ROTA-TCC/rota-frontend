@@ -41,10 +41,16 @@ export const setupInterceptors = (api: AxiosInstance) => {
     async (error: AxiosError) => {
       const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+      console.log('--- INTERCEPTOR RESPONSE ERROR ---');
+      console.log('Status:', error.response?.status);
+      console.log('URL:', originalRequest.url);
+
       if (error.response?.status === 401 && !originalRequest._retry) {
+        console.log('Attempting refresh...');
         originalRequest._retry = true;
         if (refreshHandler) {
           const newToken = await refreshHandler();
+          console.log('Refresh result:', newToken ? 'SUCCESS' : 'FAILED');
           if (newToken) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return api(originalRequest);
