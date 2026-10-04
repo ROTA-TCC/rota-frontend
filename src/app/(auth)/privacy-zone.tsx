@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Image, ScrollView, Alert } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
@@ -14,7 +14,7 @@ export default function PrivacyZoneScreen() {
   const router = useRouter();
   const [mapCenter, setMapCenter] = useState<[number, number]>(DEFAULT_CENTER);
 
-  const requestUserLocation = async () => {
+  const requestUserLocation = useCallback(async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -30,14 +30,14 @@ export default function PrivacyZoneScreen() {
       });
 
       setMapCenter([location.coords.latitude, location.coords.longitude]);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Erro', 'Não foi possível obter sua localização.');
     }
-  };
+  }, []);
 
   useEffect(() => {
     requestUserLocation();
-  }, []);
+  }, [requestUserLocation]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

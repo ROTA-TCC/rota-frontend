@@ -5,16 +5,16 @@ import { WebView } from 'react-native-webview';
 interface LeafletMapProps {
   center: [number, number];
   zoom: number;
+  route?: [number, number][]; // Rota para ser desenhada
   style?: any;
   customCSS?: string;
-  [key: string]: any; 
 }
 
-export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: LeafletMapProps) {
+export function LeafletMap({ center, zoom, route = [], style, customCSS = '' }: LeafletMapProps) {
   const webviewRef = useRef<WebView>(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
-  const [htmlContent] = useState(`
+  const htmlContent = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -32,45 +32,54 @@ export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: Lea
       <div id="map"></div>
       <script>
         var map = L.map('map', { zoomControl: false }).setView([${center[0]}, ${center[1]}], ${zoom});
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+
+        // Cria a linha da rota
+        window.routeLine = L.polyline([], { color: '#ff4500', weight: 5, opacity: 0.8 }).addTo(map);
         
-        /* 🔥 COLOQUE O SEU PROVEDOR AQUI DE VOLTA 🔥 */
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19
+        // Cria o marcador de posição atual
+        window.currentMarker = L.circleMarker([${center[0]}, ${center[1]}], {
+          radius: 8, fillColor: '#007AFF', color: '#FFFFFF', weight: 2, opacity: 1, fillOpacity: 1
         }).addTo(map);
-        
+
         window.leafletMapInstance = map;
-        
+
         setTimeout(function() {
           window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'READY' }));
         }, 150);
       </script>
     </body>
     </html>
-  `);
+  `;
 
   useEffect(() => {
     if (isMapReady && webviewRef.current) {
-      // Script inteligente: Só faz o flyTo se a distância for maior que 5 metros.
-      // Isso impede que atualizações duplicadas do React causem a tremedeira.
-      const script = `
+      webviewRef.current.injectJavaScript(`
         if (window.leafletMapInstance) {
           var currentCenter = window.leafletMapInstance.getCenter();
-          var targetLat = ${center[0]};
-          var targetLng = ${center[1]};
-          var dist = window.leafletMapInstance.distance(currentCenter, [targetLat, targetLng]);
-          
+          var dist = window.leafletMapInstance.distance(currentCenter, [${center[0]}, ${center[1]}]);
           if (dist > 5) {
-            window.leafletMapInstance.flyTo([targetLat, targetLng], ${zoom}, {
-              animate: true,
-              duration: 1.2
-            });
+            window.leafletMapInstance.flyTo([${center[0]}, ${center[1]}], ${zoom}, { animate: true, duration: 1.2 });
+            window.currentMarker.setLatLng([${center[0]}, ${center[1]}]);
           }
         }
         true;
-      `;
-      webviewRef.current.injectJavaScript(script);
+      `);
     }
   }, [center[0], center[1], zoom, isMapReady]);
+
+  useEffect(() => {
+    if (isMapReady && webviewRef.current && route.length > 0) {
+      const routeJson = JSON.stringify(route);
+      webviewRef.current.injectJavaScript(`
+        if (window.routeLine) {
+          window.routeLine.setLatLngs(${routeJson});
+        }
+        true;
+      `);
+    }
+  }, [route, isMapReady]);
 
   return (
     <View style={[styles.container, style]}>
@@ -78,7 +87,6 @@ export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: Lea
         ref={webviewRef}
         source={{ html: htmlContent }}
         style={styles.webview}
-        // 🔥 Removi o scrollEnabled={false} que estava impedindo você de mexer no mapa!
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         bounces={false}
@@ -89,7 +97,6 @@ export function LeafletMap({ center, zoom, style, customCSS = '', ...rest }: Lea
             if (data.type === 'READY') setIsMapReady(true);
           } catch (e) {}
         }}
-        {...rest}
       />
     </View>
   );
@@ -99,3 +106,4 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#070707' },
   webview: { flex: 1, backgroundColor: 'transparent' },
 });
+
