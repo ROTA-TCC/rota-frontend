@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 
@@ -16,9 +16,8 @@ export function LeafletMap({ center, zoom, style, customCSS = '', route, showMar
   const webviewRef = useRef<WebView>(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
-  const hasTrackingFeatures = route !== undefined || showMarker;
-
-  const htmlContent = `
+  const htmlContent = useMemo(() => {
+    return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -37,18 +36,12 @@ export function LeafletMap({ center, zoom, style, customCSS = '', route, showMar
       <script>
         var map = L.map('map', { zoomControl: false }).setView([${center[0]}, ${center[1]}], ${zoom});
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+        
         window.leafletMapInstance = map;
-
-        ${hasTrackingFeatures ? `
-          if (${showMarker}) {
-            window.currentMarker = L.circleMarker([${center[0]},${center[1]}], {
-              radius: 8, fillColor: '#007AFF', color: '#FFFFFF', weight: 2, opacity: 1, fillOpacity: 1
-            }).addTo(map);
-          }
-          if (${route !== undefined}) {
-            window.routeLine = L.polyline([], { color: '#ff4500', weight: 5, opacity: 0.8 }).addTo(map);
-          }
-        ` : ''}
+        window.routeLine = L.polyline([], { color: '#ff4500', weight: 5, opacity: 0.8 }).addTo(map);
+        window.currentMarker = L.circleMarker([${center[0]}, ${center[1]}], {
+          radius: 8, fillColor: '#007AFF', color: '#FFFFFF', weight: 2, opacity: 1, fillOpacity: 1
+        });
 
         setTimeout(function() {
           window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'READY' }));
@@ -57,23 +50,25 @@ export function LeafletMap({ center, zoom, style, customCSS = '', route, showMar
     </body>
     </html>
   `;
+  }, [customCSS]);
 
   useEffect(() => {
     if (isMapReady && webviewRef.current) {
       const script = `
         if (window.leafletMapInstance) {
-          var currentCenter = window.leafletMapInstance.getCenter();
           var targetLat = ${center[0]};
           var targetLng = ${center[1]};
-          var dist = window.leafletMapInstance.distance(currentCenter, [targetLat, targetLng]);
-          if (dist > 2) {
-            window.leafletMapInstance.flyTo([targetLat, targetLng], ${zoom}, { animate: true, duration: 1.2 });
-          }
-          ${showMarker ? `
-            if (window.currentMarker) {
-              window.currentMarker.setLatLng([targetLat, targetLng]);
+          
+          window.leafletMapInstance.panTo([targetLat, targetLng], { animate: true, duration: 0.5 });
+          
+          if (${showMarker}) {
+            if (!window.leafletMapInstance.hasLayer(window.currentMarker)) {
+              window.currentMarker.addTo(window.leafletMapInstance);
             }
-          ` : ''}
+            window.currentMarker.setLatLng([targetLat, targetLng]);
+          } else if (window.leafletMapInstance.hasLayer(window.currentMarker)) {
+            window.leafletMapInstance.removeLayer(window.currentMarker);
+          }
         }
         true;
       `;

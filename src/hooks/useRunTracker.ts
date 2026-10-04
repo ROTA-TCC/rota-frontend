@@ -24,10 +24,12 @@ export const useRunTracker = () => {
     setIsRecording(true);
     setIsPaused(false);
 
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setDuration((prev) => prev + 1);
     }, 1000);
 
+    if (locationSubRef.current) locationSubRef.current.remove();
     locationSubRef.current = await Location.watchPositionAsync(
       {
         accuracy: Location.Accuracy.Highest,
