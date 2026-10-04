@@ -48,8 +48,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (alias: string, email: string, password: string) => {
     try {
+      console.log('--- DIAGNOSTIC REQUEST ---');
+      console.log('BaseURL:', api.defaults.baseURL);
+      console.log('Endpoint:', '/auth/register');
+      console.log('Payload:', { alias, email, password });
       await api.post('/auth/register', { alias, email, password });
     } catch (error: any) {
+      console.log('--- DIAGNOSTIC ERROR ---');
+      console.log('Error Config:', error.config);
       throw error;
     }
   };
