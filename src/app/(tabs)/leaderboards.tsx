@@ -13,9 +13,9 @@ const bestRunners = [
 ];
 
 const topClubs = [
-  { name: 'Running Rebels', members: 1223 },
-  { name: 'Speedsters Club', members: 950 },
-  { name: 'Marathon Masters', members: 820 },
+  { name: 'Elite Run Club', members: 1223 },
+  { name: 'Sociedade dos Velocistas', members: 950 },
+  { name: 'Academia de Maratonistas', members: 820 },
 ];
 
 export default function LeaderboardsScreen() {
