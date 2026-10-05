@@ -5,19 +5,27 @@ import { Ionicons } from '@expo/vector-icons';
 const TRACKS = [
   {
     id: '1',
-    title: 'Lane Cove Riverside Walk',
-    views: '10.2M',
-    rating: '4.5',
-    reviews: '10M',
-    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=80',
+    title: 'Aterro do Flamengo, RJ',
+    views: '12.5M',
+    rating: '4.9',
+    reviews: '12M',
+    image: 'https://images.unsplash.com/photo-1628172922756-32d2050f246c?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: '2',
-    title: 'Ennogera Reservoir Trail',
-    views: '8.1M',
-    rating: '4.8',
+    title: 'Parque Ibirapuera, SP',
+    views: '15.1M',
+    rating: '4.9',
+    reviews: '15M',
+    image: 'https://images.unsplash.com/photo-1596759714853-27a3a8309a63?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: '3',
+    title: 'Lagoa da Pampulha, MG',
+    views: '8.2M',
+    rating: '4.7',
     reviews: '8M',
-    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1595085617151-2856353982cc?auto=format&fit=crop&w=600&q=80',
   },
 ];
 

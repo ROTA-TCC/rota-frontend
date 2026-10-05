@@ -9,8 +9,8 @@ type LeaderboardPodiumProps = {
 export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps) => {
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Leaderboards</Text>
-      <Text style={styles.subtitle}>November 2023</Text>
+      <Text style={styles.title}>Classificações</Text>
+      <Text style={styles.subtitle}>Novembro 2023</Text>
 
       <View style={styles.podiumContainer}>
         <PodiumCol

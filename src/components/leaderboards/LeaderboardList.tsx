@@ -16,7 +16,7 @@ export const LeaderboardList = ({ title, items }: { title: string, items: any[] 
           </View>
           <View>
             <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.sub}>{item.points} points</Text>
+            <Text style={styles.sub}>{item.points} pontos</Text>
           </View>
         </View>
         <View style={styles.itemRight}>

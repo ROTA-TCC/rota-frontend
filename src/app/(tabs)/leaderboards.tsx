@@ -30,8 +30,8 @@ export default function LeaderboardsScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <LeaderboardPodium onTriggerConfetti={handleTriggerConfetti} />
         <RankCard rank={8} />
-        <LeaderboardList title="Best Runners" items={bestRunners} />
-        <TopClubsList title="Top Club Running" clubs={topClubs} />
+        <LeaderboardList title="Melhores Corredores" items={bestRunners} />
+        <TopClubsList title="Clubes de Corrida Top" clubs={topClubs} />
       </ScrollView>
 
       <Confetti ref={confettiRef} count={80} manualstart={true} />

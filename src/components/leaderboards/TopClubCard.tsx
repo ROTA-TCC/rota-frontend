@@ -19,7 +19,7 @@ export const TopClubsList = ({ title, clubs }: { title: string, clubs: any[] }) 
               <Text style={styles.name}>{club.name}</Text>
               <View style={styles.clubSub}>
                 <FontAwesome5 name="user" size={10} color="#8E8E93" />
-                <Text style={styles.sub}>{club.members.toLocaleString()} members</Text>
+                <Text style={styles.sub}>{club.members.toLocaleString()} membros</Text>
               </View>
             </View>
           </View>

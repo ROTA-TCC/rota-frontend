@@ -21,7 +21,7 @@ export const MapRouteCarousel = () => (
             <Text style={styles.locationText}>A 2,3 km de distância</Text>
           </View>
           <View style={styles.specialTag}>
-            <Ionicons name="flame" size={14} color="#AFC170" />
+            <Ionicons name="flame" size={14} color="#FF8C00" />
             <Text style={styles.specialTagText}>Em alta hoje</Text>
           </View>
         </View>
@@ -39,11 +39,11 @@ const styles = StyleSheet.create({
   routeNameRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   routeName: { color: '#FFFFFF', fontSize: 15, fontWeight: '800' },
   badgeRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  badgeComfort: { backgroundColor: 'rgba(175, 193, 112, 0.15)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: '#AFC170' },
-  badgeComfortText: { color: '#AFC170', fontSize: 10.5, fontWeight: '800' },
+  badgeComfort: { backgroundColor: 'rgba(255, 140, 0, 0.15)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: '#FF8C00' },
+  badgeComfortText: { color: '#FF8C00', fontSize: 10.5, fontWeight: '800' },
   routeStats: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
   locationInfo: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   locationText: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
   specialTag: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-  specialTagText: { color: '#AFC170', fontSize: 13, fontWeight: '700' },
+  specialTagText: { color: '#FF8C00', fontSize: 13, fontWeight: '700' },
 });

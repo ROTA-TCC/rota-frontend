@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export const RankCard = ({ rank }: { rank: number }) => (
   <View style={styles.card}>
-    <Text style={styles.text}>Currently Rank</Text>
+    <Text style={styles.text}>Ranking Atual</Text>
     <View style={styles.value}>
       <Text style={styles.valueText}>{rank}</Text>
       <MaterialCommunityIcons name="chevron-double-up" size={18} color="#9ED872" />
