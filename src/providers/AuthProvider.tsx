@@ -55,6 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (alias: string, email: string, password: string) => {
     try {
       await api.post('/auth/register', { alias, email, password });
+      await login({ email, password });
     } catch (error: any) {
       throw error;
     }
