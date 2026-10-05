@@ -15,7 +15,7 @@ export function ProfileHeader() {
         </View>
       </TouchableOpacity>
       
-      <Text style={styles.name}>Sarah Jenkins</Text>
+      <Text style={styles.name}>Ana Silva</Text>
     </View>
   );
 }

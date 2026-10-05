@@ -9,7 +9,7 @@ const TRACKS = [
     views: '12.5M',
     rating: '4.9',
     reviews: '12M',
-    image: 'https://images.unsplash.com/photo-1628172922756-32d2050f246c?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: '2',
@@ -17,7 +17,7 @@ const TRACKS = [
     views: '15.1M',
     rating: '4.9',
     reviews: '15M',
-    image: 'https://images.unsplash.com/photo-1596759714853-27a3a8309a63?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: '3',
@@ -25,7 +25,7 @@ const TRACKS = [
     views: '8.2M',
     rating: '4.7',
     reviews: '8M',
-    image: 'https://images.unsplash.com/photo-1595085617151-2856353982cc?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=80',
   },
 ];
 

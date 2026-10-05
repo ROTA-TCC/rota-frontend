@@ -15,13 +15,13 @@ export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps)
       <View style={styles.podiumContainer}>
         <PodiumCol
           rank={2}
-          name="James Grant"
+          name="Carlos Mendes"
           points="125 pt"
           image="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&auto=format&fit=crop&q=80"
         />
         <PodiumCol
           rank={1}
-          name="Samantha"
+          name="Camila Souza"
           points="250 pt"
           image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80"
           isFirst
@@ -29,7 +29,7 @@ export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps)
         />
         <PodiumCol
           rank={3}
-          name="Josh Nathan"
+          name="Ricardo Alves"
           points="100 pt"
           image="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80"
         />
