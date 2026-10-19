@@ -1,84 +1,88 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-interface ListItem {
-  icon: string;
+import { ThemedText } from '@/components/themed-text';
+import { colors, radius, spacing, typography } from '@/theme';
+
+type IoniconName = keyof typeof Ionicons.glyphMap;
+
+export interface ProfileListItem {
+  icon: IoniconName;
   title: string;
 }
 
 interface ProfileListCardProps {
   title: string;
-  items: ListItem[];
+  items: ProfileListItem[];
 }
 
-export const ProfileListCard = ({ title, items }: ProfileListCardProps) => {
+export function ProfileListCard({ title, items }: ProfileListCardProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
       <View style={styles.card}>
         {items.map((item, index) => (
-          <TouchableOpacity 
-            key={index} 
-            style={[styles.item, index !== items.length - 1 && styles.itemBorder]} 
+          <TouchableOpacity
+            key={item.title}
+            style={[styles.item, index !== items.length - 1 && styles.itemBorder]}
             activeOpacity={0.7}
           >
             <View style={styles.itemLeft}>
               <View style={styles.iconWrapper}>
-                <Ionicons name={item.icon as any} size={20} color="#FFFFFF" />
+                <Ionicons name={item.icon} size={20} color={colors.text} />
               </View>
-              <Text style={styles.itemText}>{item.title}</Text>
+              <ThemedText style={styles.itemText}>{item.title}</ThemedText>
             </View>
-            <Ionicons name="chevron-forward" size={18} color="#8E8E93" />
+            <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
         ))}
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: spacing.lg,
   },
   sectionTitle: {
-    color: '#8E8E93',
-    fontSize: 14,
-    fontWeight: '600',
-    paddingHorizontal: 4,
+    color: colors.textSecondary,
+    fontSize: typography.sizes.bodyLg,
+    fontWeight: typography.weights.semibold,
+    paddingHorizontal: spacing.xs,
     textTransform: 'uppercase',
   },
   card: {
-    backgroundColor: '#151517',
-    borderRadius: 20,
-    paddingHorizontal: 20,
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.xl,
+    paddingHorizontal: spacing.xxl,
   },
   item: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 20,
+    paddingVertical: spacing.xxl,
   },
   itemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: '#2A2A2E',
+    borderBottomColor: colors.border,
   },
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.lg,
   },
   iconWrapper: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#2A2A2E',
+    backgroundColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
   itemText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
+    color: colors.text,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.semibold,
   },
 });

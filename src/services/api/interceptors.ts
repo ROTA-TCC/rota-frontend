@@ -1,4 +1,4 @@
-import { AxiosInstance, InternalAxiosRequestConfig, AxiosError, AxiosResponse, AxiosStatic } from 'axios';
+import { AxiosInstance, InternalAxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 export class ApiError extends Error {
@@ -6,7 +6,7 @@ export class ApiError extends Error {
     public message: string,
     public status?: number,
     public field?: string,
-    public data?: any
+    public data?: unknown
   ) {
     super(message);
     this.name = 'ApiError';
@@ -41,16 +41,10 @@ export const setupInterceptors = (api: AxiosInstance) => {
     async (error: AxiosError) => {
       const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-      console.log('--- INTERCEPTOR RESPONSE ERROR ---');
-      console.log('Status:', error.response?.status);
-      console.log('URL:', originalRequest.url);
-
       if (error.response?.status === 401 && !originalRequest._retry) {
-        console.log('Attempting refresh...');
         originalRequest._retry = true;
         if (refreshHandler) {
           const newToken = await refreshHandler();
-          console.log('Refresh result:', newToken ? 'SUCCESS' : 'FAILED');
           if (newToken) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return api(originalRequest);
@@ -60,8 +54,8 @@ export const setupInterceptors = (api: AxiosInstance) => {
 
       if (error.response) {
         const { status, data } = error.response;
-        
-        const backendData = data as any;
+
+        const backendData = data as { message?: string; field?: string } | undefined;
         const backendMessage = backendData?.message;
         const field = backendData?.field;
         

@@ -1,49 +1,144 @@
-import React from 'react';
-import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export const MapRouteCarousel = () => (
-  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.carousel} contentContainerStyle={styles.carouselContent}>
-    {[1, 2].map((_, i) => (
-      <View key={i} style={styles.routeCard}>
-        <Image source={{ uri: 'https://images.unsplash.com/photo-1449844908441-8829872d2607?w=200' }} style={styles.routeImage} />
-        <View style={styles.routeInfo}>
-          <View style={styles.routeNameRow}>
-            <Text style={styles.routeName}>Avenida Paulista...</Text>
-            <Ionicons name="bookmark-outline" size={16} color="white" />
+import { ThemedText } from '@/components/themed-text';
+import { colors, radius, spacing, typography } from '@/theme';
+
+const ROUTE_IMAGE_URI =
+  'https://images.unsplash.com/photo-1449844908441-8829872d2607?w=200';
+
+const ROUTE_IDS = ['route-1', 'route-2'];
+
+type RouteCardProps = {
+  name: string;
+  stats: string;
+  distanceLabel: string;
+};
+
+function RouteCard({ name, stats, distanceLabel }: RouteCardProps) {
+  return (
+    <View style={styles.routeCard}>
+      <Image source={{ uri: ROUTE_IMAGE_URI }} style={styles.routeImage} />
+      <View style={styles.routeInfo}>
+        <View style={styles.routeNameRow}>
+          <ThemedText style={styles.routeName}>{name}</ThemedText>
+          <Ionicons name="bookmark-outline" size={16} color={colors.text} />
+        </View>
+        <View style={styles.badgeRow}>
+          <View style={styles.badgeComfort}>
+            <ThemedText style={styles.badgeComfortText}>PLANO</ThemedText>
           </View>
-          <View style={styles.badgeRow}>
-            <View style={styles.badgeComfort}><Text style={styles.badgeComfortText}>PLANO</Text></View>
-            <Text style={styles.routeStats}>6,5 km • ⏱ 2h</Text>
-          </View>
-          <View style={styles.locationInfo}>
-            <Ionicons name="locate" size={14} color="white" />
-            <Text style={styles.locationText}>A 2,3 km de distância</Text>
-          </View>
-          <View style={styles.specialTag}>
-            <Ionicons name="flame" size={14} color="#FF8C00" />
-            <Text style={styles.specialTagText}>Em alta hoje</Text>
-          </View>
+          <ThemedText style={styles.routeStats}>{stats}</ThemedText>
+        </View>
+        <View style={styles.locationInfo}>
+          <Ionicons name="locate" size={14} color={colors.text} />
+          <ThemedText style={styles.locationText}>{distanceLabel}</ThemedText>
+        </View>
+        <View style={styles.specialTag}>
+          <Ionicons name="flame" size={14} color={colors.primary} />
+          <ThemedText style={styles.specialTagText}>Em alta hoje</ThemedText>
         </View>
       </View>
-    ))}
-  </ScrollView>
-);
+    </View>
+  );
+}
+
+export function MapRouteCarousel() {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.carousel}
+      contentContainerStyle={styles.carouselContent}
+    >
+      {ROUTE_IDS.map((id) => (
+        <RouteCard
+          key={id}
+          name="Avenida Paulista..."
+          stats="6,5 km • ⏱ 2h"
+          distanceLabel="A 2,3 km de distância"
+        />
+      ))}
+    </ScrollView>
+  );
+}
 
 const styles = StyleSheet.create({
-  carousel: { marginTop: 16, marginBottom: 16 }, 
-  carouselContent: { paddingHorizontal: 16, gap: 12 },
-  routeCard: { width: 320, backgroundColor: 'rgba(15, 15, 15, 0.95)', borderRadius: 16, flexDirection: 'row', overflow: 'hidden' },
-  routeImage: { width: 105 },
-  routeInfo: { padding: 14, flex: 1, gap: 6 },
-  routeNameRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  routeName: { color: '#FFFFFF', fontSize: 15, fontWeight: '800' },
-  badgeRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  badgeComfort: { backgroundColor: 'rgba(255, 140, 0, 0.15)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: '#FF8C00' },
-  badgeComfortText: { color: '#FF8C00', fontSize: 10.5, fontWeight: '800' },
-  routeStats: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
-  locationInfo: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  locationText: { color: '#FFFFFF', fontSize: 13, fontWeight: '600' },
-  specialTag: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-  specialTagText: { color: '#FF8C00', fontSize: 13, fontWeight: '700' },
+  carousel: {
+    marginTop: spacing.xl,
+    marginBottom: spacing.xl,
+  },
+  carouselContent: {
+    paddingHorizontal: spacing.xl,
+    gap: spacing.lg,
+  },
+  routeCard: {
+    width: 320,
+    backgroundColor: colors.surfaceTranslucent,
+    borderRadius: radius.lg,
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
+  routeImage: {
+    width: 105,
+  },
+  routeInfo: {
+    padding: 14,
+    flex: 1,
+    gap: spacing.sm,
+  },
+  routeNameRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  routeName: {
+    color: colors.text,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.heavy,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  badgeComfort: {
+    backgroundColor: colors.badgeHighlight,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: radius.xs,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+  badgeComfortText: {
+    color: colors.primary,
+    fontSize: 10.5,
+    fontWeight: typography.weights.heavy,
+  },
+  routeStats: {
+    color: colors.text,
+    fontSize: typography.sizes.body,
+    fontWeight: typography.weights.semibold,
+  },
+  locationInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  locationText: {
+    color: colors.text,
+    fontSize: typography.sizes.body,
+    fontWeight: typography.weights.semibold,
+  },
+  specialTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  specialTagText: {
+    color: colors.primary,
+    fontSize: typography.sizes.body,
+    fontWeight: typography.weights.bold,
+  },
 });

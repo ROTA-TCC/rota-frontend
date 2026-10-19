@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import { useCallback, useState } from 'react';
+import { Dimensions, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
-import { LeafletMap } from '../map/LeafletMap';
-import { InteractiveZoneCircle } from './InteractiveZoneCircle';
-import { MapControls } from './MapControls';
+
+import { LeafletMap } from '@/components/map/LeafletMap';
+import { InteractiveZoneCircle } from '@/components/privacy/InteractiveZoneCircle';
+import { MapControls } from '@/components/privacy/MapControls';
+import { colors, radius, spacing } from '@/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_SIZE = SCREEN_WIDTH - 48;
+
+const CUSTOM_MAP_CSS = `
+  .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important; }
+  .leaflet-control-container { display: none !important; }
+`;
 
 interface PrivacyMapContainerProps {
   mapCenter: [number, number];
@@ -32,33 +33,30 @@ export function PrivacyMapContainer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [distanceText, setDistanceText] = useState('0 m');
 
-  const customMapCSS = `
-    .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important; }
-    .leaflet-control-container { display: none !important; }
-  `;
+  const handleDistanceChange = useCallback(
+    (dist: string) => setDistanceText(dist),
+    []
+  );
+
+  const closeFullscreen = useCallback(() => setIsFullscreen(false), []);
 
   const renderMapContent = (size: number, isFull: boolean) => (
-    <View style={{ width: size, height: size, position: 'relative' }}>
-      <LeafletMap
-        center={mapCenter}
-        zoom={zoom}
-        style={styles.map}
-        customCSS={customMapCSS}
-      />
+    <View style={{ width: size, height: size }}>
+      <LeafletMap center={mapCenter} zoom={zoom} style={styles.map} customCSS={CUSTOM_MAP_CSS} />
       <View style={styles.mapOverlay} pointerEvents="none" />
 
       <InteractiveZoneCircle
         containerSize={size}
         centerCoords={mapCenter}
         zoom={zoom}
-        onDistanceChange={(dist) => setDistanceText(dist)}
+        onDistanceChange={handleDistanceChange}
         onRadiusMetersChange={onRadiusMetersChange}
       />
 
       <MapControls
         distanceText={distanceText}
         isFullscreen={isFull}
-        onToggleFullscreen={() => setIsFullscreen(!isFull)}
+        onToggleFullscreen={() => setIsFullscreen((prev) => !prev)}
         onLocateUser={onLocateUser}
       />
     </View>
@@ -66,15 +64,13 @@ export function PrivacyMapContainer({
 
   return (
     <>
-      <View style={styles.cardContainer}>
-        {renderMapContent(CARD_SIZE, false)}
-      </View>
+      <View style={styles.cardContainer}>{renderMapContent(CARD_SIZE, false)}</View>
 
       <Modal
         visible={isFullscreen}
         animationType="fade"
-        transparent={true}
-        onRequestClose={() => setIsFullscreen(false)}
+        transparent
+        onRequestClose={closeFullscreen}
       >
         <SafeAreaView style={styles.fullscreenRoot}>
           <Animated.View
@@ -84,13 +80,15 @@ export function PrivacyMapContainer({
           >
             <TouchableOpacity
               style={styles.closeBtn}
-              onPress={() => setIsFullscreen(false)}
+              onPress={closeFullscreen}
               activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Fechar mapa em tela cheia"
             >
               <Svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <Path
                   d="M18 6L6 18M6 6L18 18"
-                  stroke="#FFFFFF"
+                  stroke={colors.text}
                   strokeWidth="2.5"
                   strokeLinecap="round"
                 />
@@ -110,16 +108,16 @@ const styles = StyleSheet.create({
     width: CARD_SIZE,
     height: CARD_SIZE,
     alignSelf: 'center',
-    borderRadius: 28,
+    borderRadius: radius.xxxl,
     overflow: 'hidden',
-    marginVertical: 12,
+    marginVertical: spacing.lg,
     borderWidth: 1,
-    borderColor: '#1F1F22',
-    backgroundColor: '#070707',
+    borderColor: colors.borderCard,
+    backgroundColor: colors.backgroundAlt,
   },
   fullscreenRoot: {
     flex: 1,
-    backgroundColor: '#070707',
+    backgroundColor: colors.backgroundAlt,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -127,21 +125,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mapOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(7, 7, 7, 0.25)',
+    ...StyleSheet.absoluteFill,
+    backgroundColor: colors.overlaySoft,
   },
   closeBtn: {
     position: 'absolute',
-    top: 20,
-    left: 20,
+    top: spacing.xxl,
+    left: spacing.xxl,
     zIndex: 30,
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#141416',
+    backgroundColor: colors.surfaceCard,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: colors.borderVisible,
   },
 });

@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AuthProvider } from '@/providers/AuthProvider';
 import { ProfileSetupProvider } from '@/providers/ProfileSetupProvider';
+import { colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,8 +33,7 @@ export default function RootLayout() {
         <Stack
           screenOptions={{
             contentStyle: {
-              backgroundColor: colorScheme === 'dark' ? '#121212' : '#ffffff',
-              fontFamily: 'Eina03-SemiBold',
+              backgroundColor: colorScheme === 'dark' ? colors.surfaceCardAlt : colors.white,
             },
           }}
         >

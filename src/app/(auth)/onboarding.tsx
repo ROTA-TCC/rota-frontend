@@ -1,9 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import GoogleIcon from '@/components/social-icons/GoogleIcon';
-import FacebookIcon from '@/components/social-icons/FacebookIcon';
-import AppleIcon from '@/components/social-icons/AppleIcon';
-import TwitterIcon from '@/components/social-icons/TwitterIcon';
+
+import { SocialLoginRow } from '@/components/auth/SocialLoginRow';
+import { colors, radius, spacing, typography } from '@/theme';
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -15,29 +14,21 @@ export default function OnboardingScreen() {
         style={styles.heroImage}
         resizeMode="cover"
       />
-      <View style={styles.whiteCard}>
+
+      <View style={styles.card}>
         <Text style={styles.title}>está a apenas alguns passos do Rota</Text>
-        
-        <TouchableOpacity style={styles.btnLogin} onPress={() => router.push('/(auth)/login')}>
-          <Text style={styles.btnText}>Log In</Text>
+
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push('/(auth)/login')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.loginText}>Log In</Text>
         </TouchableOpacity>
 
         <Text style={styles.dividerText}>Ou continue com</Text>
 
-        <View style={styles.socialContainer}>
-          <TouchableOpacity style={styles.socialBox}>
-            <GoogleIcon color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialBox}>
-            <FacebookIcon color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialBox}>
-            <AppleIcon color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialBox}>
-            <TwitterIcon color="#fff" />
-          </TouchableOpacity>
-        </View>
+        <SocialLoginRow variant="dark" />
       </View>
     </View>
   );
@@ -46,60 +37,47 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.screenLight,
   },
   heroImage: {
     flex: 0.65,
-    backgroundColor: '#ff9a00',
+    backgroundColor: colors.primaryTint,
   },
-  whiteCard: {
+  card: {
     flex: 0.4,
-    backgroundColor: '#0F0F0F',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
+    backgroundColor: colors.surfaceOnboarding,
+    borderTopLeftRadius: radius.xxl,
+    borderTopRightRadius: radius.xxl,
+    padding: spacing.xxxl,
     marginTop: -20,
     justifyContent: 'center',
   },
   title: {
-    color: '#fff',
+    color: colors.text,
     fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 24,
+    fontWeight: typography.weights.bold,
+    marginBottom: spacing.xxxl,
     textAlign: 'center',
   },
-  btnLogin: {
+  loginButton: {
     borderWidth: 2,
-    borderColor: '#FF743D',
+    borderColor: colors.primarySoft,
     backgroundColor: 'transparent',
     height: 60,
     borderRadius: 31,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: spacing.giant,
   },
-  btnText: {
-    color: '#FF743D',
-    fontSize: 16,
-    fontWeight: '700',
+  loginText: {
+    color: colors.primarySoft,
+    fontSize: typography.sizes.input,
+    fontWeight: typography.weights.bold,
   },
   dividerText: {
-    color: '#D9D9D9',
-    fontSize: 14,
+    color: colors.textSoftAlt,
+    fontSize: typography.sizes.bodyLg,
     textAlign: 'center',
-    marginBottom: 8,
-  },
-  socialContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-  },
-  socialBox: {
-    width: 58,
-    height: 58,
-    backgroundColor: '#262626',
-    borderRadius: 29,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginBottom: spacing.md,
   },
 });

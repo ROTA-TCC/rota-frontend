@@ -1,18 +1,19 @@
-import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, Modal, TouchableWithoutFeedback } from 'react-native';
-import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Modal, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+
+import { ThemedText } from '@/components/themed-text';
+import { colors, spacing, typography } from '@/theme';
 
 interface SportItem {
   id: string;
   name: string;
-  iconName: string;
-  iconType: 'FontAwesome5' | 'MaterialCommunityIcons';
+  iconName: keyof typeof FontAwesome5.glyphMap;
   rotate?: boolean;
 }
 
-const sports: SportItem[] = [
-  { id: 'corrida', name: 'Corrida', iconName: 'shoe-prints', iconType: 'FontAwesome5', rotate: true },
-  { id: 'esteira', name: 'Esteira', iconName: 'running', iconType: 'FontAwesome5' },
+const SPORTS: SportItem[] = [
+  { id: 'corrida', name: 'Corrida', iconName: 'shoe-prints', rotate: true },
+  { id: 'esteira', name: 'Esteira', iconName: 'running' },
 ];
 
 interface SportDropdownProps {
@@ -21,17 +22,16 @@ interface SportDropdownProps {
   onClose: () => void;
 }
 
-export const SportDropdown = ({ activeSport, onSelect, onClose }: SportDropdownProps) => {
+export function SportDropdown({ activeSport, onSelect, onClose }: SportDropdownProps) {
   return (
-    <Modal visible={true} transparent={true} animationType="fade">
+    <Modal visible transparent animationType="fade">
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.overlay} />
       </TouchableWithoutFeedback>
       <View style={styles.dropdown}>
-        {sports.map((sport) => {
+        {SPORTS.map((sport) => {
           const isActive = activeSport === sport.id;
-          const color = isActive ? '#E34F1E' : '#999';
-          const iconStyle = sport.rotate ? { transform: [{ rotate: '-30deg' }] } : {};
+          const iconColor = isActive ? colors.primaryAction : colors.textIcon;
 
           return (
             <TouchableOpacity
@@ -41,23 +41,30 @@ export const SportDropdown = ({ activeSport, onSelect, onClose }: SportDropdownP
                 onSelect(sport.id);
                 onClose();
               }}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isActive }}
             >
               <View style={styles.sportIcon}>
-                {sport.iconType === 'FontAwesome5' ? (
-                  <FontAwesome5 name={sport.iconName} size={16} color={color} style={iconStyle} />
-                ) : (
-                  <MaterialCommunityIcons name={sport.iconName as any} size={20} color={color} />
-                )}
+                <FontAwesome5
+                  name={sport.iconName}
+                  size={16}
+                  color={iconColor}
+                  style={sport.rotate ? styles.rotatedIcon : undefined}
+                />
               </View>
-              <Text style={[styles.sportName, isActive && styles.activeText]}>{sport.name}</Text>
-              {isActive && <Ionicons name="checkmark" size={14} color="#E34F1E" />}
+              <ThemedText style={[styles.sportName, isActive && styles.activeText]}>
+                {sport.name}
+              </ThemedText>
+              {isActive && (
+                <Ionicons name="checkmark" size={14} color={colors.primaryAction} />
+              )}
             </TouchableOpacity>
           );
         })}
       </View>
     </Modal>
   );
-};
+}
 
 const styles = StyleSheet.create({
   overlay: {
@@ -66,41 +73,44 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.overlay,
   },
   dropdown: {
     position: 'absolute',
     top: 80,
-    left: 16,
+    left: spacing.xl,
     width: 190,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: colors.surfaceMenuItem,
     borderRadius: 14,
-    padding: 6,
+    padding: spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.borderMedium,
     zIndex: 20,
   },
   sportItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    padding: spacing.lg,
     borderRadius: 10,
   },
   activeItem: {
-    backgroundColor: 'rgba(227, 79, 30, 0.12)',
+    backgroundColor: colors.selectedHighlight,
   },
   sportIcon: {
     width: 24,
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: spacing.lg,
+  },
+  rotatedIcon: {
+    transform: [{ rotate: '-30deg' }],
   },
   sportName: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
+    color: colors.text,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.bold,
     flex: 1,
   },
   activeText: {
-    color: '#E34F1E',
+    color: colors.primaryAction,
   },
 });

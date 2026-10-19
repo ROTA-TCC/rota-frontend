@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withDelay,
   Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
 } from 'react-native-reanimated';
+
+import { colors } from '@/theme';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -18,27 +20,29 @@ export default function SplashScreen() {
   const logoOpacity = useSharedValue(0);
 
   useEffect(() => {
-    iconTranslateY.value = withTiming(0, { duration: 1500, easing: Easing.bezier(0.25, 0.1, 0.25, 1) });
-    iconScale.value = withTiming(1, { duration: 1500 });
-    iconRotate.value = withTiming(380, { duration: 1500 });
+    iconTranslateY.set(withTiming(0, { duration: 1500, easing: Easing.bezier(0.25, 0.1, 0.25, 1) }));
+    iconScale.set(withTiming(1, { duration: 1500 }));
+    iconRotate.set(withTiming(380, { duration: 1500 }));
 
-    logoOpacity.value = withDelay(1500, withTiming(1, { duration: 500 }));
+    logoOpacity.set(withDelay(1500, withTiming(1, { duration: 500 })));
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       router.replace('/(auth)/onboarding');
     }, 2500);
+
+    return () => clearTimeout(timeout);
   }, [iconTranslateY, iconScale, iconRotate, logoOpacity]);
 
   const iconStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateY: iconTranslateY.value },
-      { scale: iconScale.value },
-      { rotate: `${iconRotate.value}deg` },
+      { translateY: iconTranslateY.get() },
+      { scale: iconScale.get() },
+      { rotate: `${iconRotate.get()}deg` },
     ],
   }));
 
   const logoStyle = useAnimatedStyle(() => ({
-    opacity: logoOpacity.value,
+    opacity: logoOpacity.get(),
   }));
 
   return (
@@ -62,7 +66,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ff9a00',
+    backgroundColor: colors.primaryTint,
   },
   logo: {
     width: 200,
@@ -73,6 +77,5 @@ const styles = StyleSheet.create({
     height: 100,
     position: 'absolute',
     left: SCREEN_WIDTH / 2 - 67,
-    },
-
+  },
 });

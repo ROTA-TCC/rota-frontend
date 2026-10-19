@@ -1,44 +1,109 @@
-import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 
-export const TopClubsList = ({ title, clubs }: { title: string, clubs: any[] }) => (
-  <View style={styles.card}>
-    <View style={styles.header}>
-      <Text style={styles.headerText}>{title}</Text>
-      <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
-    </View>
-    <View style={styles.list}>
-      {clubs.map((club, index) => (
-        <View key={index} style={[styles.item, index !== clubs.length - 1 && styles.itemSeparator]}>
-          <View style={styles.itemLeft}>
-            <View style={styles.clubIcon}>
-              <FontAwesome5 name="sun" size={20} color="#FF7B31" />
-            </View>
-            <View>
-              <Text style={styles.name}>{club.name}</Text>
-              <View style={styles.clubSub}>
-                <FontAwesome5 name="user" size={10} color="#8E8E93" />
-                <Text style={styles.sub}>{club.members.toLocaleString()} membros</Text>
+import { ThemedText } from '@/components/themed-text';
+import { colors, radius, spacing, typography } from '@/theme';
+
+export interface TopClub {
+  name: string;
+  members: number;
+}
+
+type TopClubsListProps = {
+  title: string;
+  clubs: TopClub[];
+};
+
+export function TopClubsList({ title, clubs }: TopClubsListProps) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <ThemedText style={styles.headerText}>{title}</ThemedText>
+        <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />
+      </View>
+      <View style={styles.list}>
+        {clubs.map((club, index) => (
+          <View
+            key={club.name}
+            style={[styles.item, index !== clubs.length - 1 && styles.itemSeparator]}
+          >
+            <View style={styles.itemLeft}>
+              <View style={styles.clubIcon}>
+                <FontAwesome5 name="sun" size={20} color={colors.primaryBright} />
+              </View>
+              <View>
+                <ThemedText style={styles.name}>{club.name}</ThemedText>
+                <View style={styles.clubSub}>
+                  <FontAwesome5 name="user" size={10} color={colors.textSecondary} />
+                  <ThemedText style={styles.sub}>
+                    {club.members.toLocaleString()} membros
+                  </ThemedText>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </View>
-  </View>
-);
+  );
+}
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#151517', borderRadius: 20, padding: 20, gap: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  headerText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
-  list: { gap: 16 },
-  item: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  itemSeparator: { borderBottomWidth: 1, borderBottomColor: '#2A2A2E', paddingBottom: 16 },
-  itemLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  clubIcon: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#1F1F22', justifyContent: 'center', alignItems: 'center' },
-  name: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
-  sub: { color: '#8E8E93', fontSize: 12, fontWeight: '600' },
-  clubSub: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  card: {
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.xl,
+    padding: spacing.xxl,
+    gap: spacing.xxl,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerText: {
+    color: colors.text,
+    fontSize: typography.sizes.input,
+    fontWeight: typography.weights.bold,
+  },
+  list: {
+    gap: spacing.xl,
+  },
+  item: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  itemSeparator: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    paddingBottom: spacing.xl,
+  },
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.lg,
+  },
+  clubIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.surfaceModalAlt,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  name: {
+    color: colors.text,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.bold,
+  },
+  sub: {
+    color: colors.textSecondary,
+    fontSize: typography.sizes.caption,
+    fontWeight: typography.weights.semibold,
+  },
+  clubSub: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
 });

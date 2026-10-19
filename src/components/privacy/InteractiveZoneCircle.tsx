@@ -1,16 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
+  runOnJS,
   useAnimatedProps,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
-  runOnJS,
-  useAnimatedReaction,
 } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
-const ORANGE = '#FF8C00';
+import { colors } from '@/theme';
+
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 interface InteractiveZoneCircleProps {
@@ -19,6 +20,22 @@ interface InteractiveZoneCircleProps {
   zoom: number;
   onDistanceChange?: (formattedDistance: string) => void;
   onRadiusMetersChange?: (meters: number) => void;
+}
+
+function getMetersPerPx(z: number, lat: number) {
+  'worklet';
+  const latRad = (lat * Math.PI) / 180;
+  return (156543.03392 * Math.cos(latRad)) / Math.pow(2, z);
+}
+
+function calculateDistance(rPx: number, z: number, lat: number) {
+  'worklet';
+  return Math.round(rPx * getMetersPerPx(z, lat));
+}
+
+function calculateDistanceStr(meters: number) {
+  if (meters < 1000) return `${meters} m`;
+  return `${(meters / 1000).toFixed(1)} km`;
 }
 
 export function InteractiveZoneCircle({
@@ -37,65 +54,50 @@ export function InteractiveZoneCircle({
   const lastDistRef = useRef('');
 
   const handleAngleRad = (-45 * Math.PI) / 180;
-  const gapAngleDeg = 48; 
+  const gapAngleDeg = 48;
 
-  const getMetersPerPx = (z: number, lat: number) => {
-    'worklet';
-    const latRad = (lat * Math.PI) / 180;
-    return (156543.03392 * Math.cos(latRad)) / Math.pow(2, z);
-  };
+  const updateDistance = useCallback(
+    (currentRadiusPx: number, currentZoom: number, currentLat: number) => {
+      const meters = calculateDistance(currentRadiusPx, currentZoom, currentLat);
+      const dist = calculateDistanceStr(meters);
 
-  const calculateDistance = (rPx: number, z: number, lat: number) => {
-    'worklet';
-    return Math.round(rPx * getMetersPerPx(z, lat));
-  };
+      onRadiusMetersChange?.(meters);
 
-  const calculateDistanceStr = (meters: number) => {
-    if (meters < 1000) return `${meters} m`;
-    return `${(meters / 1000).toFixed(1)} km`;
-  };
-
-  const updateDistanceJS = (currentRadiusPx: number, currentZoom: number, currentLat: number) => {
-    const meters = calculateDistance(currentRadiusPx, currentZoom, currentLat);
-    const dist = calculateDistanceStr(meters);
-    
-    if (onRadiusMetersChange) {
-      onRadiusMetersChange(meters);
-    }
-    
-    if (dist !== lastDistRef.current && onDistanceChange) {
-      lastDistRef.current = dist;
-      onDistanceChange(dist);
-    }
-  };
+      if (dist !== lastDistRef.current) {
+        lastDistRef.current = dist;
+        onDistanceChange?.(dist);
+      }
+    },
+    [onDistanceChange, onRadiusMetersChange]
+  );
 
   useEffect(() => {
-    updateDistanceJS(radius.value, zoom, centerCoords[0]);
-  }, [zoom, centerCoords[0]]);
+    updateDistance(radius.get(), zoom, centerCoords[0]);
+  }, [updateDistance, radius, zoom, centerCoords]);
 
   useAnimatedReaction(
-    () => radius.value,
+    () => radius.get(),
     (currentRadius) => {
-      runOnJS(updateDistanceJS)(currentRadius, zoom, centerCoords[0]);
+      runOnJS(updateDistance)(currentRadius, zoom, centerCoords[0]);
     }
   );
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
-      startRadius.value = radius.value;
+      startRadius.set(radius.get());
     })
     .onUpdate((event) => {
       const delta = (event.translationX - event.translationY) / Math.SQRT2;
-      let newR = startRadius.value + delta;
+      let newR = startRadius.get() + delta;
 
       if (newR < minRadius) newR = minRadius;
       if (newR > maxRadius) newR = maxRadius;
 
-      radius.value = newR;
+      radius.set(newR);
     });
 
   const animatedArcProps = useAnimatedProps(() => {
-    const r = radius.value;
+    const r = radius.get();
     const gapRad = (gapAngleDeg * Math.PI) / 180;
     const startAngle = handleAngleRad + gapRad / 2;
     const endAngle = handleAngleRad - gapRad / 2 + 2 * Math.PI;
@@ -109,13 +111,13 @@ export function InteractiveZoneCircle({
   });
 
   const animatedFillStyle = useAnimatedStyle(() => ({
-    width: radius.value * 2,
-    height: radius.value * 2,
-    borderRadius: radius.value,
+    width: radius.get() * 2,
+    height: radius.get() * 2,
+    borderRadius: radius.get(),
   }));
 
   const animatedHandleStyle = useAnimatedStyle(() => {
-    const r = radius.value;
+    const r = radius.get();
     return {
       transform: [
         { translateX: center + r * Math.cos(handleAngleRad) - 24 },
@@ -130,12 +132,15 @@ export function InteractiveZoneCircle({
       pointerEvents="box-none"
     >
       <Animated.View style={[styles.zoneFill, animatedFillStyle]} pointerEvents="none" />
-      <View style={[styles.centerDot, { top: center - 5, left: center - 5 }]} pointerEvents="none" />
+      <View
+        style={[styles.centerDot, { top: center - 5, left: center - 5 }]}
+        pointerEvents="none"
+      />
 
       <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
         <AnimatedPath
           animatedProps={animatedArcProps}
-          stroke={ORANGE}
+          stroke={colors.primary}
           strokeWidth={2.5}
           fill="none"
           strokeLinecap="round"
@@ -143,11 +148,15 @@ export function InteractiveZoneCircle({
       </Svg>
 
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.cleanHandle, animatedHandleStyle]}>
+        <Animated.View
+          style={[styles.cleanHandle, animatedHandleStyle]}
+          accessibilityRole="adjustable"
+          accessibilityLabel="Ajustar área oculta"
+        >
           <Svg width="36" height="36" viewBox="0 0 24 24" fill="none">
             <Path
               d="M14 10L21 3M21 3H16M21 3V8M10 14L3 21M3 21H8M3 21V16"
-              stroke="#000000"
+              stroke={colors.textDark}
               strokeWidth="1.2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -170,16 +179,16 @@ const styles = StyleSheet.create({
   },
   zoneFill: {
     position: 'absolute',
-    backgroundColor: 'rgba(255, 140, 0, 0.16)',
+    backgroundColor: colors.zoneFill,
   },
   centerDot: {
     position: 'absolute',
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: ORANGE,
+    backgroundColor: colors.primary,
     borderWidth: 2,
-    borderColor: '#070707',
+    borderColor: colors.backgroundAlt,
   },
   cleanHandle: {
     position: 'absolute',

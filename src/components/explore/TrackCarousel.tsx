@@ -1,15 +1,28 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const TRACKS = [
+import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/Button';
+import { colors, radius, spacing, typography } from '@/theme';
+
+type Track = {
+  id: string;
+  title: string;
+  views: string;
+  rating: string;
+  reviews: string;
+  image: string;
+};
+
+const TRACKS: Track[] = [
   {
     id: '1',
     title: 'Aterro do Flamengo, RJ',
     views: '12.5M',
     rating: '4.9',
     reviews: '12M',
-    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=80',
+    image:
+      'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: '2',
@@ -17,7 +30,8 @@ const TRACKS = [
     views: '15.1M',
     rating: '4.9',
     reviews: '15M',
-    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80',
+    image:
+      'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80',
   },
   {
     id: '3',
@@ -25,9 +39,40 @@ const TRACKS = [
     views: '8.2M',
     rating: '4.7',
     reviews: '8M',
-    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=80',
+    image:
+      'https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=600&q=80',
   },
 ];
+
+function TrackCard({ track }: { track: Track }) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.imageWrapper}>
+        <Image source={{ uri: track.image }} style={styles.image} />
+      </View>
+
+      <View style={styles.info}>
+        <ThemedText style={styles.title} numberOfLines={1}>
+          {track.title}
+        </ThemedText>
+        <View style={styles.stats}>
+          <View style={styles.statItem}>
+            <Ionicons name="eye-outline" size={13} color={colors.textSecondary} />
+            <ThemedText style={styles.statText}>{track.views}</ThemedText>
+          </View>
+          <View style={styles.statItem}>
+            <Ionicons name="star" size={13} color={colors.gold} />
+            <ThemedText style={styles.statText}>
+              {track.rating} ({track.reviews})
+            </ThemedText>
+          </View>
+        </View>
+      </View>
+
+      <Button label="Explorar rota" variant="secondary" size="small" style={styles.cardButton} />
+    </View>
+  );
+}
 
 export function TrackCarousel() {
   return (
@@ -37,34 +82,8 @@ export function TrackCarousel() {
       style={styles.scrollView}
       contentContainerStyle={styles.container}
     >
-      {TRACKS.map((item) => (
-        <View key={item.id} style={styles.card}>
-          <View style={styles.imageWrapper}>
-            <Image source={{ uri: item.image }} style={styles.image} />
-          </View>
-
-          <View style={styles.info}>
-            <Text style={styles.title} numberOfLines={1}>
-              {item.title}
-            </Text>
-            <View style={styles.stats}>
-              <View style={styles.statItem}>
-                <Ionicons name="eye-outline" size={13} color="#8E8E93" />
-                <Text style={styles.statText}>{item.views}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Ionicons name="star" size={13} color="#FFD700" />
-                <Text style={styles.statText}>
-                  {item.rating} ({item.reviews})
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <TouchableOpacity style={styles.cardButton} activeOpacity={0.8}>
-            <Text style={styles.cardButtonText}>Explorar rota</Text>
-          </TouchableOpacity>
-        </View>
+      {TRACKS.map((track) => (
+        <TrackCard key={track.id} track={track} />
       ))}
     </ScrollView>
   );
@@ -75,24 +94,24 @@ const styles = StyleSheet.create({
     marginHorizontal: -20,
   },
   container: {
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.xxl,
     gap: 14,
-    paddingVertical: 4,
+    paddingVertical: spacing.xs,
   },
   card: {
     width: 250,
-    backgroundColor: '#151515',
-    borderRadius: 24,
+    backgroundColor: colors.surface,
+    borderRadius: radius.xxl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    padding: 12,
-    gap: 12,
+    borderColor: colors.borderSubtle,
+    padding: spacing.lg,
+    gap: spacing.lg,
     justifyContent: 'space-between',
   },
   imageWrapper: {
     width: '100%',
     height: 120,
-    borderRadius: 16,
+    borderRadius: radius.lg,
     overflow: 'hidden',
   },
   image: {
@@ -100,41 +119,29 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   info: {
-    gap: 4,
+    gap: spacing.xs,
   },
   title: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
+    color: colors.text,
+    fontSize: typography.sizes.bodyLg,
+    fontWeight: typography.weights.bold,
   },
   stats: {
     flexDirection: 'row',
-    gap: 12,
+    gap: spacing.lg,
     alignItems: 'center',
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: spacing.xs,
   },
   statText: {
-    color: '#8E8E93',
-    fontSize: 11,
-    fontWeight: '600',
+    color: colors.textSecondary,
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.semibold,
   },
   cardButton: {
-    backgroundColor: '#2A2A2A',
-    borderWidth: 1,
-    borderColor: '#444444',
-    height: 38,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  cardButtonText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
+    marginTop: spacing.xs,
   },
 });

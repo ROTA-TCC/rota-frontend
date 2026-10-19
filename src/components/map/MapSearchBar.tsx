@@ -1,34 +1,48 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { SportDropdown } from './SportDropdown';
 
-export const MapSearchBar = () => {
+import { SportDropdown } from '@/components/map/SportDropdown';
+import { ThemedText } from '@/components/themed-text';
+import { colors, radius, shadows, spacing, typography } from '@/theme';
+
+export function MapSearchBar() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [activeSport, setActiveSport] = useState('corrida');
 
   return (
-    <View style={styles.container}>
+    <View>
       <View style={styles.searchBar}>
         <TouchableOpacity
           style={styles.brandSection}
-          onPress={() => setDropdownVisible(!dropdownVisible)}
+          onPress={() => setDropdownVisible((prev) => !prev)}
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Selecionar esporte"
         >
           <FontAwesome5
             name={activeSport === 'corrida' ? 'shoe-prints' : 'running'}
             size={18}
-            color="#E34F1E"
-            style={activeSport === 'corrida' ? { transform: [{ rotate: '-30deg' }] } : undefined}
+            color={colors.primaryAction}
+            style={activeSport === 'corrida' ? styles.shoeIcon : undefined}
           />
-          <Ionicons name={dropdownVisible ? "chevron-up" : "chevron-down"} size={11} color="white" />
+          <Ionicons
+            name={dropdownVisible ? 'chevron-up' : 'chevron-down'}
+            size={11}
+            color={colors.text}
+          />
         </TouchableOpacity>
 
-        <Text style={styles.searchText}>Procurar locais</Text>
+        <ThemedText style={styles.searchText}>Procurar locais</ThemedText>
 
-        <TouchableOpacity style={styles.savedBtn} activeOpacity={0.7}>
-          <Ionicons name="bookmark-outline" size={16} color="white" />
-          <Text style={styles.savedText}>Salvo</Text>
+        <TouchableOpacity
+          style={styles.savedBtn}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel="Locais salvos"
+        >
+          <Ionicons name="bookmark-outline" size={16} color={colors.text} />
+          <ThemedText style={styles.savedText}>Salvo</ThemedText>
         </TouchableOpacity>
       </View>
 
@@ -41,48 +55,46 @@ export const MapSearchBar = () => {
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {},
   searchBar: {
-    backgroundColor: 'rgba(20, 20, 20, 0.95)',
+    backgroundColor: colors.surfaceOverlay,
     height: 52,
-    borderRadius: 12,
+    borderRadius: radius.md,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    borderColor: colors.borderMedium,
+    ...shadows.raised,
   },
   brandSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing.sm,
     paddingRight: 14,
     borderRightWidth: 1.5,
-    borderRightColor: '#333333',
+    borderRightColor: colors.borderStrong,
     marginRight: 14,
   },
+  shoeIcon: {
+    transform: [{ rotate: '-30deg' }],
+  },
   searchText: {
-    color: '#A0A0A0',
-    fontSize: 15,
-    fontWeight: '600',
+    color: colors.textPlaceholder,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.semibold,
     flex: 1,
   },
   savedBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: spacing.md,
   },
   savedText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
+    color: colors.text,
+    fontSize: typography.sizes.bodyLg,
+    fontWeight: typography.weights.bold,
   },
 });

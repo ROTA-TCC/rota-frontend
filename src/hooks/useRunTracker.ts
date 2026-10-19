@@ -14,7 +14,7 @@ export const useRunTracker = () => {
   
   const startTimeRef = useRef<string | null>(null);
   const locationSubRef = useRef<Location.LocationSubscription | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastLocationRef = useRef<{ latitude: number; longitude: number } | null>(null);
   const totalDistanceRef = useRef<number>(0);
 
@@ -71,7 +71,7 @@ export const useRunTracker = () => {
               latitude,
               longitude,
               altitude: altitude || 0,
-              speedMs: speed || 0,
+              speedMps: speed || 0,
               recordedAt: new Date().toISOString()
             };
 

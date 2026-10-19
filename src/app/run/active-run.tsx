@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
+
+import BottomPanel from '@/components/Record/BottomPanel';
+import FloatingButtons from '@/components/Record/FloatingButtons';
 import { LeafletMap } from '@/components/map/LeafletMap';
-import FloatingButtons from '../../components/Record/FloatingButtons';
-import BottomPanel from '../../components/Record/BottomPanel';
 import { useRunTracker } from '@/hooks/useRunTracker';
 import { createRun } from '@/services/api/runService';
+import { colors } from '@/theme';
+
+const MAP_OVERLAY_CSS = `#map::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: ${colors.overlayMap}; pointer-events: none; z-index: 1000; }`;
 
 export default function ActiveRunScreen() {
-  const { type } = useLocalSearchParams<{ type: string }>();
   const router = useRouter();
 
   const {
@@ -21,23 +24,23 @@ export default function ActiveRunScreen() {
     route,
     startRecording,
     pauseRecording,
-    finishRecording
+    finishRecording,
   } = useRunTracker();
 
   useEffect(() => {
     startRecording();
-  }, []);
+  }, [startRecording]);
 
   const handleFinish = async () => {
     const payload = finishRecording();
-    
+
     if (!payload || payload.trackpoints.length === 0) return;
 
     try {
       await createRun(payload);
       router.replace('/(tabs)/explore');
-    } catch (error) {
-      console.error(error);
+    } catch {
+      Alert.alert('Erro', 'Não foi possível salvar sua corrida. Tente novamente.');
     }
   };
 
@@ -49,7 +52,7 @@ export default function ActiveRunScreen() {
   if (!currentLocation) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#ff4500" />
+        <ActivityIndicator size="large" color={colors.primaryRun} />
       </View>
     );
   }
@@ -60,9 +63,9 @@ export default function ActiveRunScreen() {
         center={currentLocation}
         zoom={17}
         route={route}
-        showMarker={true}
+        showMarker
         style={styles.map}
-        customCSS="#map::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(43, 58, 66, 0.5); pointer-events: none; z-index: 1000; }"
+        customCSS={MAP_OVERLAY_CSS}
       />
 
       <FloatingButtons onBack={handleBack} />
@@ -70,9 +73,9 @@ export default function ActiveRunScreen() {
       <BottomPanel
         isPaused={isPaused}
         stats={{
-          statusText: isPaused ? 'Pausado' : (isRecording ? 'Gravando' : 'Pronto para Iniciar'),
+          statusText: isPaused ? 'Pausado' : isRecording ? 'Gravando' : 'Pronto para Iniciar',
           time: durationFormatted,
-          pace: pace,
+          pace,
           paceLabel: 'Ritmo médio (/km)',
           distance: distanceKm,
         }}
@@ -85,8 +88,17 @@ export default function ActiveRunScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212' },
-  loadingContainer: { flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' },
-  map: { flex: 1 },
+  container: {
+    flex: 1,
+    backgroundColor: colors.surfaceCardAlt,
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.surfaceCardAlt,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  map: {
+    flex: 1,
+  },
 });
-

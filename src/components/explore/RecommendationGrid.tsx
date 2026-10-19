@@ -1,47 +1,47 @@
-import React from 'react';
-import { StyleSheet, View, Text, ImageBackground, Image, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+import { PromoCard } from '@/components/explore/PromoCard';
+import {
+  BRAND_ICON,
+  COMING_SOON_CARD_IMAGE,
+  COMMUNITY_AVATARS,
+  COMMUNITY_CARD_IMAGE,
+  COOLING_CARD_IMAGE,
+} from '@/components/explore/recommendationData';
+import { colors, spacing, typography } from '@/theme';
 
 export function RecommendationGrid() {
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require('../../../assets/images/fundo-verde-com-imagem-quadrado.png')}
-        style={styles.greenCard}
-        imageStyle={styles.cardImageStyle}
-      >
+      <PromoCard source={COOLING_CARD_IMAGE} style={styles.greenCard}>
         <View style={styles.greenCardContent}>
           <Text style={styles.greenTitle}>Resfriamento Pós-Corrida</Text>
           <Text style={styles.greenSubtitle}>
             Top 5 passos para um resfriamento seguro após a corrida
           </Text>
         </View>
-      </ImageBackground>
+      </PromoCard>
 
       <View style={styles.rightColumn}>
-        <ImageBackground
-          source={{ uri: 'https://images.unsplash.com/photo-1552674605-171ff3ea36f0?auto=format&fit=crop&w=400&q=80' }}
-          style={styles.darkCard}
-          imageStyle={styles.cardImageStyle}
-        >
+        <PromoCard source={COMMUNITY_CARD_IMAGE} style={styles.darkCard}>
           <View style={styles.darkCardTop}>
             <View style={styles.avatarStack}>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60' }}
-                style={[styles.avatar, { zIndex: 3 }]}
-              />
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=60' }}
-                style={[styles.avatar, styles.avatarOverlap, { zIndex: 2 }]}
-              />
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=60' }}
-                style={[styles.avatar, styles.avatarOverlap, { zIndex: 1 }]}
-              />
+              {COMMUNITY_AVATARS.map((uri, index) => (
+                <Image
+                  key={uri}
+                  source={{ uri }}
+                  style={[
+                    styles.avatar,
+                    index > 0 && styles.avatarOverlap,
+                    { zIndex: COMMUNITY_AVATARS.length - index },
+                  ]}
+                />
+              ))}
             </View>
 
             <TouchableOpacity style={styles.arrowButton} activeOpacity={0.8}>
-              <Ionicons name="trending-up" size={16} color="#111111" />
+              <Ionicons name="trending-up" size={16} color={colors.textOnLight} />
             </TouchableOpacity>
           </View>
 
@@ -49,23 +49,15 @@ export function RecommendationGrid() {
             <Text style={styles.darkTitle}>Junte-se a nós!</Text>
             <Text style={styles.darkSubtitle}>Evolua e crie conexões</Text>
           </View>
-        </ImageBackground>
+        </PromoCard>
 
-        <ImageBackground
-          source={{ uri: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=500&q=80' }}
-          style={styles.redCard}
-          imageStyle={styles.cardImageStyle}
-        >
-          <Image
-            source={require('../../../assets/brand/logo-sem-fundo.png')}
-            style={styles.brandIcon}
-            resizeMode="contain"
-          />
+        <PromoCard source={COMING_SOON_CARD_IMAGE} style={styles.redCard}>
+          <Image source={BRAND_ICON} style={styles.brandIcon} resizeMode="contain" />
           <View style={styles.redCardContent}>
             <Text style={styles.redTitle}>EM BREVE</Text>
             <Text style={styles.redSubtitle}>Novos recursos e estatísticas</Text>
           </View>
-        </ImageBackground>
+        </PromoCard>
       </View>
     </View>
   );
@@ -74,52 +66,45 @@ export function RecommendationGrid() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    gap: 12,
+    gap: spacing.lg,
     height: 260,
-  },
-  cardImageStyle: {
-    borderRadius: 24,
   },
   greenCard: {
     flex: 1,
-    borderRadius: 24,
-    overflow: 'hidden',
-    padding: 20,
+    padding: spacing.xxl,
     justifyContent: 'flex-start',
   },
   greenCardContent: {
     zIndex: 2,
   },
   greenTitle: {
-    color: '#111111',
-    fontSize: 18,
-    fontWeight: '800',
+    color: colors.textOnLight,
+    fontSize: typography.sizes.titleLg,
+    fontWeight: typography.weights.heavy,
     lineHeight: 22,
-    marginBottom: 6,
-    textShadowColor: 'rgba(255, 255, 255, 0.7)',
+    marginBottom: spacing.sm,
+    textShadowColor: colors.white70,
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
   greenSubtitle: {
-    color: '#222222',
-    fontSize: 11,
-    fontWeight: '700',
+    color: colors.textOnLightSoft,
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.bold,
     lineHeight: 15,
-    textShadowColor: 'rgba(255, 255, 255, 0.7)',
+    textShadowColor: colors.white70,
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
   rightColumn: {
     flex: 1,
-    gap: 12,
+    gap: spacing.lg,
   },
   darkCard: {
     flex: 1,
-    borderRadius: 24,
-    overflow: 'hidden',
     padding: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: colors.borderSubtle,
     justifyContent: 'space-between',
   },
   darkCardTop: {
@@ -137,7 +122,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     borderWidth: 2,
-    borderColor: '#151515',
+    borderColor: colors.surface,
   },
   avatarOverlap: {
     marginLeft: -10,
@@ -146,7 +131,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#D4ED6D',
+    backgroundColor: colors.accentLime,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -154,23 +139,20 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   darkTitle: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
+    color: colors.text,
+    fontSize: typography.sizes.bodyLg,
+    fontWeight: typography.weights.bold,
     marginBottom: 2,
   },
   darkSubtitle: {
-    color: '#8E8E93',
-    fontSize: 11,
-    fontWeight: '500',
+    color: colors.textSecondary,
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.medium,
   },
   redCard: {
     flex: 1,
-    borderRadius: 24,
-    overflow: 'hidden',
     padding: 14,
     justifyContent: 'flex-end',
-    position: 'relative',
   },
   brandIcon: {
     position: 'absolute',
@@ -184,14 +166,14 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   redTitle: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '800',
+    color: colors.text,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.heavy,
     marginBottom: 2,
   },
   redSubtitle: {
-    color: 'rgba(255, 255, 255, 0.85)',
-    fontSize: 10,
-    fontWeight: '500',
+    color: colors.white85,
+    fontSize: typography.sizes.xs,
+    fontWeight: typography.weights.medium,
   },
 });

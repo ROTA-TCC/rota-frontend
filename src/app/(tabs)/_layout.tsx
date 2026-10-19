@@ -1,7 +1,8 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
+
+import { colors, shadows, typography } from '@/theme';
 
 export default function TabLayout() {
   return (
@@ -9,10 +10,10 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: styles.tabBar,
-        tabBarActiveTintColor: '#E34F1E',
-        tabBarInactiveTintColor: '#999999',
+        tabBarActiveTintColor: colors.primaryAction,
+        tabBarInactiveTintColor: colors.textIcon,
         tabBarShowLabel: true,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: { fontSize: typography.sizes.sm, fontWeight: typography.weights.semibold },
       }}
     >
       <Tabs.Screen
@@ -35,7 +36,7 @@ export default function TabLayout() {
           title: '',
           tabBarIcon: () => (
             <View style={styles.recordButton}>
-              <Ionicons name="add" size={28} color="#FFFFFF" />
+              <Ionicons name="add" size={28} color={colors.white} />
             </View>
           ),
         }}
@@ -60,25 +61,21 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#070707',
+    backgroundColor: colors.backgroundAlt,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: colors.borderMedium,
     height: 70,
     paddingTop: 8,
     paddingBottom: 8,
   },
   recordButton: {
-    backgroundColor: '#E34F1E',
+    backgroundColor: colors.primaryAction,
     width: 48,
     height: 48,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: -10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    ...shadows.raised,
   },
 });

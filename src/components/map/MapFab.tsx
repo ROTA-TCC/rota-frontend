@@ -1,113 +1,65 @@
-import React, { useState, useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity, Animated } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { ThemedText } from '../themed-text';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
-export const MapFab = () => {
+import { SubFab } from '@/components/map/SubFab';
+import { ThemedText } from '@/components/themed-text';
+import { colors, shadows } from '@/theme';
+
+const SPRING_CONFIG = { damping: 12, stiffness: 180, mass: 0.8 };
+const SUB_FAB_OFFSET = 60;
+
+export function MapFab() {
   const [active, setActive] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const animation = useRef(new Animated.Value(0)).current;
+  const progress = useSharedValue(0);
 
   const toggleFab = () => {
-    if (active) {
-      Animated.timing(animation, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() => {
-        setActive(false);
-        setVisible(false);
-      });
-    } else {
-      setActive(true);
-      setVisible(true);
-      Animated.spring(animation, {
-        toValue: 1,
-        friction: 6,
-        tension: 45,
-        useNativeDriver: true,
-      }).start();
-    }
+    const next = !active;
+    setActive(next);
+    progress.set(next ? withSpring(1, SPRING_CONFIG) : withTiming(0, { duration: 200 }));
   };
 
-  const translateY1 = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -60],
-  });
-
-  const translateY2 = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -120],
-  });
-
-  const translateY3 = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -180],
-  });
-
-  const scale = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.3, 1],
-  });
-
-  const rotateMain = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['-90deg', '0deg'],
-  });
+  const mainIconStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${-90 + 90 * progress.get()}deg` }],
+  }));
 
   return (
     <View style={styles.container}>
-      {visible && (
-        <>
-          <Animated.View
-            style={[
-              styles.subFab,
-              {
-                opacity: animation,
-                transform: [{ translateY: translateY3 }, { scale }],
-              },
-            ]}
-          >
-            <Ionicons name="layers" size={18} color="white" />
-            <View style={styles.badge}>
-              <ThemedText style={styles.badgeText}>1</ThemedText>
-            </View>
-          </Animated.View>
+      <SubFab progress={progress} offset={SUB_FAB_OFFSET * 3}>
+        <Ionicons name="layers" size={18} color={colors.text} />
+        <View style={styles.badge}>
+          <ThemedText style={styles.badgeText}>1</ThemedText>
+        </View>
+      </SubFab>
 
-          <Animated.View
-            style={[
-              styles.subFab,
-              {
-                opacity: animation,
-                transform: [{ translateY: translateY2 }, { scale }],
-              },
-            ]}
-          >
-            <Ionicons name="locate" size={18} color="white" />
-          </Animated.View>
+      <SubFab progress={progress} offset={SUB_FAB_OFFSET * 2}>
+        <Ionicons name="locate" size={18} color={colors.text} />
+      </SubFab>
 
-          <Animated.View
-            style={[
-              styles.subFab,
-              {
-                opacity: animation,
-                transform: [{ translateY: translateY1 }, { scale }],
-              },
-            ]}
-          >
-            <FontAwesome5 name="pencil-alt" size={18} color="white" />
-          </Animated.View>
-        </>
-      )}
+      <SubFab progress={progress} offset={SUB_FAB_OFFSET}>
+        <FontAwesome5 name="pencil-alt" size={18} color={colors.text} />
+      </SubFab>
 
-      <TouchableOpacity style={styles.mainFab} onPress={toggleFab} activeOpacity={0.8}>
-        <Animated.View style={{ transform: [{ rotate: rotateMain }] }}>
-          <Ionicons name="ellipsis-horizontal" size={22} color="white" />
+      <TouchableOpacity
+        style={styles.mainFab}
+        onPress={toggleFab}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={active ? 'Fechar ações do mapa' : 'Abrir ações do mapa'}
+      >
+        <Animated.View style={mainIconStyle}>
+          <Ionicons name="ellipsis-horizontal" size={22} color={colors.text} />
         </Animated.View>
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -120,32 +72,18 @@ const styles = StyleSheet.create({
   mainFab: {
     width: 48,
     height: 48,
-    backgroundColor: '#070707',
+    backgroundColor: colors.backgroundAlt,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 5,
-    shadowColor: '#000',
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  subFab: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 48,
-    height: 48,
-    backgroundColor: 'rgba(15, 15, 15, 0.95)',
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    ...shadows.fab,
   },
   badge: {
     position: 'absolute',
     top: -2,
     right: -2,
-    backgroundColor: 'white',
+    backgroundColor: colors.text,
     width: 18,
     height: 18,
     borderRadius: 9,
@@ -153,7 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeText: {
-    color: 'black',
+    color: colors.textDark,
     fontSize: 10,
     fontWeight: '800',
     textAlign: 'center',

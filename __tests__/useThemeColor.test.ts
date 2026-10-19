@@ -1,7 +1,7 @@
 import { useThemeColor } from '../src/hooks/use-theme-color';
 
-jest.mock('@/constants/theme', () => ({
-  Colors: {
+jest.mock('@/theme', () => ({
+  themed: {
     light: { text: '#000', background: '#fff' },
     dark: { text: '#fff', background: '#000' },
   },
@@ -11,7 +11,7 @@ jest.mock('@/hooks/use-color-scheme', () => ({
   useColorScheme: jest.fn(),
 }));
 
-import { Colors } from '@/constants/theme';
+import { themed } from '@/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 describe('useThemeColor', () => {
@@ -34,12 +34,12 @@ describe('useThemeColor', () => {
   test('returns color from theme when props are missing', () => {
     (useColorScheme as jest.Mock).mockReturnValue('dark');
     const color = useThemeColor({}, 'text');
-    expect(color).toBe(Colors.dark.text);
+    expect(color).toBe(themed.dark.text);
   });
 
   test('returns default light theme when color scheme is null', () => {
     (useColorScheme as jest.Mock).mockReturnValue(null);
     const color = useThemeColor({}, 'background');
-    expect(color).toBe(Colors.light.background);
+    expect(color).toBe(themed.light.background);
   });
 });

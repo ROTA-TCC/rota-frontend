@@ -1,137 +1,75 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-} from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
-import Svg, { Circle } from 'react-native-svg';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import GoalArcPicker, { GoalLevel } from '@/components/GoalArcPicker';
+
+import { OnboardingFooter } from '@/components/auth/OnboardingFooter';
+import { GoalArcPicker } from '@/components/goals/GoalArcPicker';
+import { GoalLevelInfo } from '@/components/goals/GoalLevelInfo';
+import { GOAL_LEVEL_API, GOAL_LEVELS, type GoalLevel } from '@/components/goals/goalArcData';
+import { ThemedText } from '@/components/themed-text';
+import { GlowBackground } from '@/components/ui/GlowBackground';
+import { ProgressSteps } from '@/components/ui/ProgressSteps';
 import { useProfileSetup } from '@/providers/ProfileSetupProvider';
-
-const ORANGE = '#FF8C00';
-
-interface LevelData {
-  id: GoalLevel;
-  title: string;
-  description: string;
-}
-
-const LEVELS: Record<GoalLevel, LevelData> = {
-  novice: {
-    id: 'novice',
-    title: 'Novato',
-    description: 'Haverá 1 desafio com distância de 2 km. Perfeito para dar os primeiros passos com consistência.',
-  },
-  intermediate: {
-    id: 'intermediate',
-    title: 'Intermediário',
-    description: 'Haverá 3 desafios com distâncias cumulativas de 5 km. Você pode redefinir isso na página de configurações.',
-  },
-  advanced: {
-    id: 'advanced',
-    title: 'Avançado',
-    description: 'Haverá 5 desafios com distâncias cumulativas de 10 km. Ideal para quem deseja alta intensidade.',
-  },
-};
+import { colors, spacing, typography } from '@/theme';
 
 export default function SetGoalsScreen() {
   const router = useRouter();
   const [selectedLevel, setSelectedLevel] = useState<GoalLevel>('intermediate');
   const { updateProfileData } = useProfileSetup();
 
+  const accentColor = colors.primary;
+  const levelData = GOAL_LEVELS[selectedLevel];
+
   const handleNext = () => {
-    const levelMap: Record<GoalLevel, string> = {
-      novice: 'iniciante',
-      intermediate: 'intermediario',
-      advanced: 'avancado',
-    };
-    updateProfileData({ nivelDificuldade: levelMap[selectedLevel] });
+    updateProfileData({ nivelDificuldade: GOAL_LEVEL_API[selectedLevel] });
     router.push('/privacy-zone');
   };
 
+  const handleSkip = () => router.push('/privacy-zone');
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <View style={styles.container}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image
-            source={require('../../../assets/images/background-blur.png')}
-            style={[styles.glowImage, styles.topGlow]}
-            resizeMode="cover"
-          />
-          <Image
-            source={require('../../../assets/images/background-blur.png')}
-            style={[styles.glowImage, styles.bottomGlow]}
-            resizeMode="cover"
-          />
-        </View>
+        <GlowBackground offset={80} opacity={0.35} />
 
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
-          bounces={true}
+          bounces
         >
           <View style={styles.header}>
-            <View style={styles.progressBar}>
-              <View style={styles.step} />
-              <View style={[styles.step, styles.activeStep]} />
-              <View style={styles.step} />
-            </View>
+            <ProgressSteps activeStep={1} accentColor={accentColor} />
 
-            <Text style={styles.subtitle}>Metas</Text>
-            <Text style={styles.title}>Defina metas</Text>
-            <Text style={styles.description}>
-              Defina sua meta semanal. Nós ajudaremos você a acompanhar seu progresso e a manter a motivação, escolha o nível de dificuldade.
-            </Text>
+            <ThemedText style={[styles.subtitle, { color: accentColor }]}>Metas</ThemedText>
+            <ThemedText style={styles.title}>Defina metas</ThemedText>
+            <ThemedText style={styles.description}>
+              Defina sua meta semanal. Nós ajudaremos você a acompanhar seu progresso e a manter a
+              motivação, escolha o nível de dificuldade.
+            </ThemedText>
           </View>
 
           <GoalArcPicker
             selectedLevel={selectedLevel}
             onSelectLevel={setSelectedLevel}
-            accentColor={ORANGE}
+            accentColor={accentColor}
           />
 
-          <Animated.View
-            key={selectedLevel}
-            entering={FadeIn.duration(200)}
-            exiting={FadeOut.duration(150)}
-            style={styles.infoBox}
-          >
-            <View style={styles.infoIcon}>
-              <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <Circle cx="12" cy="12" r="10" stroke={ORANGE} strokeWidth="2" />
-                <Circle cx="12" cy="12" r="6" stroke={ORANGE} strokeWidth="2" />
-                <Circle cx="12" cy="12" r="2" fill={ORANGE} />
-              </Svg>
-            </View>
-            <Text style={styles.infoText}>
-              <Text style={styles.infoHighlight}>{LEVELS[selectedLevel].title}: </Text>
-              {LEVELS[selectedLevel].description}
-            </Text>
-          </Animated.View>
+          <GoalLevelInfo
+            selectedLevel={selectedLevel}
+            title={levelData.title}
+            description={levelData.description}
+            accentColor={accentColor}
+          />
 
           <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.btnNext}
-              onPress={handleNext}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.btnNextText}>Próximo</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.btnSkip}
-              onPress={() => router.push('/privacy-zone')}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.btnSkipText}>Pular</Text>
-            </TouchableOpacity>
+            <OnboardingFooter
+              onNext={handleNext}
+              onSkip={handleSkip}
+              accentColor={accentColor}
+              fullWidth
+            />
           </View>
         </ScrollView>
       </View>
@@ -140,122 +78,47 @@ export default function SetGoalsScreen() {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#070707',
+    backgroundColor: colors.backgroundAlt,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.xxxl,
     paddingTop: 60,
-    paddingBottom: 40,
+    paddingBottom: spacing.xxxl,
     flexGrow: 1,
     justifyContent: 'space-between',
   },
-  glowImage: {
-    position: 'absolute',
-    width: 320,
-    height: 320,
-    opacity: 0.35,
-  },
-  topGlow: {
-    top: -80,
-    right: -80,
-  },
-  bottomGlow: {
-    bottom: -80,
-    left: -80,
-    transform: [{ rotate: '180deg' }],
-  },
   header: {
-    marginBottom: 8,
-  },
-  progressBar: {
-    flexDirection: 'row',
-    gap: 6,
-    marginBottom: 20,
-  },
-  step: {
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: '#2A2A2D',
-    width: 12,
-  },
-  activeStep: {
-    width: 24,
-    backgroundColor: ORANGE,
+    marginBottom: spacing.sm,
   },
   subtitle: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.bold,
     letterSpacing: 0.3,
-    marginBottom: 4,
-    color: ORANGE,
+    marginBottom: spacing.xs,
   },
   title: {
-    marginBottom: 12,
+    marginBottom: spacing.md,
     fontSize: 30,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    fontWeight: typography.weights.bold,
+    color: colors.text,
   },
   description: {
-    color: '#8E8E93',
-    fontSize: 13,
-    fontWeight: '500',
+    color: colors.textSecondary,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.medium,
     lineHeight: 20,
-  },
-  infoBox: {
-    backgroundColor: '#141416',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#242426',
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    marginVertical: 16,
-  },
-  infoIcon: {
-    marginTop: 2,
-  },
-  infoText: {
-    color: '#8E8E93',
-    fontSize: 13,
-    lineHeight: 19.5,
-    fontWeight: '500',
-    flex: 1,
-  },
-  infoHighlight: {
-    color: ORANGE,
-    fontWeight: '700',
   },
   footer: {
     alignItems: 'center',
-    gap: 14,
-    marginTop: 8,
-  },
-  btnNext: {
-    backgroundColor: ORANGE,
-    height: 54,
-    borderRadius: 27,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  btnNextText: {
-    color: '#0A0F09',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  btnSkip: {
-    padding: 6,
-  },
-  btnSkipText: {
-    color: ORANGE,
-    fontWeight: '600',
-    fontSize: 14,
+    gap: spacing.lg,
+    marginTop: spacing.sm,
   },
 });

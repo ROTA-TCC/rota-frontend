@@ -1,23 +1,18 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StatusBar,
-} from 'react-native';
+import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { HeaderSearch } from '@/components/explore/HeaderSearch';
+
 import { FilterChips } from '@/components/explore/FilterChips';
+import { HeaderSearch } from '@/components/explore/HeaderSearch';
 import { RecommendationGrid } from '@/components/explore/RecommendationGrid';
 import { TrackCarousel } from '@/components/explore/TrackCarousel';
+import { ThemedText } from '@/components/themed-text';
+import { colors, spacing, typography } from '@/theme';
 
 export default function ExploreScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <StatusBar barStyle="light-content" backgroundColor="#050505" />
+      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <View style={styles.container}>
         <View style={styles.header}>
           <HeaderSearch />
@@ -31,17 +26,15 @@ export default function ExploreScreen() {
         >
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Recomendações</Text>
+              <ThemedText style={styles.sectionTitle}>Recomendações</ThemedText>
             </View>
             <RecommendationGrid />
           </View>
 
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Melhores rotas próximas</Text>
-              <TouchableOpacity activeOpacity={0.7}>
-                <Ionicons name="chevron-forward" size={18} color="#555555" />
-              </TouchableOpacity>
+              <ThemedText style={styles.sectionTitle}>Melhores rotas próximas</ThemedText>
+              <Ionicons name="chevron-forward" size={18} color={colors.textDisabled} />
             </View>
             <TrackCarousel />
           </View>
@@ -54,25 +47,25 @@ export default function ExploreScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#050505',
+    backgroundColor: colors.background,
   },
   container: {
     flex: 1,
-    backgroundColor: '#050505',
+    backgroundColor: colors.background,
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 12,
+    paddingHorizontal: spacing.xxl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.lg,
     gap: 14,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 40,
-    gap: 28,
+    paddingHorizontal: spacing.xxl,
+    paddingBottom: spacing.xxxl,
+    gap: spacing.xxxl,
   },
   section: {
     gap: 14,
@@ -83,8 +76,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sectionTitle: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '700',
+    color: colors.text,
+    fontSize: typography.sizes.title,
+    fontWeight: typography.weights.bold,
   },
 });

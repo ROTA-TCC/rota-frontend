@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, StatusBar, Platform } from 'react-native';
+import { useState } from 'react';
+import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+
 import { LeafletMap } from '@/components/map/LeafletMap';
-import { MapSearchBar } from '@/components/map/MapSearchBar';
-import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
-import { MapFab } from '@/components/map/MapFab';
-import { MapRouteCarousel } from '@/components/map/MapRouteCarousel';
 import { MapBottomSheet } from '@/components/map/MapBottomSheet';
+import { MapFab } from '@/components/map/MapFab';
+import { MapFilterCarousel } from '@/components/map/MapFilterCarousel';
+import { MapRouteCarousel } from '@/components/map/MapRouteCarousel';
+import { MapSearchBar } from '@/components/map/MapSearchBar';
+import { colors, spacing } from '@/theme';
+
+const MAP_CENTER: [number, number] = [-23.55052, -46.633308];
 
 export default function MapaScreen() {
   const [sheetVisible, setSheetVisible] = useState(false);
@@ -15,11 +19,7 @@ export default function MapaScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      <LeafletMap
-        center={[-23.55052, -46.633308]}
-        zoom={13}
-        style={styles.map}
-      />
+      <LeafletMap center={MAP_CENTER} zoom={13} style={styles.map} />
 
       <View style={styles.uiLayer} pointerEvents="box-none">
         <View pointerEvents="box-none" style={styles.topSection}>
@@ -60,7 +60,7 @@ export default function MapaScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: colors.surfaceCardAlt,
   },
   map: {
     flex: 1,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'space-between',
     paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 54,
-    paddingBottom: 16,
+    paddingBottom: spacing.xl,
     zIndex: 10,
   },
   topSection: {
@@ -83,9 +83,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   searchWrapper: {
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.xl,
   },
   filterWrapper: {
-    marginTop: 12,
+    marginTop: spacing.lg,
   },
 });

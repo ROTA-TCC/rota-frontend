@@ -1,66 +1,88 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Alert, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { GoalProgressCard } from '@/components/Record/GoalProgressCard';
+import { SportCard } from '@/components/Record/SportCard';
+import { SPORT_ACTIVITIES } from '@/components/Record/recordSports';
+import { ThemedText } from '@/components/themed-text';
+import { Button } from '@/components/ui/Button';
+import { colors, spacing, typography } from '@/theme';
+
+const GOAL_PROGRESS = 0.6;
+const GOAL_REMAINING_LABEL = '14 treinos restantes';
 
 export default function RecordScreen() {
   const router = useRouter();
 
-  const handleSelectType = (type: string) => {
+  const handleStartActivity = (type: string) => {
     router.push(`/run/active-run?type=${type}`);
   };
 
+  const handleMoreSports = () => {
+    Alert.alert('Mais esportes', 'Novos esportes estarão disponíveis em breve.');
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.backgroundDeep} />
       <View style={styles.header}>
-        <Text style={styles.title}>Selecionar Atividade</Text>
-        <Text style={styles.subtitle}>Escolha o modo ideal para o seu treino de hoje</Text>
+        <ThemedText style={styles.title}>Gravar</ThemedText>
       </View>
-
-      <View style={styles.optionsContainer}>
-        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handleSelectType('normal')}>
-          <Ionicons name="play-outline" size={24} color="#ff4500" style={styles.icon} />
-          <Text style={styles.buttonText}>Corrida Normal</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handleSelectType('trail')}>
-          <Ionicons name="trail-sign-outline" size={24} color="#ff4500" style={styles.icon} />
-          <Text style={styles.buttonText}>Trilha</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handleSelectType('walk')}>
-          <Ionicons name="walk-outline" size={24} color="#ff4500" style={styles.icon} />
-          <Text style={styles.buttonText}>Caminhada</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handleSelectType('treadmill')}>
-          <Ionicons name="fitness-outline" size={24} color="#ff4500" style={styles.icon} />
-          <Text style={styles.buttonText}>Esteira</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <GoalProgressCard
+          title="Progresso da Meta"
+          subtitle={GOAL_REMAINING_LABEL}
+          progress={GOAL_PROGRESS}
+        />
+        <ThemedText style={styles.sectionLabel}>Atividades</ThemedText>
+        {SPORT_ACTIVITIES.map((activity) => (
+          <SportCard
+            key={activity.type}
+            icon={activity.icon}
+            title={activity.title}
+            subtitle={activity.subtitle}
+            onStart={() => handleStartActivity(activity.type)}
+          />
+        ))}
+        <Button
+          label="Mais esportes"
+          variant="outline"
+          fullWidth
+          onPress={handleMoreSports}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', paddingHorizontal: 24, justifyContent: 'center' },
-  header: { marginBottom: 36, alignItems: 'center' },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#ffffff', marginBottom: 8, fontFamily: 'Eina03-SemiBold' },
-  subtitle: { fontSize: 14, color: '#888888', textAlign: 'center', fontFamily: 'Eina03-SemiBold' },
-  optionsContainer: { gap: 16 },
-  button: {
-    flexDirection: 'row',
-    alignItem: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#ff4500',
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    backgroundColor: 'transparent',
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.backgroundDeep,
   },
-  icon: { marginRight: 12 },
-  buttonText: { color: '#ff4500', fontSize: 18, fontWeight: '600', fontFamily: 'Eina03-SemiBold' },
+  header: {
+    paddingTop: spacing.xxxl,
+    paddingHorizontal: spacing.xxl,
+    paddingBottom: spacing.xl,
+  },
+  title: {
+    color: colors.text,
+    fontSize: typography.sizes.displayXl,
+    fontWeight: typography.weights.heavy,
+    letterSpacing: -0.6,
+  },
+  content: {
+    paddingHorizontal: spacing.xxl,
+    paddingBottom: spacing.xxl,
+    gap: spacing.xl,
+  },
+  sectionLabel: {
+    color: colors.textNeutral,
+    fontSize: typography.sizes.body,
+    fontWeight: typography.weights.bold,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    marginTop: spacing.xs,
+  },
 });
-

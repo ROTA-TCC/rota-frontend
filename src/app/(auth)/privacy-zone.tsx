@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Image, ScrollView, Alert } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 
-import { PrivacyHeader } from '../../components/privacy/PrivacyHeader';
-import { PrivacyFooter } from '../../components/privacy/PrivacyFooter';
-import { PrivacyMapContainer } from '../../components/privacy/PrivacyMapContainer';
-
-import { updateProfile } from '@/services/api/profileService';
+import { OnboardingFooter } from '@/components/auth/OnboardingFooter';
+import { PrivacyHeader } from '@/components/privacy/PrivacyHeader';
+import { PrivacyMapContainer } from '@/components/privacy/PrivacyMapContainer';
+import { GlowBackground } from '@/components/ui/GlowBackground';
 import { useProfileSetup } from '@/providers/ProfileSetupProvider';
+import { updateProfile } from '@/services/api/profileService';
+import { colors, spacing } from '@/theme';
 
 const DEFAULT_CENTER: [number, number] = [-23.55052, -46.633308];
 
@@ -31,8 +32,8 @@ export default function PrivacyZoneScreen() {
       });
       resetProfileData();
       router.replace('/(tabs)/explore');
-    } catch (error) {
-      console.error(error);
+    } catch {
+      Alert.alert('Erro', 'Não foi possível salvar sua área de privacidade.');
     }
   };
 
@@ -52,36 +53,32 @@ export default function PrivacyZoneScreen() {
       });
 
       setMapCenter([location.coords.latitude, location.coords.longitude]);
-    } catch (_error) {
+    } catch {
       Alert.alert('Erro', 'Não foi possível obter sua localização.');
     }
   }, []);
 
   useEffect(() => {
+    // Busca assíncrona de localização: setState ocorre apenas nos callbacks do fluxo
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     requestUserLocation();
   }, [requestUserLocation]);
 
+  const handleSkip = () => {
+    resetProfileData();
+    router.push('/');
+  };
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <View style={styles.container}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image
-            source={require('../../../assets/images/background-blur.png')}
-            style={[styles.glowImage, styles.topGlow]}
-            resizeMode="cover"
-          />
-          <Image
-            source={require('../../../assets/images/background-blur.png')}
-            style={[styles.glowImage, styles.bottomGlow]}
-            resizeMode="cover"
-          />
-        </View>
+        <GlowBackground offset={80} opacity={0.35} />
 
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
-          bounces={true}
+          bounces
         >
           <PrivacyHeader />
 
@@ -92,13 +89,15 @@ export default function PrivacyZoneScreen() {
             onRadiusMetersChange={setRadiusMeters}
           />
 
-          <PrivacyFooter
-            onComplete={handleComplete}
-            onSkip={() => {
-              resetProfileData();
-              router.push('/');
-            }}
-          />
+          <View style={styles.footer}>
+            <OnboardingFooter
+              onNext={handleComplete}
+              onSkip={handleSkip}
+              accentColor={colors.primary}
+              nextLabel="Concluir"
+              fullWidth
+            />
+          </View>
         </ScrollView>
       </View>
     </GestureHandlerRootView>
@@ -106,33 +105,24 @@ export default function PrivacyZoneScreen() {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#070707',
+    backgroundColor: colors.backgroundAlt,
   },
   scroll: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.xxxl,
     paddingTop: 60,
-    paddingBottom: 40,
+    paddingBottom: spacing.xxxl,
     flexGrow: 1,
     justifyContent: 'space-between',
   },
-  glowImage: {
-    position: 'absolute',
-    width: 320,
-    height: 320,
-    opacity: 0.35,
-  },
-  topGlow: {
-    top: -80,
-    right: -80,
-  },
-  bottomGlow: {
-    bottom: -80,
-    left: -80,
-    transform: [{ rotate: '180deg' }],
+  footer: {
+    marginTop: spacing.xl,
   },
 });

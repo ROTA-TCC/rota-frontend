@@ -1,22 +1,26 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
-import { ThemedView } from '@/components/themed-view';
+
+import { OnboardingFooter } from '@/components/auth/OnboardingFooter';
+import { ProfileFieldPill } from '@/components/profile/ProfileFieldPill';
 import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
-import { PickerModal } from '@/components/PickerModal';
+import { ThemedView } from '@/components/themed-view';
+import { GlowBackground } from '@/components/ui/GlowBackground';
+import { ProgressSteps } from '@/components/ui/ProgressSteps';
+import { PickerModal } from '@/components/ui/picker/PickerModal';
 import { useProfileSetup } from '@/providers/ProfileSetupProvider';
+import { colors, spacing, typography } from '@/theme';
 
 export default function ProfileInfoScreen() {
   const router = useRouter();
-  const accentColor = Colors.dark.tint;
+  const accentColor = colors.primaryTint;
   const { updateProfileData } = useProfileSetup();
 
   const [weight, setWeight] = useState('70.3 kg');
   const [height, setHeight] = useState('175 cm');
   const [age, setAge] = useState('24 anos');
-
   const [activePicker, setActivePicker] = useState<'weight' | 'height' | 'age' | null>(null);
 
   const handleNext = () => {
@@ -27,75 +31,55 @@ export default function ProfileInfoScreen() {
     router.push('/set-goals');
   };
 
+  const goToNextStep = () => router.push('/set-goals');
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.root}>
       <ThemedView style={styles.container}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Image
-            source={require('../../../assets/images/background-blur.png')}
-            style={[styles.glowImage, styles.topGlow]}
-            resizeMode="cover"
-          />
-          <Image
-            source={require('../../../assets/images/background-blur.png')}
-            style={[styles.glowImage, styles.bottomGlow]}
-            resizeMode="cover"
-          />
-        </View>
+        <GlowBackground offset={60} opacity={0.5} />
 
         <View style={styles.header}>
-          <View style={styles.progressBar}>
-            <View style={[styles.step, styles.activeStep, { backgroundColor: accentColor }]} />
-            <View style={styles.step} />
-            <View style={styles.step} />
-          </View>
+          <ProgressSteps activeStep={0} accentColor={accentColor} />
 
-          <ThemedText style={[styles.subtitle, { color: accentColor }]}>Informações pessoais</ThemedText>
-          <ThemedText type="title" style={styles.title}>Informações do perfil</ThemedText>
+          <ThemedText style={[styles.subtitle, { color: accentColor }]}>
+            Informações pessoais
+          </ThemedText>
+          <ThemedText type="title" style={styles.title}>
+            Informações do perfil
+          </ThemedText>
           <ThemedText style={styles.description}>
-            As informações do seu perfil desempenham um papel fundamental na personalização do acompanhamento de determinadas métricas.
+            As informações do seu perfil desempenham um papel fundamental na personalização do
+            acompanhamento de determinadas métricas.
           </ThemedText>
         </View>
 
         <View style={styles.formContainer}>
-          <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('weight')}>
-            <ThemedText style={styles.inputLabel}>Peso</ThemedText>
-            <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-              <ThemedText style={{ color: accentColor }}>{weight}</ThemedText>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('height')}>
-            <ThemedText style={styles.inputLabel}>Altura</ThemedText>
-            <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-              <ThemedText style={{ color: accentColor }}>{height}</ThemedText>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.inputPill} onPress={() => setActivePicker('age')}>
-            <ThemedText style={styles.inputLabel}>Idade</ThemedText>
-            <View style={[styles.inputValue, { backgroundColor: '#222222' }]}>
-              <ThemedText style={{ color: accentColor }}>{age}</ThemedText>
-            </View>
-          </TouchableOpacity>
+          <ProfileFieldPill
+            label="Peso"
+            value={weight}
+            accentColor={accentColor}
+            onPress={() => setActivePicker('weight')}
+          />
+          <ProfileFieldPill
+            label="Altura"
+            value={height}
+            accentColor={accentColor}
+            onPress={() => setActivePicker('height')}
+          />
+          <ProfileFieldPill
+            label="Idade"
+            value={age}
+            accentColor={accentColor}
+            onPress={() => setActivePicker('age')}
+          />
         </View>
 
         <View style={styles.footer}>
-          <TouchableOpacity
-            style={[styles.btnNext, { backgroundColor: accentColor }]}
-            onPress={handleNext}
-            activeOpacity={0.85}
-          >
-            <ThemedText style={styles.btnNextText}>Próximo</ThemedText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.btnSkip}
-            onPress={() => router.push('/set-goals')}
-            activeOpacity={0.7}
-          >
-            <ThemedText style={[styles.btnSkipText, { color: accentColor }]}>Pular</ThemedText>
-          </TouchableOpacity>
+          <OnboardingFooter
+            onNext={handleNext}
+            onSkip={goToNextStep}
+            accentColor={accentColor}
+          />
         </View>
 
         <PickerModal
@@ -151,105 +135,40 @@ export default function ProfileInfoScreen() {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.xxxl,
     paddingTop: 50,
-    paddingBottom: 40,
+    paddingBottom: spacing.xxxl,
     overflow: 'hidden',
   },
-  glowImage: {
-    position: 'absolute',
-    width: 320,
-    height: 320,
-    opacity: 0.5,
-  },
-  topGlow: {
-    top: -60,
-    right: -60,
-  },
-  bottomGlow: {
-    bottom: -60,
-    left: -60,
-    transform: [{ rotate: '180deg' }],
-  },
   header: {
-    marginBottom: 40,
-  },
-  progressBar: {
-    flexDirection: 'row',
-    gap: 6,
-    marginBottom: 24,
-  },
-  step: {
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: '#2A2A2A',
-    width: 12,
-  },
-  activeStep: {
-    width: 24,
+    marginBottom: spacing.giant,
   },
   subtitle: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.bold,
     letterSpacing: 0.3,
     marginBottom: 6,
   },
   title: {
-    marginBottom: 16,
+    marginBottom: spacing.lg,
   },
   description: {
-    color: '#828282',
-    fontSize: 13,
-    fontWeight: '500',
+    color: colors.textFaint,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.medium,
     lineHeight: 20,
   },
   formContainer: {
-    gap: 16,
-  },
-  inputPill: {
-    backgroundColor: '#151515',
-    height: 64,
-    borderRadius: 32,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-  },
-  inputLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  inputValue: {
-    height: 40,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    gap: spacing.lg,
   },
   footer: {
     marginTop: 'auto',
     alignItems: 'center',
-    gap: 16,
-  },
-  btnNext: {
-    height: 56,
-    paddingHorizontal: 48,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  btnNextText: {
-    color: '#0A0F09',
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  btnSkip: {
-    padding: 10,
-  },
-  btnSkipText: {
-    fontWeight: '600',
-    fontSize: 14,
+    gap: spacing.lg,
   },
 });

@@ -1,8 +1,9 @@
-import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MapFab } from '../map/MapFab';
+
+import { MapFab } from '@/components/map/MapFab';
+import { colors, shadows } from '@/theme';
 
 type FloatingButtonsProps = {
   onBack?: () => void;
@@ -10,17 +11,19 @@ type FloatingButtonsProps = {
 
 export default function FloatingButtons({ onBack }: FloatingButtonsProps) {
   const insets = useSafeAreaInsets();
-  const topInset = insets?.top ? Math.max(insets.top, 20) : 40;
+  const topOffset = insets.top > 0 ? Math.max(insets.top, 20) : 40;
 
   return (
     <>
-      <TouchableOpacity 
-        style={[styles.btnCircle, { top: topInset + 10, left: 20 }]} 
+      <TouchableOpacity
+        style={[styles.btnCircle, { top: topOffset + 10 }]}
         onPress={onBack}
         activeOpacity={0.8}
         hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+        accessibilityRole="button"
+        accessibilityLabel="Voltar"
       >
-        <Ionicons name="chevron-back" size={26} color="white" style={styles.iconFix} />
+        <Ionicons name="chevron-back" size={26} color={colors.text} style={styles.iconFix} />
       </TouchableOpacity>
 
       <View style={styles.fabWrapper} pointerEvents="box-none">
@@ -33,22 +36,23 @@ export default function FloatingButtons({ onBack }: FloatingButtonsProps) {
 const styles = StyleSheet.create({
   btnCircle: {
     position: 'absolute',
+    left: 20,
     width: 44,
     height: 44,
-    backgroundColor: 'rgba(18, 18, 18, 0.9)',
+    backgroundColor: colors.surfaceOverlayDark,
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000, 
-    elevation: 20,
+    zIndex: 1000,
+    ...shadows.fab,
   },
   iconFix: {
     marginLeft: -2,
     marginTop: 1,
   },
   fabWrapper: {
-    ...StyleSheet.absoluteFillObject,
-    transform: [{ translateY: -50 }], 
+    ...StyleSheet.absoluteFill,
+    transform: [{ translateY: -50 }],
     zIndex: 900,
     elevation: 15,
   },

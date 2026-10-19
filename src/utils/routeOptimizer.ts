@@ -30,7 +30,7 @@ export const filterNoise = (points: Trackpoint[], minDistance: number = 2.0, min
   for (let i = 0; i < points.length; i++) {
     const current = points[i];
 
-    if (current.speedMs < minSpeed && filtered.length === 0) {
+    if ((current.speedMps ?? 0) < minSpeed && filtered.length === 0) {
       continue;
     }
 

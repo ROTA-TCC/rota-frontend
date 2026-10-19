@@ -1,100 +1,82 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
+
+import { PodiumColumn } from '@/components/leaderboards/PodiumColumn';
+import { DEFAULT_PODIUM, type PodiumEntry } from '@/components/leaderboards/podiumData';
+import { ThemedText } from '@/components/themed-text';
+import { colors, radius, spacing, typography } from '@/theme';
 
 type LeaderboardPodiumProps = {
+  entries?: PodiumEntry[];
+  periodLabel?: string;
   onTriggerConfetti?: () => void;
 };
 
-export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps) => {
+export function LeaderboardPodium({
+  entries = DEFAULT_PODIUM,
+  periodLabel = 'Novembro 2023',
+  onTriggerConfetti,
+}: LeaderboardPodiumProps) {
+  const [first, second, third] = entries;
+
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Classificações</Text>
-      <Text style={styles.subtitle}>Novembro 2023</Text>
+      <ThemedText style={styles.title}>Classificações</ThemedText>
+      <ThemedText style={styles.subtitle}>{periodLabel}</ThemedText>
 
       <View style={styles.podiumContainer}>
-        <PodiumCol
-          rank={2}
-          name="Carlos Mendes"
-          points="125 pt"
-          image="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&auto=format&fit=crop&q=80"
-        />
-        <PodiumCol
-          rank={1}
-          name="Camila Souza"
-          points="250 pt"
-          image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80"
-          isFirst
-          onPress={onTriggerConfetti}
-        />
-        <PodiumCol
-          rank={3}
-          name="Ricardo Alves"
-          points="100 pt"
-          image="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80"
-        />
+        {second && (
+          <PodiumColumn
+            rank={2}
+            name={second.name}
+            points={second.points}
+            image={second.image}
+          />
+        )}
+        {first && (
+          <PodiumColumn
+            rank={1}
+            name={first.name}
+            points={first.points}
+            image={first.image}
+            isFirst
+            onPress={onTriggerConfetti}
+          />
+        )}
+        {third && (
+          <PodiumColumn
+            rank={3}
+            name={third.name}
+            points={third.points}
+            image={third.image}
+          />
+        )}
       </View>
     </View>
   );
-};
-
-const PodiumCol = ({ rank, name, points, image, isFirst, onPress }: any) => (
-  <TouchableOpacity
-    activeOpacity={1}
-    onPress={onPress}
-    style={[styles.podiumCol, isFirst && styles.first]}
-  >
-    <View style={[styles.awardIcon, rank === 1 ? styles.trophy : styles.star]}>
-      {rank === 1 ? (
-        <FontAwesome5 name="trophy" size={20} color="#FFD700" />
-      ) : (
-        <FontAwesome5
-          name="star"
-          size={20}
-          color={rank === 2 ? '#C0C0C0' : '#CD7F32'}
-        />
-      )}
-      {rank !== 1 && <Text style={styles.rankNum}>{rank}</Text>}
-    </View>
-    <View style={styles.avatarRing}>
-      <Image source={{ uri: image }} style={styles.avatarImg} />
-    </View>
-    <Text style={styles.userName}>{name}</Text>
-    <Text style={styles.userPts}>{points}</Text>
-  </TouchableOpacity>
-);
+}
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#151517',
-    borderRadius: 24,
-    padding: 24,
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.xxl,
+    padding: spacing.xxxl,
     alignItems: 'center',
-    position: 'relative',
   },
-  title: { color: '#FFFFFF', fontSize: 22, fontWeight: '700', marginBottom: 4 },
-  subtitle: { color: '#8E8E93', fontSize: 12, fontWeight: '600', marginBottom: 0 },
-  podiumContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'flex-end', 
-    gap: 20,
-    marginTop: 24 
+  title: {
+    color: colors.text,
+    fontSize: typography.sizes.display,
+    fontWeight: typography.weights.bold,
+    marginBottom: spacing.xs,
   },
-  podiumCol: { alignItems: 'center' },
-  first: { marginBottom: 20 },
-  awardIcon: { marginBottom: 8, justifyContent: 'center', alignItems: 'center' },
-  star: { position: 'relative' },
-  trophy: {},
-  rankNum: { position: 'absolute', fontSize: 10, fontWeight: '800', color: '#FFFFFF' },
-  avatarRing: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: '#151517',
+  subtitle: {
+    color: colors.textSecondary,
+    fontSize: typography.sizes.caption,
+    fontWeight: typography.weights.semibold,
   },
-  avatarImg: { width: '100%', height: '100%', borderRadius: 32 },
-  userName: { color: '#9ED872', fontSize: 12, fontWeight: '700', marginBottom: 2 },
-  userPts: { color: '#8E8E93', fontSize: 11, fontWeight: '600' },
+  podiumContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: spacing.xxl,
+    marginTop: spacing.xxxl,
+  },
 });

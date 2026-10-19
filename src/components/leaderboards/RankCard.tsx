@@ -1,20 +1,47 @@
-import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-export const RankCard = ({ rank }: { rank: number }) => (
-  <View style={styles.card}>
-    <Text style={styles.text}>Ranking Atual</Text>
-    <View style={styles.value}>
-      <Text style={styles.valueText}>{rank}</Text>
-      <MaterialCommunityIcons name="chevron-double-up" size={18} color="#9ED872" />
+import { ThemedText } from '@/components/themed-text';
+import { colors, radius, spacing, typography } from '@/theme';
+
+type RankCardProps = {
+  rank: number;
+};
+
+export function RankCard({ rank }: RankCardProps) {
+  return (
+    <View style={styles.card}>
+      <ThemedText style={styles.text}>Ranking Atual</ThemedText>
+      <View style={styles.value}>
+        <ThemedText style={styles.valueText}>{rank}</ThemedText>
+        <MaterialCommunityIcons name="chevron-double-up" size={18} color={colors.accentGreen} />
+      </View>
     </View>
-  </View>
-);
+  );
+}
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#151517', borderRadius: 20, padding: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  text: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
-  value: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  valueText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  card: {
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.xl,
+    padding: spacing.xxl,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  text: {
+    color: colors.text,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.bold,
+  },
+  value: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  valueText: {
+    color: colors.text,
+    fontSize: typography.sizes.label,
+    fontWeight: typography.weights.bold,
+  },
 });
