@@ -9,6 +9,7 @@ import Animated, {
   interpolate,
   Extrapolation,
   Easing,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { ThemedText } from '@/components/themed-text';
@@ -39,7 +40,7 @@ interface PickerModalProps {
 interface PickerItemProps {
   item: string;
   index: number;
-  scrollY: Animated.SharedValue<number>;
+  scrollY: SharedValue<number>;
   accentColor: string;
 }
 
@@ -132,7 +133,7 @@ export const PickerModal: React.FC<PickerModalProps> = ({
         easing: Easing.in(Easing.quad),
       });
     }
-  }, [isVisible, initialIndex]);
+  }, [isVisible, initialIndex, scrollY, translateY]);
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -148,9 +149,9 @@ export const PickerModal: React.FC<PickerModalProps> = ({
   }));
 
   const handleClose = () => {
-    translateY.value = withTiming(SHEET_HEIGHT, { duration: 200 }, () => {
+    translateY.set(withTiming(SHEET_HEIGHT, { duration: 200 }, () => {
       runOnJS(onClose)();
-    });
+    }));
   };
 
   const handleSave = () => {
@@ -164,20 +165,20 @@ export const PickerModal: React.FC<PickerModalProps> = ({
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       if (event.translationY > 0) {
-        translateY.value = event.translationY;
+        translateY.set(event.translationY);
       }
     })
     .onEnd((event) => {
       if (event.translationY > 80 || event.velocityY > 500) {
         runOnJS(handleClose)();
       } else {
-        translateY.value = withTiming(0, { duration: 200 });
+        translateY.set(withTiming(0, { duration: 200 }));
       }
     });
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
+      scrollY.set(event.contentOffset.y);
     },
   });
 
@@ -206,19 +207,19 @@ export const PickerModal: React.FC<PickerModalProps> = ({
         </GestureDetector>
 
         <View style={styles.pickerContainer}>
-          <Image
-            source={require('../../assets/images/ambient-light.png')}
-            style={styles.ambientGlowImage}
-            resizeMode="cover"
-            pointerEvents="none"
-          />
+          <View style={StyleSheet.absoluteFill} pointerEvents="none">
+            <Image
+              source={require('../../assets/images/ambient-light.png')}
+              style={styles.ambientGlowImage}
+              resizeMode="cover"
+            />
 
-          <Image
-            source={require('../../assets/images/selection-strip.png')}
-            style={styles.selectionStripImage}
-            resizeMode="stretch"
-            pointerEvents="none"
-          />
+            <Image
+              source={require('../../assets/images/selection-strip.png')}
+              style={styles.selectionStripImage}
+              resizeMode="stretch"
+            />
+          </View>
 
           <Animated.FlatList
             ref={flatListRef}
@@ -255,7 +256,7 @@ export const PickerModal: React.FC<PickerModalProps> = ({
 
 const styles = StyleSheet.create({
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: '#000000',
     zIndex: 100,
   },

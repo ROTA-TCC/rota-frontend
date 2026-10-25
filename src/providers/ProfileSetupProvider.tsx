@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  ReactNode,
+} from 'react';
 import { UpdateProfileDto } from '@ROTA-TCC/types/profile';
 
 interface ProfileSetupContextType {
@@ -12,19 +19,20 @@ const ProfileSetupContext = createContext<ProfileSetupContextType | undefined>(u
 export const ProfileSetupProvider = ({ children }: { children: ReactNode }) => {
   const [profileData, setProfileData] = useState<Partial<UpdateProfileDto>>({});
 
-  const updateProfileData = (data: Partial<UpdateProfileDto>) => {
+  const updateProfileData = useCallback((data: Partial<UpdateProfileDto>) => {
     setProfileData((prev) => ({ ...prev, ...data }));
-  };
+  }, []);
 
-  const resetProfileData = () => {
+  const resetProfileData = useCallback(() => {
     setProfileData({});
-  };
+  }, []);
 
-  return (
-    <ProfileSetupContext.Provider value={{ profileData, updateProfileData, resetProfileData }}>
-      {children}
-    </ProfileSetupContext.Provider>
+  const value = useMemo(
+    () => ({ profileData, updateProfileData, resetProfileData }),
+    [profileData, updateProfileData, resetProfileData]
   );
+
+  return <ProfileSetupContext.Provider value={value}>{children}</ProfileSetupContext.Provider>;
 };
 
 export const useProfileSetup = () => {

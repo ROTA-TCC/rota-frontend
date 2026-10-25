@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Image, ScrollView, Alert } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 
@@ -30,7 +29,7 @@ export default function PrivacyZoneScreen() {
         },
       });
       resetProfileData();
-      router.replace('/(tabs)/explore');
+      router.replace('/(tabs)/home');
     } catch (error) {
       console.error(error);
     }
@@ -52,7 +51,7 @@ export default function PrivacyZoneScreen() {
       });
 
       setMapCenter([location.coords.latitude, location.coords.longitude]);
-    } catch (_error) {
+    } catch {
       Alert.alert('Erro', 'Não foi possível obter sua localização.');
     }
   }, []);
@@ -62,9 +61,8 @@ export default function PrivacyZoneScreen() {
   }, [requestUserLocation]);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View style={styles.container}>
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <Image
             source={require('../../../assets/images/background-blur.png')}
             style={[styles.glowImage, styles.topGlow]}
@@ -99,9 +97,8 @@ export default function PrivacyZoneScreen() {
               router.push('/');
             }}
           />
-        </ScrollView>
-      </View>
-    </GestureHandlerRootView>
+      </ScrollView>
+    </View>
   );
 }
 

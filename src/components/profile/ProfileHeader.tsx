@@ -1,53 +1,101 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useMemo } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
+import { useProfileColors, type ProfilePalette } from '@/constants/profileTheme';
+import { VerifiedIcon } from './icons';
 
-export function ProfileHeader() {
+interface ProfileHeaderProps {
+  name: string;
+  avatarUrl: string;
+  followers: number;
+  following: number;
+  verified?: boolean;
+}
+
+function formatCompactNumber(value: number) {
+  if (value < 1000) {
+    return String(value);
+  }
+
+  const compact = value / 1000;
+  const formatted = Number.isInteger(compact)
+    ? String(compact)
+    : compact.toFixed(1).replace('.', ',');
+
+  return `${formatted}k`;
+}
+
+export function ProfileHeader({
+  name,
+  avatarUrl,
+  followers,
+  following,
+  verified = false,
+}: ProfileHeaderProps) {
+  const colors = useProfileColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const stats = `${formatCompactNumber(followers)} seguidores · ${formatCompactNumber(following)} seguindo`;
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.avatarWrapper} activeOpacity={0.8}>
-        <Image 
-          source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80' }} 
-          style={styles.avatar} 
-        />
-        <View style={styles.cameraIconWrapper}>
-          <Ionicons name="camera" size={16} color="#050505" />
-        </View>
-      </TouchableOpacity>
-      
-      <Text style={styles.name}>Ana Silva</Text>
+      <View style={styles.avatarWrapper}>
+        <Image source={{ uri: avatarUrl }} style={styles.avatar} resizeMode="cover" />
+      </View>
+
+      <View style={styles.nameRow}>
+        <Text style={styles.name}>{name}</Text>
+        {verified && (
+          <View style={styles.verifiedBadge} accessibilityLabel="Perfil verificado">
+            <VerifiedIcon size={12} color={colors.accentText} />
+          </View>
+        )}
+      </View>
+
+      <Text style={styles.stats}>{stats}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    paddingTop: 20,
-    gap: 12,
-  },
-  avatarWrapper: {
-    position: 'relative',
-  },
-  avatar: {
-    width: 140,
-    height: 140,
-    borderRadius: 60,
-  },
-  cameraIconWrapper: {
-    position: 'absolute',
-    bottom: 5,
-    right: 5,
-    backgroundColor: '#FFFFFF',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  name: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: '800',
-  },
-});
+const createStyles = (colors: ProfilePalette) =>
+  StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      marginBottom: 22,
+    },
+    avatarWrapper: {
+      width: 90,
+      height: 90,
+      borderRadius: 45,
+      overflow: 'hidden',
+      borderWidth: 2,
+      borderColor: colors.surface,
+      marginBottom: 12,
+    },
+    avatar: {
+      width: '100%',
+      height: '100%',
+    },
+    nameRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      marginBottom: 4,
+    },
+    name: {
+      color: colors.textPrimary,
+      fontSize: 20,
+      fontWeight: '700',
+    },
+    verifiedBadge: {
+      width: 18,
+      height: 18,
+      borderRadius: 9,
+      backgroundColor: colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    stats: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      fontWeight: '400',
+    },
+  });

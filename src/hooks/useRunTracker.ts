@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import * as Location from 'expo-location';
 import { calculateDistance, calculatePace, formatTime } from '../utils/runUtils';
 import { optimizeRoute } from '../utils/routeOptimizer';
@@ -9,16 +9,19 @@ export const useRunTracker = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [duration, setDuration] = useState(0);
   const [distance, setDistance] = useState(0);
+  const [elevationGain, setElevationGain] = useState(0);
   const [trackpoints, setTrackpoints] = useState<Trackpoint[]>([]);
   const [currentLocation, setCurrentLocation] = useState<[number, number] | null>(null);
   
   const startTimeRef = useRef<string | null>(null);
   const locationSubRef = useRef<Location.LocationSubscription | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastLocationRef = useRef<{ latitude: number; longitude: number } | null>(null);
   const totalDistanceRef = useRef<number>(0);
+  const totalElevationRef = useRef<number>(0);
+  const lastAltitudeRef = useRef<number | null>(null);
 
-  const startRecording = async () => {
+  const startRecording = useCallback(async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') return;
 
@@ -54,6 +57,19 @@ export const useRunTracker = () => {
         
         setCurrentLocation([latitude, longitude]);
 
+        if (altitude != null) {
+          if (lastAltitudeRef.current != null) {
+            const altitudeDiff = altitude - lastAltitudeRef.current;
+
+            if (altitudeDiff > 0.5) {
+              totalElevationRef.current += altitudeDiff;
+              setElevationGain(totalElevationRef.current);
+            }
+          }
+
+          lastAltitudeRef.current = altitude;
+        }
+
         if (lastLocationRef.current) {
           const dist = calculateDistance(
             lastLocationRef.current.latitude,
@@ -65,13 +81,13 @@ export const useRunTracker = () => {
           if (dist >= 1) {
             totalDistanceRef.current += dist;
             setDistance(totalDistanceRef.current);
-            lastLocationRef.current = { latitude: lat, longitude: lng };
+            lastLocationRef.current = { latitude, longitude };
 
             const newPoint: Trackpoint = {
               latitude,
               longitude,
               altitude: altitude || 0,
-              speedMs: speed || 0,
+              speedMps: speed || 0,
               recordedAt: new Date().toISOString()
             };
 
@@ -80,7 +96,7 @@ export const useRunTracker = () => {
         }
       }
     );
-  };
+  }, []);
 
   const pauseRecording = () => {
     setIsPaused(true);
@@ -118,12 +134,16 @@ export const useRunTracker = () => {
     return trackpoints.map(pt => [pt.latitude, pt.longitude] as [number, number]);
   }, [trackpoints]);
 
+  const calories = useMemo(() => Math.round((distance / 1000) * 60), [distance]);
+
   return {
     isRecording,
     isPaused,
     durationFormatted: formatTime(duration),
     distanceKm: (distance / 1000).toFixed(2).replace('.', ','),
     pace: calculatePace(duration, distance),
+    calories,
+    elevationGain: Math.round(elevationGain),
     currentLocation,
     route,
     startRecording,

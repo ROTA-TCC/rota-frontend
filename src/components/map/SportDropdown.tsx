@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity, Text, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useMapColors, type MapPalette } from '@/constants/mapTheme';
 
 interface SportItem {
   id: string;
@@ -22,6 +23,9 @@ interface SportDropdownProps {
 }
 
 export const SportDropdown = ({ activeSport, onSelect, onClose }: SportDropdownProps) => {
+  const colors = useMapColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <Modal visible={true} transparent={true} animationType="fade">
       <TouchableWithoutFeedback onPress={onClose}>
@@ -30,7 +34,7 @@ export const SportDropdown = ({ activeSport, onSelect, onClose }: SportDropdownP
       <View style={styles.dropdown}>
         {sports.map((sport) => {
           const isActive = activeSport === sport.id;
-          const color = isActive ? '#E34F1E' : '#999';
+          const color = isActive ? colors.accent : colors.textSecondary;
           const iconStyle = sport.rotate ? { transform: [{ rotate: '-30deg' }] } : {};
 
           return (
@@ -50,7 +54,7 @@ export const SportDropdown = ({ activeSport, onSelect, onClose }: SportDropdownP
                 )}
               </View>
               <Text style={[styles.sportName, isActive && styles.activeText]}>{sport.name}</Text>
-              {isActive && <Ionicons name="checkmark" size={14} color="#E34F1E" />}
+              {isActive && <Ionicons name="checkmark" size={14} color={colors.accent} />}
             </TouchableOpacity>
           );
         })}
@@ -59,48 +63,49 @@ export const SportDropdown = ({ activeSport, onSelect, onClose }: SportDropdownP
   );
 };
 
-const styles = StyleSheet.create({
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  dropdown: {
-    position: 'absolute',
-    top: 80,
-    left: 16,
-    width: 190,
-    backgroundColor: '#1A1A1A',
-    borderRadius: 14,
-    padding: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    zIndex: 20,
-  },
-  sportItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 10,
-  },
-  activeItem: {
-    backgroundColor: 'rgba(227, 79, 30, 0.12)',
-  },
-  sportIcon: {
-    width: 24,
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  sportName: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
-    flex: 1,
-  },
-  activeText: {
-    color: '#E34F1E',
-  },
-});
+const createStyles = (colors: MapPalette) =>
+  StyleSheet.create({
+    overlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: colors.overlay,
+    },
+    dropdown: {
+      position: 'absolute',
+      top: 80,
+      left: 16,
+      width: 190,
+      backgroundColor: colors.surfaceStrong,
+      borderRadius: 14,
+      padding: 6,
+      borderWidth: 1,
+      borderColor: colors.border,
+      zIndex: 20,
+    },
+    sportItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 12,
+      borderRadius: 10,
+    },
+    activeItem: {
+      backgroundColor: colors.accentSoft,
+    },
+    sportIcon: {
+      width: 24,
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    sportName: {
+      color: colors.textPrimary,
+      fontSize: 15,
+      fontWeight: '700',
+      flex: 1,
+    },
+    activeText: {
+      color: colors.accent,
+    },
+  });

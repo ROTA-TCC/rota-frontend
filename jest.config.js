@@ -1,8 +1,11 @@
 module.exports = {
   preset: 'jest-expo',
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@assets/(.*)$': '<rootDir>/assets/$1',
+  },
   transformIgnorePatterns: [
-    'node_modules/(?!(?:\\.pnpm/)?((jest-)?react-native|@react-native(-community)?|@react-native/.*|expo(nent)?|@expo(nent)?/.*|expo-.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg))',
+    'node_modules/(?!(?:\\.pnpm/)?((jest-)?react-native|@react-native(-community)?|@react-native/.*|expo(nent)?|@expo(nent)?/.*|expo-.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|standard-navigation))',
   ],
   modulePaths: ['<rootDir>'],
 };
-

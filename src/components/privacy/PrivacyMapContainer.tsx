@@ -9,7 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
-import { LeafletMap } from '../map/LeafletMap';
+import { GoogleMap } from '../map/GoogleMap';
 import { InteractiveZoneCircle } from './InteractiveZoneCircle';
 import { MapControls } from './MapControls';
 
@@ -32,18 +32,12 @@ export function PrivacyMapContainer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [distanceText, setDistanceText] = useState('0 m');
 
-  const customMapCSS = `
-    .leaflet-layer { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) !important; }
-    .leaflet-control-container { display: none !important; }
-  `;
-
   const renderMapContent = (size: number, isFull: boolean) => (
     <View style={{ width: size, height: size, position: 'relative' }}>
-      <LeafletMap
+      <GoogleMap
         center={mapCenter}
         zoom={zoom}
         style={styles.map}
-        customCSS={customMapCSS}
       />
       <View style={styles.mapOverlay} pointerEvents="none" />
 
@@ -127,7 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mapOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(7, 7, 7, 0.25)',
   },
   closeBtn: {

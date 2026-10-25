@@ -1,10 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { LeaderboardPodium } from '@/components/leaderboards/LeaderboardPodium';
 import { RankCard } from '@/components/leaderboards/RankCard';
 import { LeaderboardList } from '@/components/leaderboards/LeaderboardList';
 import { TopClubsList } from '@/components/leaderboards/TopClubCard';
 import { Confetti, ConfettiRef } from '@/components/leaderboards/Confetti';
+import { useLeaderboardsColors, type LeaderboardsPalette } from '@/constants/leaderboardsTheme';
 
 const bestRunners = [
   { name: 'Ana Silva', points: 99, rank: 4, direction: 'up', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
@@ -19,7 +21,10 @@ const topClubs = [
 ];
 
 export default function LeaderboardsScreen() {
+  const router = useRouter();
   const confettiRef = useRef<ConfettiRef>(null);
+  const colors = useLeaderboardsColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const handleTriggerConfetti = () => {
     confettiRef.current?.fire();
@@ -30,8 +35,16 @@ export default function LeaderboardsScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <LeaderboardPodium onTriggerConfetti={handleTriggerConfetti} />
         <RankCard rank={8} />
-        <LeaderboardList title="Melhores Corredores" items={bestRunners} />
-        <TopClubsList title="Clubes de Corrida Top" clubs={topClubs} />
+        <LeaderboardList
+          title="Melhores Corredores"
+          items={bestRunners}
+          onPress={() => router.push('/best-runners')}
+        />
+        <TopClubsList
+          title="Clubes de Corrida Top"
+          clubs={topClubs}
+          onPress={() => router.push('/clubs')}
+        />
       </ScrollView>
 
       <Confetti ref={confettiRef} count={80} manualstart={true} />
@@ -39,7 +52,8 @@ export default function LeaderboardsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#09090B' },
-  scrollContent: { padding: 16, gap: 12, paddingBottom: 100 },
-});
+const createStyles = (colors: LeaderboardsPalette) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    scrollContent: { padding: 16, gap: 12, paddingBottom: 100 },
+  });

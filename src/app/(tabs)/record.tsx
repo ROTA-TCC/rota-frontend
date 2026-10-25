@@ -1,66 +1,122 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { GoalProgressWidget } from '@/components/Record/GoalProgressWidget';
+import { MoreSportsModal } from '@/components/Record/MoreSportsModal';
+import { SportCard } from '@/components/Record/SportCard';
+import { sportIcons } from '@/components/Record/icons';
+import { useRecordColors, type RecordPalette } from '@/constants/recordTheme';
+import { useTheme } from '@/providers/ThemeProvider';
+import { additionalSports, featuredSports, weeklyGoal } from '@/constants/mockRecord';
 
 export default function RecordScreen() {
   const router = useRouter();
+  const { isDark } = useTheme();
+  const colors = useRecordColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  const [moreSportsVisible, setMoreSportsVisible] = useState(false);
 
-  const handleSelectType = (type: string) => {
-    router.push(`/run/active-run?type=${type}`);
+  const handleStart = (trackingType: string) => {
+    setMoreSportsVisible(false);
+    router.push(`/run/active-run?type=${trackingType}`);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+
       <View style={styles.header}>
-        <Text style={styles.title}>Selecionar Atividade</Text>
-        <Text style={styles.subtitle}>Escolha o modo ideal para o seu treino de hoje</Text>
+        <Text style={styles.headerTitle}>Gravar</Text>
       </View>
 
-      <View style={styles.optionsContainer}>
-        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handleSelectType('normal')}>
-          <Ionicons name="play-outline" size={24} color="#ff4500" style={styles.icon} />
-          <Text style={styles.buttonText}>Corrida Normal</Text>
-        </TouchableOpacity>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <GoalProgressWidget progress={weeklyGoal.progress} remaining={weeklyGoal.remaining} />
 
-        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handleSelectType('trail')}>
-          <Ionicons name="trail-sign-outline" size={24} color="#ff4500" style={styles.icon} />
-          <Text style={styles.buttonText}>Trilha</Text>
-        </TouchableOpacity>
+        <Text style={styles.sectionLabel}>Atividades</Text>
 
-        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handleSelectType('walk')}>
-          <Ionicons name="walk-outline" size={24} color="#ff4500" style={styles.icon} />
-          <Text style={styles.buttonText}>Caminhada</Text>
-        </TouchableOpacity>
+        {featuredSports.map((sport) => (
+          <SportCard
+            key={sport.id}
+            title={sport.title}
+            subtitle={sport.subtitle}
+            icon={sportIcons[sport.id]}
+            onStart={() => handleStart(sport.trackingType)}
+          />
+        ))}
 
-        <TouchableOpacity style={styles.button} activeOpacity={0.7} onPress={() => handleSelectType('treadmill')}>
-          <Ionicons name="fitness-outline" size={24} color="#ff4500" style={styles.icon} />
-          <Text style={styles.buttonText}>Esteira</Text>
-        </TouchableOpacity>
-      </View>
+        <Pressable
+          style={({ pressed }) => [styles.moreButton, pressed && styles.moreButtonPressed]}
+          onPress={() => setMoreSportsVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Ver mais esportes"
+        >
+          <Text style={styles.moreButtonText}>Mais esportes</Text>
+        </Pressable>
+      </ScrollView>
+
+      <MoreSportsModal
+        visible={moreSportsVisible}
+        sports={additionalSports}
+        onClose={() => setMoreSportsVisible(false)}
+        onSelect={(sport) => handleStart(sport.trackingType)}
+      />
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121212', paddingHorizontal: 24, justifyContent: 'center' },
-  header: { marginBottom: 36, alignItems: 'center' },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#ffffff', marginBottom: 8, fontFamily: 'Eina03-SemiBold' },
-  subtitle: { fontSize: 14, color: '#888888', textAlign: 'center', fontFamily: 'Eina03-SemiBold' },
-  optionsContainer: { gap: 16 },
-  button: {
-    flexDirection: 'row',
-    alignItem: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#ff4500',
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    backgroundColor: 'transparent',
-  },
-  icon: { marginRight: 12 },
-  buttonText: { color: '#ff4500', fontSize: 18, fontWeight: '600', fontFamily: 'Eina03-SemiBold' },
-});
-
+const createStyles = (colors: RecordPalette) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingTop: 12,
+      paddingBottom: 16,
+    },
+    headerTitle: {
+      color: colors.textPrimary,
+      fontSize: 30,
+      fontWeight: '800',
+      letterSpacing: -0.6,
+    },
+    scroll: {
+      flex: 1,
+    },
+    content: {
+      paddingHorizontal: 20,
+      paddingBottom: 32,
+      gap: 16,
+    },
+    sectionLabel: {
+      color: colors.textSecondary,
+      fontSize: 13,
+      fontWeight: '700',
+      letterSpacing: 0.6,
+      textTransform: 'uppercase',
+      marginTop: 4,
+    },
+    moreButton: {
+      height: 48,
+      borderRadius: 24,
+      borderWidth: 1.5,
+      borderColor: colors.accent,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 4,
+    },
+    moreButtonPressed: {
+      backgroundColor: colors.accentSoft,
+    },
+    moreButtonText: {
+      color: colors.accent,
+      fontSize: 14,
+      fontWeight: '700',
+    },
+  });

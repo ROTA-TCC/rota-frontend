@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useLeaderboardsColors, type LeaderboardsPalette } from '@/constants/leaderboardsTheme';
 
 type LeaderboardPodiumProps = {
   onTriggerConfetti?: () => void;
 };
 
 export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps) => {
+  const colors = useLeaderboardsColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Classificações</Text>
@@ -18,6 +22,7 @@ export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps)
           name="Carlos Mendes"
           points="125 pt"
           image="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&auto=format&fit=crop&q=80"
+          styles={styles}
         />
         <PodiumCol
           rank={1}
@@ -26,19 +31,21 @@ export const LeaderboardPodium = ({ onTriggerConfetti }: LeaderboardPodiumProps)
           image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80"
           isFirst
           onPress={onTriggerConfetti}
+          styles={styles}
         />
         <PodiumCol
           rank={3}
           name="Ricardo Alves"
           points="100 pt"
           image="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80"
+          styles={styles}
         />
       </View>
     </View>
   );
 };
 
-const PodiumCol = ({ rank, name, points, image, isFirst, onPress }: any) => (
+const PodiumCol = ({ rank, name, points, image, isFirst, onPress, styles }: any) => (
   <TouchableOpacity
     activeOpacity={1}
     onPress={onPress}
@@ -64,37 +71,38 @@ const PodiumCol = ({ rank, name, points, image, isFirst, onPress }: any) => (
   </TouchableOpacity>
 );
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#151517',
-    borderRadius: 24,
-    padding: 24,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  title: { color: '#FFFFFF', fontSize: 22, fontWeight: '700', marginBottom: 4 },
-  subtitle: { color: '#8E8E93', fontSize: 12, fontWeight: '600', marginBottom: 0 },
-  podiumContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'flex-end', 
-    gap: 20,
-    marginTop: 24 
-  },
-  podiumCol: { alignItems: 'center' },
-  first: { marginBottom: 20 },
-  awardIcon: { marginBottom: 8, justifyContent: 'center', alignItems: 'center' },
-  star: { position: 'relative' },
-  trophy: {},
-  rankNum: { position: 'absolute', fontSize: 10, fontWeight: '800', color: '#FFFFFF' },
-  avatarRing: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: '#151517',
-  },
-  avatarImg: { width: '100%', height: '100%', borderRadius: 32 },
-  userName: { color: '#9ED872', fontSize: 12, fontWeight: '700', marginBottom: 2 },
-  userPts: { color: '#8E8E93', fontSize: 11, fontWeight: '600' },
-});
+const createStyles = (colors: LeaderboardsPalette) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: colors.card,
+      borderRadius: 24,
+      padding: 24,
+      alignItems: 'center',
+      position: 'relative',
+    },
+    title: { color: colors.textPrimary, fontSize: 22, fontWeight: '700', marginBottom: 4 },
+    subtitle: { color: colors.textSecondary, fontSize: 12, fontWeight: '600', marginBottom: 0 },
+    podiumContainer: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      gap: 20,
+      marginTop: 24,
+    },
+    podiumCol: { alignItems: 'center' },
+    first: { marginBottom: 20 },
+    awardIcon: { marginBottom: 8, justifyContent: 'center', alignItems: 'center' },
+    star: { position: 'relative' },
+    trophy: {},
+    rankNum: { position: 'absolute', fontSize: 10, fontWeight: '800', color: '#FFFFFF' },
+    avatarRing: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      marginBottom: 12,
+      borderWidth: 2,
+      borderColor: colors.card,
+    },
+    avatarImg: { width: '100%', height: '100%', borderRadius: 32 },
+    userName: { color: colors.accent, fontSize: 12, fontWeight: '700', marginBottom: 2 },
+    userPts: { color: colors.textSecondary, fontSize: 11, fontWeight: '600' },
+  });

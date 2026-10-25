@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
@@ -28,9 +27,8 @@ export default function ProfileInfoScreen() {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemedView style={styles.container}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <ThemedView style={styles.container}>
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
           <Image
             source={require('../../../assets/images/background-blur.png')}
             style={[styles.glowImage, styles.topGlow]}
@@ -145,8 +143,7 @@ export default function ProfileInfoScreen() {
             setActivePicker(null);
           }}
         />
-      </ThemedView>
-    </GestureHandlerRootView>
+    </ThemedView>
   );
 }
 

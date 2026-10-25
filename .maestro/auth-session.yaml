@@ -1,0 +1,57 @@
+appId: com.anonymous.rotafrontend
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Log In"
+    timeout: 20000
+- tapOn: "Log In"
+- extendedWaitUntil:
+    visible: "Bem-vindo de volta"
+    timeout: 10000
+- tapOn: "voce@email.com"
+- inputText: ${E2E_EMAIL}
+- hideKeyboard
+- tapOn: "Sua senha"
+- inputText: ${E2E_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "login-submit"
+- extendedWaitUntil:
+    visible: "Início"
+    timeout: 20000
+
+# A sessão deve ser restaurada do SecureStore após reiniciar o app.
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "Início"
+    timeout: 20000
+
+# O logout deve revogar a sessão e limpar os tokens locais.
+- tapOn:
+    id: "profile-tab"
+- extendedWaitUntil:
+    visible: "Meu perfil"
+    timeout: 10000
+- tapOn:
+    id: "profile-settings"
+- extendedWaitUntil:
+    visible: "Configurações"
+    timeout: 10000
+- tapOn:
+    id: "logout-button"
+- extendedWaitUntil:
+    visible: "Sair da conta"
+    timeout: 5000
+- tapOn: "Sair agora"
+- extendedWaitUntil:
+    visible: "Bem-vindo de volta"
+    timeout: 20000
+
+# Após reiniciar, o app não deve restaurar a sessão encerrada.
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: "Log In"
+    timeout: 20000

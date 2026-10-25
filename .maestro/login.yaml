@@ -1,0 +1,22 @@
+appId: com.anonymous.rotafrontend
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Log In"
+    timeout: 20000
+- tapOn: "Log In"
+- extendedWaitUntil:
+    visible: "Bem-vindo de volta"
+    timeout: 10000
+- tapOn: "voce@email.com"
+- inputText: ${E2E_EMAIL}
+- hideKeyboard
+- tapOn: "Sua senha"
+- inputText: ${E2E_PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: "login-submit"
+- extendedWaitUntil:
+    visible: "Início"
+    timeout: 20000

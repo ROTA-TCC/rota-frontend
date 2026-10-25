@@ -1,0 +1,44 @@
+appId: com.anonymous.rotafrontend
+---
+- runFlow: login.yaml
+- tapOn:
+    id: "record-tab"
+- extendedWaitUntil:
+    visible: "Gravar"
+    timeout: 10000
+- setLocation:
+    latitude: -23.550520
+    longitude: -46.633308
+- tapOn: "Iniciar Corrida"
+- tapOn:
+    text: ".*(While using the app|Allow|Permitir|Somente desta vez).*"
+    optional: true
+- extendedWaitUntil:
+    visible: "Pausar corrida"
+    timeout: 10000
+- travel:
+    points:
+      - "-23.550520,-46.633308"
+      - "-23.551520,-46.633308"
+      - "-23.552520,-46.633308"
+      - "-23.553520,-46.633308"
+    speed: 40
+    timeout: 30000
+- waitForAnimationToEnd
+- tapOn: "Pausar corrida"
+- extendedWaitUntil:
+    visible: "Concluir corrida"
+    timeout: 5000
+- tapOn: "Concluir corrida"
+- extendedWaitUntil:
+    visible: "Salvar atividade"
+    timeout: 10000
+- tapOn: "Dê um título para sua corrida"
+- inputText: "Corrida E2E"
+- hideKeyboard
+- tapOn:
+    id: "save-activity"
+- extendedWaitUntil:
+    visible: "Ver rota gravada"
+    timeout: 10000
+- assertVisible: "Corrida E2E"

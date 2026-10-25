@@ -43,7 +43,7 @@ export const Confetti = forwardRef < ConfettiRef,
     }, [manualstart]);
     
     return (
-      <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
       <ConfettiCannon
         ref={cannonRef}
         count={count}

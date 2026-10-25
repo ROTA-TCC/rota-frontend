@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -12,6 +12,22 @@ import Svg, { Path } from 'react-native-svg';
 
 const ORANGE = '#FF8C00';
 const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+const getMetersPerPx = (z: number, lat: number) => {
+  'worklet';
+  const latRad = (lat * Math.PI) / 180;
+  return (156543.03392 * Math.cos(latRad)) / Math.pow(2, z);
+};
+
+const calculateDistance = (rPx: number, z: number, lat: number) => {
+  'worklet';
+  return Math.round(rPx * getMetersPerPx(z, lat));
+};
+
+const calculateDistanceStr = (meters: number) => {
+  if (meters < 1000) return `${meters} m`;
+  return `${(meters / 1000).toFixed(1)} km`;
+};
 
 interface InteractiveZoneCircleProps {
   containerSize: number;
@@ -32,6 +48,7 @@ export function InteractiveZoneCircle({
   const minRadius = 40;
   const maxRadius = containerSize / 2 - 32;
 
+  const [centerLat] = centerCoords;
   const radius = useSharedValue(70);
   const startRadius = useSharedValue(70);
   const lastDistRef = useRef('');
@@ -39,50 +56,37 @@ export function InteractiveZoneCircle({
   const handleAngleRad = (-45 * Math.PI) / 180;
   const gapAngleDeg = 48; 
 
-  const getMetersPerPx = (z: number, lat: number) => {
-    'worklet';
-    const latRad = (lat * Math.PI) / 180;
-    return (156543.03392 * Math.cos(latRad)) / Math.pow(2, z);
-  };
+  const updateDistanceJS = useCallback(
+    (currentRadiusPx: number, currentZoom: number, currentLat: number) => {
+      const meters = calculateDistance(currentRadiusPx, currentZoom, currentLat);
+      const dist = calculateDistanceStr(meters);
 
-  const calculateDistance = (rPx: number, z: number, lat: number) => {
-    'worklet';
-    return Math.round(rPx * getMetersPerPx(z, lat));
-  };
+      if (onRadiusMetersChange) {
+        onRadiusMetersChange(meters);
+      }
 
-  const calculateDistanceStr = (meters: number) => {
-    if (meters < 1000) return `${meters} m`;
-    return `${(meters / 1000).toFixed(1)} km`;
-  };
-
-  const updateDistanceJS = (currentRadiusPx: number, currentZoom: number, currentLat: number) => {
-    const meters = calculateDistance(currentRadiusPx, currentZoom, currentLat);
-    const dist = calculateDistanceStr(meters);
-    
-    if (onRadiusMetersChange) {
-      onRadiusMetersChange(meters);
-    }
-    
-    if (dist !== lastDistRef.current && onDistanceChange) {
-      lastDistRef.current = dist;
-      onDistanceChange(dist);
-    }
-  };
+      if (dist !== lastDistRef.current && onDistanceChange) {
+        lastDistRef.current = dist;
+        onDistanceChange(dist);
+      }
+    },
+    [onDistanceChange, onRadiusMetersChange]
+  );
 
   useEffect(() => {
-    updateDistanceJS(radius.value, zoom, centerCoords[0]);
-  }, [zoom, centerCoords[0]]);
+    updateDistanceJS(radius.get(), zoom, centerLat);
+  }, [zoom, centerLat, updateDistanceJS, radius]);
 
   useAnimatedReaction(
     () => radius.value,
     (currentRadius) => {
-      runOnJS(updateDistanceJS)(currentRadius, zoom, centerCoords[0]);
+      runOnJS(updateDistanceJS)(currentRadius, zoom, centerLat);
     }
   );
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
-      startRadius.value = radius.value;
+      startRadius.set(radius.get());
     })
     .onUpdate((event) => {
       const delta = (event.translationX - event.translationY) / Math.SQRT2;
@@ -91,7 +95,7 @@ export function InteractiveZoneCircle({
       if (newR < minRadius) newR = minRadius;
       if (newR > maxRadius) newR = maxRadius;
 
-      radius.value = newR;
+      radius.set(newR);
     });
 
   const animatedArcProps = useAnimatedProps(() => {

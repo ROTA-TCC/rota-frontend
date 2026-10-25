@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { router } from 'expo-router';
 import Animated, {
@@ -9,9 +9,13 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 
+import { useAuth } from '@/providers/AuthProvider';
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function SplashScreen() {
+  const { status } = useAuth();
+  const [animationFinished, setAnimationFinished] = useState(false);
   const iconTranslateY = useSharedValue(SCREEN_HEIGHT);
   const iconScale = useSharedValue(3);
   const iconRotate = useSharedValue(20);
@@ -24,10 +28,20 @@ export default function SplashScreen() {
 
     logoOpacity.value = withDelay(1500, withTiming(1, { duration: 500 }));
 
-    setTimeout(() => {
-      router.replace('/(auth)/onboarding');
+    const timer = setTimeout(() => {
+      setAnimationFinished(true);
     }, 2500);
+
+    return () => clearTimeout(timer);
   }, [iconTranslateY, iconScale, iconRotate, logoOpacity]);
+
+  useEffect(() => {
+    if (!animationFinished || status === 'bootstrapping') return;
+
+    router.replace(
+      status === 'authenticated' ? '/(tabs)/home' : '/(auth)/onboarding'
+    );
+  }, [animationFinished, status]);
 
   const iconStyle = useAnimatedStyle(() => ({
     transform: [

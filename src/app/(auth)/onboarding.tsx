@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import GoogleIcon from '@/components/social-icons/GoogleIcon';
 import FacebookIcon from '@/components/social-icons/FacebookIcon';
@@ -10,15 +10,21 @@ export default function OnboardingScreen() {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require('../../../assets/onboarding/fundo-onboarding.jpg')}
-        style={styles.heroImage}
-        resizeMode="cover"
-      />
+      <View style={styles.heroImage}>
+        <Image
+          source={require('../../../assets/onboarding/fundo-onboarding.jpg')}
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
+        />
+      </View>
       <View style={styles.whiteCard}>
         <Text style={styles.title}>está a apenas alguns passos do Rota</Text>
         
-        <TouchableOpacity style={styles.btnLogin} onPress={() => router.push('/(auth)/login')}>
+        <TouchableOpacity
+          style={styles.btnLogin}
+          onPress={() => router.push('/(auth)/login')}
+          testID="onboarding-login"
+        >
           <Text style={styles.btnText}>Log In</Text>
         </TouchableOpacity>
 
@@ -51,6 +57,7 @@ const styles = StyleSheet.create({
   heroImage: {
     flex: 0.65,
     backgroundColor: '#ff9a00',
+    overflow: 'hidden',
   },
   whiteCard: {
     flex: 0.4,

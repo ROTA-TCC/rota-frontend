@@ -1,35 +1,48 @@
+import type { LoginDto, RegisterDto, TwoFactorVerifyDto } from '@ROTA-TCC/types';
+
+import { getDeviceId } from '@/services/auth/deviceId';
+import {
+  parseLoginPayload,
+  parseSessionPayload,
+  type LoginOutcome,
+  type SessionPayload,
+} from '@/services/auth/session';
+
 import api from './client';
-import * as SecureStore from 'expo-secure-store';
+import { ApiError } from './interceptors';
 
-export const refreshAccessToken = async (): Promise<string | null> => {
-  const refreshToken = await SecureStore.getItemAsync('refreshToken');
-  console.log('--- REFRESH SERVICE ---');
-  console.log('Refresh Token found:', !!refreshToken);
-  
-  if (!refreshToken) {
-    console.log('No refresh token found.');
-    return null;
+const getMobileHeaders = async () => ({
+  'X-Device-Id': await getDeviceId(),
+});
+
+export const login = async (data: LoginDto): Promise<LoginOutcome> => {
+  const response = await api.post('/auth/login', data, {
+    headers: await getMobileHeaders(),
+  });
+  const outcome = parseLoginPayload(response.data);
+
+  if (!outcome) {
+    throw new ApiError('Resposta de autenticação inválida.');
   }
 
-  try {
-    const response = await api.post('/auth/refresh', {}, {
-      headers: {
-        Cookie: `refreshToken=${refreshToken}`
-      }
-    });
+  return outcome;
+};
 
-    const newAccessToken = response.data.data?.accessToken || response.data.accessToken || response.data.token;
-    console.log('Refresh successful. New token:', !!newAccessToken);
-    
-    if (newAccessToken) {
-      await SecureStore.setItemAsync('token', newAccessToken);
-      return newAccessToken;
-    }
-    return null;
-  } catch (error) {
-    console.error('Refresh request failed:', error);
-    await SecureStore.deleteItemAsync('token');
-    await SecureStore.deleteItemAsync('refreshToken');
-    return null;
+export const register = async (data: RegisterDto): Promise<void> => {
+  await api.post('/auth/register', data);
+};
+
+export const verifyTwoFactor = async (
+  data: TwoFactorVerifyDto
+): Promise<SessionPayload> => {
+  const response = await api.post('/auth/verify-2fa', data, {
+    headers: await getMobileHeaders(),
+  });
+  const session = parseSessionPayload(response.data);
+
+  if (!session) {
+    throw new ApiError('Resposta de autenticação inválida.');
   }
+
+  return session;
 };
