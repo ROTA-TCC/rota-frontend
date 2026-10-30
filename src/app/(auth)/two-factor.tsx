@@ -30,7 +30,7 @@ export default function TwoFactorScreen() {
   const [isInputFocused, setIsInputFocused] = useState(false);
 
   const email = typeof params.email === 'string' ? params.email : '';
-  const emailLabel = email || 'seu e-mail';
+  const emailLabel = email || 'sua conta';
   const activeIndex = Math.min(code.length, OTP_LENGTH - 1);
 
   useEffect(() => {
@@ -72,8 +72,8 @@ export default function TwoFactorScreen() {
     setError('');
 
     try {
-      await verifyTwoFactor(code);
-      router.replace('/(tabs)/home');
+      const result = await verifyTwoFactor(code);
+      router.replace(result.isNewUser ? '/(auth)/profile-info' : '/(tabs)/home');
     } catch (verifyError) {
       if (verifyError instanceof ApiError) {
         setError(verifyError.message);

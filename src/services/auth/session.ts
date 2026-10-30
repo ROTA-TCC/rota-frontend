@@ -10,6 +10,14 @@ export type LoginOutcome =
   | { type: 'session'; session: SessionPayload }
   | { type: 'two-factor'; partialToken: string };
 
+export interface SocialSessionPayload extends SessionPayload {
+  isNewUser: boolean;
+}
+
+export type SocialLoginOutcome =
+  | { type: 'session'; session: SessionPayload; isNewUser: boolean }
+  | { type: 'two-factor'; partialToken: string; isNewUser: boolean };
+
 type UnknownRecord = Record<string, unknown>;
 
 const asRecord = (value: unknown): UnknownRecord =>
@@ -60,4 +68,25 @@ export const parseLoginPayload = (body: unknown): LoginOutcome | null => {
 
   const session = parseSessionPayload(body);
   return session ? { type: 'session', session } : null;
+};
+
+export const parseSocialLoginPayload = (body: unknown): SocialLoginOutcome | null => {
+  const data = unwrap(body);
+  const isNewUser = data.isNewUser === true;
+
+  if (data.requires2fa === true) {
+    const partialToken = asString(data.partialToken);
+    return partialToken ? { type: 'two-factor', partialToken, isNewUser } : null;
+  }
+
+  const session = parseSessionPayload(body);
+  return session ? { type: 'session', session, isNewUser } : null;
+};
+
+export const parseSocialSessionPayload = (body: unknown): SocialSessionPayload | null => {
+  const session = parseSessionPayload(body);
+  if (!session) return null;
+
+  const data = unwrap(body);
+  return { ...session, isNewUser: data.isNewUser === true };
 };

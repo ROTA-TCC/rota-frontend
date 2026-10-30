@@ -12,11 +12,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { AuthScreen, AuthFooterLink } from '@/components/auth/AuthScreen';
 import { AuthInput } from '@/components/auth/AuthInput';
-import { AuthDivider } from '@/components/auth/AuthDivider';
 import { AuthSwitch } from '@/components/auth/AuthSwitch';
-import { SocialAuthButtons } from '@/components/auth/SocialAuthButtons';
+import { SocialAuthSection } from '@/components/auth/SocialAuthSection';
 import { useAuthTheme, type AuthTheme } from '@/constants/authTheme';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth, type SocialAuthResult } from '@/providers/AuthProvider';
 import { ApiError } from '@/services/api/interceptors';
 import { hasErrors, validateRegisterForm, type AuthFormErrors } from '@/utils/validation';
 
@@ -67,6 +66,18 @@ export default function CadastroScreen() {
     setGeneralError('Não foi possível criar sua conta. Tente novamente.');
   };
 
+  const handleSocialSuccess = (result: SocialAuthResult) => {
+    if (result.outcome === 'two-factor') {
+      router.push({
+        pathname: '/(auth)/two-factor',
+        params: { email: '' },
+      });
+      return;
+    }
+
+    router.replace(result.isNewUser ? '/(auth)/profile-info' : '/(tabs)/home');
+  };
+
   const handleRegister = async () => {
     const validationErrors = validateRegisterForm({
       alias,
@@ -113,9 +124,10 @@ export default function CadastroScreen() {
         />
       }
     >
-      <SocialAuthButtons />
-
-      <AuthDivider />
+      <SocialAuthSection
+        onSuccess={handleSocialSuccess}
+        onError={setGeneralError}
+      />
 
       <AuthInput
         label="Nome completo"

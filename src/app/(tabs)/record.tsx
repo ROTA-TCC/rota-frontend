@@ -1,25 +1,26 @@
-import React, { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { Alert, Pressable, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { GoalProgressWidget } from '@/components/Record/GoalProgressWidget';
-import { MoreSportsModal } from '@/components/Record/MoreSportsModal';
 import { SportCard } from '@/components/Record/SportCard';
 import { sportIcons } from '@/components/Record/icons';
 import { useRecordColors, type RecordPalette } from '@/constants/recordTheme';
 import { useTheme } from '@/providers/ThemeProvider';
-import { additionalSports, featuredSports, weeklyGoal } from '@/constants/mockRecord';
+import { featuredSports, weeklyGoal } from '@/constants/mockRecord';
 
 export default function RecordScreen() {
   const router = useRouter();
   const { isDark } = useTheme();
   const colors = useRecordColors();
   const styles = useMemo(() => createStyles(colors), [colors]);
-  const [moreSportsVisible, setMoreSportsVisible] = useState(false);
 
   const handleStart = (trackingType: string) => {
-    setMoreSportsVisible(false);
     router.push(`/run/active-run?type=${trackingType}`);
+  };
+
+  const handleMoreSports = () => {
+    Alert.alert('Mais esportes', 'Novos esportes estarão disponíveis em breve.');
   };
 
   return (
@@ -51,20 +52,13 @@ export default function RecordScreen() {
 
         <Pressable
           style={({ pressed }) => [styles.moreButton, pressed && styles.moreButtonPressed]}
-          onPress={() => setMoreSportsVisible(true)}
+          onPress={handleMoreSports}
           accessibilityRole="button"
           accessibilityLabel="Ver mais esportes"
         >
           <Text style={styles.moreButtonText}>Mais esportes</Text>
         </Pressable>
       </ScrollView>
-
-      <MoreSportsModal
-        visible={moreSportsVisible}
-        sports={additionalSports}
-        onClose={() => setMoreSportsVisible(false)}
-        onSelect={(sport) => handleStart(sport.trackingType)}
-      />
     </SafeAreaView>
   );
 }

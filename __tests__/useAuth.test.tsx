@@ -11,7 +11,10 @@ jest.mock('expo-router', () => ({
 
 jest.mock('@/services/api/authService', () => ({
   login: jest.fn(),
+  loginWithFacebook: jest.fn(),
+  loginWithGoogle: jest.fn(),
   register: jest.fn(),
+  verifySocialTwoFactor: jest.fn(),
   verifyTwoFactor: jest.fn(),
 }));
 
@@ -46,6 +49,8 @@ describe('useAuth', () => {
     expect(result.current.isBootstrapping).toBe(false);
     expect(result.current.user).toBeNull();
     expect(typeof result.current.login).toBe('function');
+    expect(typeof result.current.loginWithGoogle).toBe('function');
+    expect(typeof result.current.loginWithFacebook).toBe('function');
     expect(typeof result.current.register).toBe('function');
     expect(typeof result.current.verifyTwoFactor).toBe('function');
     expect(typeof result.current.cancelTwoFactor).toBe('function');

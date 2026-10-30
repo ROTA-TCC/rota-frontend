@@ -13,10 +13,10 @@ export const featuredSports: SportActivity[] = [
     trackingType: 'normal',
   },
   {
-    id: 'cycling',
-    title: 'Pedalada',
-    subtitle: 'Última: Há 3 dias • 18,0 km',
-    trackingType: 'bike',
+    id: 'treadmill',
+    title: 'Esteira',
+    subtitle: 'Última: Há 3 dias • 6,0 km',
+    trackingType: 'treadmill',
   },
   {
     id: 'strength',
@@ -26,23 +26,3 @@ export const featuredSports: SportActivity[] = [
   },
 ];
 
-export const additionalSports: SportActivity[] = [
-  {
-    id: 'walk',
-    title: 'Caminhada',
-    subtitle: 'Registre uma caminhada leve',
-    trackingType: 'walk',
-  },
-  {
-    id: 'trail',
-    title: 'Trilha',
-    subtitle: 'Corrida em terreno natural',
-    trackingType: 'trail',
-  },
-  {
-    id: 'treadmill',
-    title: 'Esteira',
-    subtitle: 'Treino indoor',
-    trackingType: 'treadmill',
-  },
-];

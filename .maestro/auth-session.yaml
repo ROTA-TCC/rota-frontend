@@ -21,14 +21,12 @@ appId: com.anonymous.rotafrontend
     visible: "Início"
     timeout: 20000
 
-# A sessão deve ser restaurada do SecureStore após reiniciar o app.
 - stopApp
 - launchApp
 - extendedWaitUntil:
     visible: "Início"
     timeout: 20000
 
-# O logout deve revogar a sessão e limpar os tokens locais.
 - tapOn:
     id: "profile-tab"
 - extendedWaitUntil:
@@ -49,7 +47,6 @@ appId: com.anonymous.rotafrontend
     visible: "Bem-vindo de volta"
     timeout: 20000
 
-# Após reiniciar, o app não deve restaurar a sessão encerrada.
 - stopApp
 - launchApp
 - extendedWaitUntil:

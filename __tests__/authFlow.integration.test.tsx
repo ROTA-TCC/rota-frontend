@@ -14,7 +14,10 @@ jest.mock('expo-router', () => ({
 
 jest.mock('@/services/api/authService', () => ({
   login: jest.fn(),
+  loginWithFacebook: jest.fn(),
+  loginWithGoogle: jest.fn(),
   register: jest.fn(),
+  verifySocialTwoFactor: jest.fn(),
   verifyTwoFactor: jest.fn(),
 }));
 
@@ -43,7 +46,10 @@ jest.mock('@/services/api/interceptors', () => ({
 
 const authService = jest.requireMock('@/services/api/authService') as {
   login: jest.Mock;
+  loginWithFacebook: jest.Mock;
+  loginWithGoogle: jest.Mock;
   register: jest.Mock;
+  verifySocialTwoFactor: jest.Mock;
   verifyTwoFactor: jest.Mock;
 };
 
@@ -175,6 +181,86 @@ describe('fluxo de autenticação', () => {
       code: '123456',
     });
     expect(sessionManager.saveSession).toHaveBeenCalledWith(session);
+    expect(result.current.status).toBe('authenticated');
+  });
+
+  test('login com Google autentica e sinaliza novo usuário', async () => {
+    authService.loginWithGoogle.mockResolvedValue({
+      type: 'session',
+      session,
+      isNewUser: true,
+    });
+
+    const { result } = await renderAuth();
+
+    let socialResult: { outcome: string; isNewUser: boolean } | undefined;
+    await act(async () => {
+      socialResult = await result.current.loginWithGoogle('google-token', true);
+    });
+
+    expect(authService.loginWithGoogle).toHaveBeenCalledWith('google-token', true);
+    expect(socialResult).toEqual({ outcome: 'authenticated', isNewUser: true });
+    expect(sessionManager.saveSession).toHaveBeenCalledWith(session);
+    expect(result.current.status).toBe('authenticated');
+  });
+
+  test('login com Facebook autentica usuário existente', async () => {
+    authService.loginWithFacebook.mockResolvedValue({
+      type: 'session',
+      session,
+      isNewUser: false,
+    });
+
+    const { result } = await renderAuth();
+
+    let socialResult: { outcome: string; isNewUser: boolean } | undefined;
+    await act(async () => {
+      socialResult = await result.current.loginWithFacebook(
+        { accessToken: 'facebook-token' },
+        false
+      );
+    });
+
+    expect(authService.loginWithFacebook).toHaveBeenCalledWith(
+      { accessToken: 'facebook-token' },
+      false
+    );
+    expect(socialResult).toEqual({ outcome: 'authenticated', isNewUser: false });
+    expect(result.current.status).toBe('authenticated');
+  });
+
+  test('2FA social usa o endpoint OAuth e preserva isNewUser', async () => {
+    authService.loginWithGoogle.mockResolvedValue({
+      type: 'two-factor',
+      partialToken: 'social-partial',
+      isNewUser: true,
+    });
+    authService.verifySocialTwoFactor.mockResolvedValue({
+      ...session,
+      isNewUser: true,
+    });
+
+    const { result } = await renderAuth();
+
+    await act(async () => {
+      await result.current.loginWithGoogle('google-token');
+    });
+
+    let verified: { isNewUser: boolean } | undefined;
+    await act(async () => {
+      verified = await result.current.verifyTwoFactor('654321');
+    });
+
+    expect(authService.verifySocialTwoFactor).toHaveBeenCalledWith({
+      partialToken: 'social-partial',
+      code: '654321',
+    });
+    expect(authService.verifyTwoFactor).not.toHaveBeenCalled();
+    expect(verified).toEqual({ isNewUser: true });
+    expect(sessionManager.saveSession).toHaveBeenCalledWith({
+      ...session,
+      isNewUser: true,
+    });
     expect(result.current.status).toBe('authenticated');
   });
 

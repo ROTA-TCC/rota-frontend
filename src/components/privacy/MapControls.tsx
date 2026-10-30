@@ -19,7 +19,6 @@ export function MapControls({
 }: MapControlsProps) {
   return (
     <>
-      {/* Indicador Superior do Raio Real */}
       <View style={styles.infoPill} pointerEvents="none">
         <Text style={styles.infoPillText}>Área Oculta ({distanceText})</Text>
         <Svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -33,9 +32,7 @@ export function MapControls({
         </Svg>
       </View>
 
-      {/* Botões Flutuantes no Canto Inferior */}
       <View style={styles.actionCluster}>
-        {/* Botão de Centralizar no Usuário */}
         <TouchableOpacity
           style={styles.controlBtn}
           onPress={onLocateUser}
@@ -53,7 +50,6 @@ export function MapControls({
           </Svg>
         </TouchableOpacity>
 
-        {/* Botão de Tela Cheia / Expansão */}
         <TouchableOpacity
           style={styles.controlBtn}
           onPress={onToggleFullscreen}

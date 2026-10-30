@@ -18,7 +18,10 @@ import {
 } from '@/services/api/interceptors';
 import {
   login as loginRequest,
+  loginWithFacebook as loginWithFacebookRequest,
+  loginWithGoogle as loginWithGoogleRequest,
   register as registerRequest,
+  verifySocialTwoFactor as verifySocialTwoFactorRequest,
   verifyTwoFactor as verifyTwoFactorRequest,
 } from '@/services/api/authService';
 import {
@@ -35,14 +38,30 @@ import { devWarn } from '@/utils/devLog';
 export type AuthStatus = 'bootstrapping' | 'authenticated' | 'unauthenticated';
 export type AuthFlowOutcome = 'authenticated' | 'two-factor';
 
+export interface SocialAuthResult {
+  outcome: AuthFlowOutcome;
+  isNewUser: boolean;
+}
+
+export interface FacebookLoginInput {
+  accessToken?: string;
+  idToken?: string;
+  nonce?: string;
+}
+
 interface AuthContextType {
   status: AuthStatus;
   isAuthenticated: boolean;
   isBootstrapping: boolean;
   user: AuthUserResponse | null;
   login: (data: LoginDto) => Promise<AuthFlowOutcome>;
+  loginWithGoogle: (idToken: string, rememberMe?: boolean) => Promise<SocialAuthResult>;
+  loginWithFacebook: (
+    data: FacebookLoginInput,
+    rememberMe?: boolean
+  ) => Promise<SocialAuthResult>;
   register: (alias: string, email: string, password: string) => Promise<AuthFlowOutcome>;
-  verifyTwoFactor: (code: string) => Promise<void>;
+  verifyTwoFactor: (code: string) => Promise<{ isNewUser: boolean }>;
   cancelTwoFactor: () => void;
   logout: () => Promise<void>;
 }
@@ -71,6 +90,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [status, setStatus] = useState<AuthStatus>('bootstrapping');
   const [user, setUser] = useState<AuthUserResponse | null>(null);
   const [partialToken, setPartialToken] = useState<string | null>(null);
+  const [twoFactorMode, setTwoFactorMode] = useState<'password' | 'social'>('password');
+  const [pendingIsNewUser, setPendingIsNewUser] = useState(false);
   const logoutInProgress = useRef(false);
   const router = useRouter();
 
@@ -82,6 +103,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setUser(null);
     setPartialToken(null);
+    setTwoFactorMode('password');
+    setPendingIsNewUser(false);
     setStatus('unauthenticated');
   }, []);
 
@@ -116,6 +139,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await saveSession(session);
     setUser(session.user ?? null);
     setPartialToken(null);
+    setTwoFactorMode('password');
+    setPendingIsNewUser(false);
     setStatus('authenticated');
   }, []);
 
@@ -165,12 +190,52 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (outcome.type === 'two-factor') {
         setUser(null);
         setPartialToken(outcome.partialToken);
+        setTwoFactorMode('password');
+        setPendingIsNewUser(false);
         setStatus('unauthenticated');
         return 'two-factor';
       }
 
       await applySession(outcome.session);
       return 'authenticated';
+    },
+    [applySession]
+  );
+
+  const loginWithGoogle = useCallback(
+    async (idToken: string, rememberMe = false): Promise<SocialAuthResult> => {
+      const outcome = await loginWithGoogleRequest(idToken, rememberMe);
+
+      if (outcome.type === 'two-factor') {
+        setUser(null);
+        setPartialToken(outcome.partialToken);
+        setTwoFactorMode('social');
+        setPendingIsNewUser(outcome.isNewUser);
+        setStatus('unauthenticated');
+        return { outcome: 'two-factor', isNewUser: outcome.isNewUser };
+      }
+
+      await applySession(outcome.session);
+      return { outcome: 'authenticated', isNewUser: outcome.isNewUser };
+    },
+    [applySession]
+  );
+
+  const loginWithFacebook = useCallback(
+    async (data: FacebookLoginInput, rememberMe = false): Promise<SocialAuthResult> => {
+      const outcome = await loginWithFacebookRequest(data, rememberMe);
+
+      if (outcome.type === 'two-factor') {
+        setUser(null);
+        setPartialToken(outcome.partialToken);
+        setTwoFactorMode('social');
+        setPendingIsNewUser(outcome.isNewUser);
+        setStatus('unauthenticated');
+        return { outcome: 'two-factor', isNewUser: outcome.isNewUser };
+      }
+
+      await applySession(outcome.session);
+      return { outcome: 'authenticated', isNewUser: outcome.isNewUser };
     },
     [applySession]
   );
@@ -183,6 +248,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (outcome.type === 'two-factor') {
         setUser(null);
         setPartialToken(outcome.partialToken);
+        setTwoFactorMode('password');
+        setPendingIsNewUser(false);
         setStatus('unauthenticated');
         return 'two-factor';
       }
@@ -194,19 +261,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const verifyTwoFactor = useCallback(
-    async (code: string) => {
+    async (code: string): Promise<{ isNewUser: boolean }> => {
       if (!partialToken) {
         throw new ApiError('Sessão de verificação expirada. Faça login novamente.');
       }
 
+      if (twoFactorMode === 'social') {
+        const session = await verifySocialTwoFactorRequest({ partialToken, code });
+        await applySession(session);
+        return { isNewUser: session.isNewUser || pendingIsNewUser };
+      }
+
       const session = await verifyTwoFactorRequest({ partialToken, code });
       await applySession(session);
+      return { isNewUser: false };
     },
-    [applySession, partialToken]
+    [applySession, partialToken, pendingIsNewUser, twoFactorMode]
   );
 
   const cancelTwoFactor = useCallback(() => {
     setPartialToken(null);
+    setTwoFactorMode('password');
+    setPendingIsNewUser(false);
   }, []);
 
   const value = useMemo(
@@ -216,6 +292,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isBootstrapping: status === 'bootstrapping',
       user,
       login,
+      loginWithGoogle,
+      loginWithFacebook,
       register,
       verifyTwoFactor,
       cancelTwoFactor,
@@ -225,6 +303,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       status,
       user,
       login,
+      loginWithGoogle,
+      loginWithFacebook,
       register,
       verifyTwoFactor,
       cancelTwoFactor,

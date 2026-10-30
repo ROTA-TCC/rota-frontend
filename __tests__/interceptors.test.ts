@@ -110,6 +110,31 @@ describe('interceptors', () => {
     expect(storage.clear).not.toHaveBeenCalled();
   });
 
+  test.each([
+    '/auth/oauth/providers',
+    '/auth/oauth/google/mobile',
+    '/auth/oauth/facebook/mobile',
+    '/auth/oauth/2fa/verify',
+  ])('não tenta refresh em rota pública OAuth %s', async (path) => {
+    const adapter = jest.fn((config: InternalAxiosRequestConfig) =>
+      rejectWith(config, 401, { message: 'Token inválido' })
+    );
+    const api = createApi(adapter);
+    const refresh = jest.fn();
+    const logout = jest.fn();
+    setRefreshHandler(refresh);
+    setLogoutHandler(logout);
+
+    await expect(api.post(path, {})).rejects.toMatchObject({
+      status: 401,
+      message: 'Token inválido',
+    });
+
+    expect(refresh).not.toHaveBeenCalled();
+    expect(logout).not.toHaveBeenCalled();
+    expect(storage.clear).not.toHaveBeenCalled();
+  });
+
   test('encerra a sessão quando o refresh retorna null', async () => {
     const adapter = jest.fn((config: InternalAxiosRequestConfig) =>
       rejectWith(config, 401, { message: 'expirado' })

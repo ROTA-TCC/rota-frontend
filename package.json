@@ -25,6 +25,7 @@
     "axios": "^1.20.0",
     "babel-jest": "^30.5.2",
     "expo": "~58.0.19",
+    "expo-auth-session": "~58.0.14",
     "expo-blur": "~58.0.5",
     "expo-constants": "~58.0.13",
     "expo-crypto": "~58.0.7",
@@ -64,11 +65,11 @@
     "@types/react": "~19.3.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~58.0.4",
-    "jest-expo": "~58.0.12",
-    "ts-jest": "^29.4.14",
-    "typescript": "~6.0.3",
     "jest": "^30.5.2",
-    "test-renderer": "^1.3.0"
+    "jest-expo": "~58.0.12",
+    "test-renderer": "^1.3.0",
+    "ts-jest": "^29.4.14",
+    "typescript": "~6.0.3"
   },
   "private": true
 }

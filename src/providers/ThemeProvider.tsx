@@ -46,7 +46,7 @@ const persistMode = (mode: ThemeMode) => {
 
     SecureStore.setItemAsync(THEME_STORAGE_KEY, mode).catch(() => undefined);
   } catch {
-    // ignore persistence errors
+    return;
   }
 };
 

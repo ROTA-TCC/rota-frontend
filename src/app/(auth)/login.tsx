@@ -12,11 +12,10 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { AuthScreen, AuthFooterLink } from '@/components/auth/AuthScreen';
 import { AuthInput } from '@/components/auth/AuthInput';
-import { AuthDivider } from '@/components/auth/AuthDivider';
 import { AuthCheckbox } from '@/components/auth/AuthCheckbox';
-import { SocialAuthButtons } from '@/components/auth/SocialAuthButtons';
+import { SocialAuthSection } from '@/components/auth/SocialAuthSection';
 import { useAuthTheme, type AuthTheme } from '@/constants/authTheme';
-import { useAuth } from '@/providers/AuthProvider';
+import { useAuth, type SocialAuthResult } from '@/providers/AuthProvider';
 import { ApiError } from '@/services/api/interceptors';
 import { hasErrors, validateLoginForm, type AuthFormErrors } from '@/utils/validation';
 
@@ -64,6 +63,18 @@ export default function LoginScreen() {
     setGeneralError('Não foi possível entrar. Tente novamente.');
   };
 
+  const handleSocialSuccess = (result: SocialAuthResult) => {
+    if (result.outcome === 'two-factor') {
+      router.push({
+        pathname: '/(auth)/two-factor',
+        params: { email: '' },
+      });
+      return;
+    }
+
+    router.replace(result.isNewUser ? '/(auth)/profile-info' : '/(tabs)/home');
+  };
+
   const handleLogin = async () => {
     const validationErrors = validateLoginForm({ email, password });
     setErrors(validationErrors);
@@ -105,9 +116,11 @@ export default function LoginScreen() {
         />
       }
     >
-      <SocialAuthButtons />
-
-      <AuthDivider />
+      <SocialAuthSection
+        rememberMe={rememberMe}
+        onSuccess={handleSocialSuccess}
+        onError={setGeneralError}
+      />
 
       <AuthInput
         label="Endereço de e-mail"
